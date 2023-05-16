@@ -17,10 +17,6 @@ env:
   NEWSCATCHER_API_KEY: ${{ secrets.NEWSCATCHER_API_KEY }}
   DATABASE_URL: postgresql:///postgres:postgres@localhost:5432/story_processor_db2
 
-POSTGRES_HOST: postgres
-# The default PostgreSQL port
-POSTGRES_PORT: 5432
-
 jobs:
 
   tests:
