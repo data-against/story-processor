@@ -15,11 +15,33 @@ env:
   MC_API_TOKEN: ${{ secrets.MC_API_TOKEN }}
   MC_LEGACY_API_KEY: ${{ secrets.MC_LEGACY_API_KEY }}
   NEWSCATCHER_API_KEY: ${{ secrets.NEWSCATCHER_API_KEY }}
+  DATABASE_URL: postgresql:///postgres:postgres@localhost:5432/story_processor_db2
+
+POSTGRES_HOST: postgres
+# The default PostgreSQL port
+POSTGRES_PORT: 5432
 
 jobs:
-  build:
+
+  tests:
 
     runs-on: ubuntu-latest
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:14.8
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v3
@@ -31,6 +53,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           ./scripts/download-models.sh
+          alembic upgrade head
 
       - name: Test with pytest
         run: pytest
