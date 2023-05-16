@@ -64,7 +64,7 @@ if FEMINICIDE_API_URL is None:
     logger.error("  ❌ No FEMINICIDE_API_URL is specified. Bailing because we can't list projects to run!")
     sys.exit(1)
 else:
-    logger.info("  Config server at at {}".format(FEMINICIDE_API_URL))
+    logger.info("  Config server at {}".format(FEMINICIDE_API_URL))
 
 FEMINICIDE_API_KEY = os.environ.get('FEMINICIDE_API_KEY', None)
 if FEMINICIDE_API_KEY is None:
