@@ -132,3 +132,10 @@ def get_email_config() -> Dict:
         from_address=os.environ.get('SMTP_FROM', None),
         notify_emails=os.environ.get('NOTIFY_EMAILS', "").split(",")
     )
+
+def get_slack_config() -> Dict:
+    return dict(
+        app_token=os.environ.get('SLACK_APP_TOKEN', None),
+        bot_token=os.environ.get('SLACK_BOT_TOKEN', None),
+        
+    )

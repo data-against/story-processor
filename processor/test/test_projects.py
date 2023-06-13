@@ -22,7 +22,7 @@ class TestProjects(unittest.TestCase):
         # english
         project = TEST_EN_PROJECT.copy()
         # load test inputs
-        with open(os.path.join(test_fixture_dir, "usa_sample_stories.json")) as f:
+        with open(os.path.join(test_fixture_dir, "usa_sample_stories.json"),encoding='utf-8') as f:
             sample_text = json.load(f)
         sample_stories = [dict(story_text=t) for t in sample_text]
         # check results

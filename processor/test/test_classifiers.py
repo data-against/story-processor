@@ -38,7 +38,7 @@ class TestChainedClassifers(unittest.TestCase):
     def test_multiplied(self):
         project = TEST_EN_PROJECT.copy()
         project['language_model_id'] = 9
-        with open(os.path.join(test_fixture_dir, "more_sample_stories.json")) as f:
+        with open(os.path.join(test_fixture_dir, "more_sample_stories.json"),encoding='utf-8') as f:
             sample_texts = json.load(f)
         sample_texts = [dict(story_text=t) for t in sample_texts]
         classifier = classifiers.for_project(project)
@@ -57,7 +57,7 @@ class TestClassifierResults(unittest.TestCase):
     def test_classify_en(self):
         project = TEST_EN_PROJECT.copy()
         classifier = classifiers.for_project(project)
-        with open(os.path.join(test_fixture_dir, "usa_sample_stories.json")) as f:
+        with open(os.path.join(test_fixture_dir, "usa_sample_stories.json"),encoding='utf-8') as f:
             sample_texts = json.load(f)
         sample_texts = [dict(story_text=t) for t in sample_texts]
         results = classifier.classify(sample_texts)['model_scores']
@@ -69,7 +69,7 @@ class TestClassifierResults(unittest.TestCase):
         project = TEST_EN_PROJECT.copy()  # important to copy before editing, otherwise subsequent tests get messed up
         project['language_model_id'] = 3
         classifier = classifiers.for_project(project)
-        with open(os.path.join(test_fixture_dir, "more_sample_stories.json")) as f:
+        with open(os.path.join(test_fixture_dir, "more_sample_stories.json"),encoding='utf-8') as f:
             sample_texts = json.load(f)
         sample_texts = [dict(story_text=t) for t in sample_texts]
         results = classifier.classify(sample_texts)['model_scores']
@@ -83,14 +83,14 @@ class TestClassifierResults(unittest.TestCase):
         project = TEST_EN_PROJECT.copy()  # important to copy before editing, otherwise subsequent tests get messed up
         project['language_model_id'] = 2
         classifier = classifiers.for_project(project)
-        with open(os.path.join(test_fixture_dir, "es_sample_stories.json")) as f:
+        with open(os.path.join(test_fixture_dir, "es_sample_stories.json"),encoding='utf-8') as f:
             sample_texts = json.load(f)
         sample_texts = [dict(story_text=t) for t in sample_texts]
         results = classifier.classify(sample_texts)['model_scores']
         assert round(results[0], 5) == 0.83309
 
     def _classify_one_from(self, index, file):
-        with open(os.path.join(test_fixture_dir, file)) as f:
+        with open(os.path.join(test_fixture_dir, file),encoding='utf-8') as f:
             sample_texts = json.load(f)
         one_story = [sample_texts[index]]
         sample_texts = [dict(story_text=t) for t in one_story]
@@ -104,7 +104,7 @@ class TestClassifierResults(unittest.TestCase):
         return results_by_model_id
 
     def test_classify_aapf2(self):
-        with open(os.path.join(test_fixture_dir, "mc-story-2008554915.json"), 'r') as f:
+        with open(os.path.join(test_fixture_dir, "mc-story-2008554915.json"),encoding='utf-8') as f:
             story = json.load(f)
         project = TEST_EN_PROJECT.copy()
         project['language_model_id'] = 5
@@ -113,7 +113,7 @@ class TestClassifierResults(unittest.TestCase):
         assert round(model_result[0], 5) == 0.00789
 
     def test_classify_pt(self):
-        with open(os.path.join(test_fixture_dir, "mc-story-2529994630.json"), 'r') as f:
+        with open(os.path.join(test_fixture_dir, "mc-story-2529994630.json"),encoding='utf-8') as f:
             story = json.load(f)
         project = TEST_EN_PROJECT.copy()
         project['language_model_id'] = 15
@@ -126,7 +126,7 @@ class TestClassifierResults(unittest.TestCase):
         project['language_model_id'] = 17
         project['language'] = classifiers.LANGUAGE_KO
         classifier = classifiers.for_project(project)
-        with open(os.path.join(test_fixture_dir, "ko_sample_stories.json")) as f:
+        with open(os.path.join(test_fixture_dir, "ko_sample_stories.json"),encoding='utf-8') as f:
             sample_texts = json.load(f)
         sample_texts = [dict(story_text=t) for t in sample_texts]
         results = classifier.classify(sample_texts)['model_scores']
