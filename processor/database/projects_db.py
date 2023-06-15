@@ -38,7 +38,7 @@ def update_history(project_id: int, last_processed_stories_id: int = None, last_
     :return:
     """
     session = Session()
-    project_history = session.query(ProjectHistory).get(project_id)
+    project_history = session.get(ProjectHistory, project_id) #session.query(ProjectHistory).get(project_id)[update]
     project_history.last_processed_id = last_processed_stories_id
     project_history.last_publish_date = last_publish_date
     project_history.last_url = last_url

@@ -5,7 +5,7 @@ import copy
 import sys
 
 from sqlalchemy.sql import func
-from sqlalchemy import text
+from sqlalchemy import text,update,select
 from sqlalchemy.orm import sessionmaker
 
 import processor
@@ -46,7 +46,7 @@ def add_stories(source_story_list: List[Dict], project: Dict, source: str) -> Li
         session = Session()
         for s in new_source_story_list:
             s['stories_id'] = s['db_story'].id  # since these don't have a stories_id, set it to the database PK id
-            session.query(Story).filter_by(id=s['log_db_id']).update({"stories_id": s['log_db_id']})
+            session.execute(update(Story).where(Story.id == s['log_db_id']).values(stories_id=s['log_db_id'])) #[updated]
         session.commit()
     for s in new_source_story_list:  # free the DB objects back for GC
         del s['db_story']
@@ -63,12 +63,14 @@ def update_stories_processed_date_score(stories: List) -> None:
     session = Session()
     for s in stories:
         if 'log_db_id' in s:  # more gracefully fail in test scenarios
-            session.query(Story).filter_by(id=s['log_db_id']).update({
-                "model_score": s['model_score'],
-                "model_1_score": s['model_1_score'],
-                "model_2_score": s['model_2_score'],
-                "processed_date": now,
-            })
+            session.execute(update(Story)
+            .where(Story.id == s['log_db_id'])
+            .values(
+                model_score=s['model_score'],
+                model_1_score=s['model_1_score'],
+                model_2_score=s['model_2_score'],
+                processed_date=now
+            ))#[updated]
     session.commit()
 
 
@@ -81,7 +83,7 @@ def update_stories_above_threshold(stories: List) -> None:
     """
     session = Session()
     for s in stories:
-        session.query(Story).filter_by(id=s['log_db_id']).update({"above_threshold": True})
+        session.execute(update(Story).where(Story.id == s['log_db_id']).values(above_threshold=True))#[updated]
     session.commit()
 
 
@@ -94,7 +96,7 @@ def update_stories_posted_date(stories: List) -> None:
     now = dt.datetime.now()
     session = Session()
     for s in stories:
-        session.query(Story).filter_by(id=s['log_db_id']).update({"posted_date": now})
+        session.execute(update(Story).where(Story.id == s['log_db_id']).values(posted_date=now))#[updated]
     session.commit()
 
 
@@ -108,12 +110,16 @@ def recent_stories(project_id: int, above_threshold: bool, limit: int = 5) -> Li
     """
     earliest_date = dt.date.today() - dt.timedelta(days=7)
     session = Session()
-    q = session.query(Story).\
-        filter(Story.project_id == project_id). \
-        filter(Story.above_threshold == above_threshold). \
-        filter(Story.published_date > earliest_date). \
-        order_by(func.random()). \
-        limit(limit).all()
+    q = session.execute(
+    select(Story)
+    .where(
+        (Story.project_id == project_id) &
+        (Story.above_threshold == above_threshold) &
+        (Story.published_date > earliest_date)
+    )
+    .order_by(func.random())
+    .limit(limit)
+    .all())#[updated]
     stories = [s for s in q]
     return stories
 
