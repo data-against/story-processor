@@ -6,10 +6,12 @@ import datetime as dt
 from mcmetadata import extract
 import requests
 import sys
+import time
 from waybacknews.searchapi import SearchApiClient
+import processor
 import processor.database.stories_db as stories_db
 from processor.classifiers import download_models
-from processor import get_email_config, is_email_configured, SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER
+from processor import get_email_config, is_email_configured, SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER, get_slack_config
 import processor.projects as projects
 import processor.notifications as notifications
 from processor.tasks import add_entities_to_stories
@@ -126,6 +128,24 @@ def send_email_task(project_details: List[Dict]):
     else:
         logger.info("Not sending any email updates")
 
+@task(name='send_slack_msg')
+def send_slack_message_task(project_details: List[Dict]):
+    total_new_stories = sum([s['stories'] for s in project_details])
+    total_pages = sum([s['pages'] for s in project_details])
+    slack_message = ""
+    slack_message += "Checking {} projects.\n\n".format(len(project_details))
+    for p in project_details:
+        slack_message += p['email_text']
+    logger.info("Done with {} projects".format(len(project_details)))
+    logger.info("  {} stories over {} pages".format(total_new_stories, total_pages))
+    slack_message += "Done - pulled {} stories over {} pages total.\n\n" \
+                     "(An automated email from your friendly neighborhood story processor)" \
+        .format(total_new_stories, total_pages)
+    if get_slack_config():
+        slack_config = get_slack_config()
+        notifications.send_slack_msg(slack_config['channel_id'],slack_config['bot_token'],"Feminicide Catchup: {} stories".format(total_new_stories),slack_message)
+    else:
+        logger.info("Not sending any slack updates")
 
 if __name__ == '__main__':
 
@@ -152,6 +172,7 @@ if __name__ == '__main__':
                                                     page_size=unmapped(stories_per_page))
         # 3. send email with results of operations
         send_email_task(project_statuses)
+        send_slack_message_task(project_statuses)
 
     # run the whole thing
     flow.run(parameters={

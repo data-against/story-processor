@@ -9,7 +9,7 @@ import processor
 import processor.database.stories_db as stories_db
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
-from processor import get_mc_legacy_client, get_email_config, is_email_configured
+from processor import get_mc_legacy_client, get_email_config, is_email_configured, get_slack_config
 import processor.projects as projects
 import processor.tasks as tasks
 import processor.notifications as notifications
@@ -119,6 +119,28 @@ def send_email_task(project_details: List[Dict], start_time: float):
     else:
         logger.info("Not sending any email updates")
 
+@task(name='send_slack_msg')
+def send_slack_message_task(project_details: List[Dict], start_time: float):
+    duration_secs = time.time() - start_time
+    duration_mins = str(round(duration_secs/60, 2))
+    total_new_stories = sum([s['stories'] for s in project_details])
+    total_pages = sum([s['pages'] for s in project_details])
+    slack_message = ""
+    slack_message += "Checking {} projects.\n\n".format(len(project_details))
+    for p in project_details:
+        slack_message += p['email_text']
+    logger.info("Done with {} projects".format(len(project_details)))
+    logger.info("  {} stories over {} pages".format(total_new_stories, total_pages))
+    slack_message += "Done - pulled {} stories over {} pages total.\n\n" \
+                     "(An automated email from your friendly neighborhood {} story processor)" \
+        .format(total_new_stories, total_pages, processor.SOURCE_MEDIA_CLOUD)
+    if get_slack_config():
+        slack_config = get_slack_config()
+        notifications.send_slack_msg(slack_config['channel_id'],slack_config['bot_token'],"Feminicide {} Update: {} stories ({} mins)".format(processor.SOURCE_MEDIA_CLOUD,
+                                                                                     total_new_stories,
+                                                                                     duration_mins),slack_message)
+    else:
+        logger.info("Not sending any slack updates")
 
 if __name__ == '__main__':
 
@@ -145,6 +167,8 @@ if __name__ == '__main__':
                                                     max_stories=unmapped(max_stories_per_project))
         # 3. send email with results of operations
         send_email_task(project_statuses, start_time)
+        send_slack_message_task(project_statuses, start_time)
+        
 
     # run the whole thing
     flow.run(parameters={

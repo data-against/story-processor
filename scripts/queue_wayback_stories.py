@@ -202,6 +202,7 @@ if __name__ == '__main__':
                                                                            data_source_name)
         # 5. send email with results of operations
         prefect_tasks.send_email_task(results_data, data_source_name, start_time)
+        prefect_tasks.send_slack_message_task(results_data, data_source_name, start_time)
 
     # run the whole thing
     flow.run(parameters={
