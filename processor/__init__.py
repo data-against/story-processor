@@ -91,18 +91,15 @@ if NEWSCATCHER_API_KEY is None:
 
 SLACK_APP_TOKEN = os.environ.get('SLACK_APP_TOKEN', None) 
 if SLACK_APP_TOKEN is None:
-    logger.error("  ❌ No SLACK_APP_TOKEN env var specified. Pathetically refusing to start!")
-    sys.exit(1)
+    logger.warning("  ⚠️ No SLACK_APP_TOKEN env var specified. We won't be sending slack updates.")
 
 SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN', None)  
 if SLACK_BOT_TOKEN is None:
-    logger.error("  ❌ No SLACK_BOT_TOKEN env var specified. Pathetically refusing to start!")
-    sys.exit(1)
+    logger.warning("  ⚠️ No SLACK_BOT_TOKEN env var specified. We won't be sending slack updates.")
 
-CHANNEL_ID = os.environ.get('CHANNEL_ID', None)  
-if CHANNEL_ID is None:
-    logger.error("  ❌ No CHANNEL_ID env var specified. Pathetically refusing to start!")
-    sys.exit(1)
+SLACK_CHANNEL_ID = os.environ.get('SLACK_CHANNEL_ID', None)  
+if SLACK_CHANNEL_ID is None:
+    logger.warning("  ⚠️ No CHANNEL_ID env var specified. We won't be sending slack updates.")
 
 def get_mc_client() -> mediacloud.api.DirectoryApi:
     """
@@ -149,7 +146,7 @@ def get_email_config() -> Dict:
 
 def get_slack_config() -> Dict:
     return dict(
-        app_token=os.environ.get('SLACK_APP_TOKEN', None),
-        bot_token=os.environ.get('SLACK_BOT_TOKEN', None),
-        channel_id=os.environ.get('CHANNEL_ID', None),
+        app_token=SLACK_APP_TOKEN,
+        bot_token=SLACK_BOT_TOKEN,
+        channel_id=SLACK_CHANNEL_ID,
     )

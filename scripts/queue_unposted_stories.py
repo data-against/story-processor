@@ -16,6 +16,7 @@ import processor.projects as projects
 import processor.notifications as notifications
 from processor.tasks import add_entities_to_stories
 import processor.util as util
+import scripts.tasks as prefect_tasks
 
 DEFAULT_STORIES_PER_PAGE = 100  # I found this performs poorly if set higher than 100
 WORKER_COUNT = 8
@@ -128,25 +129,6 @@ def send_email_task(project_details: List[Dict]):
     else:
         logger.info("Not sending any email updates")
 
-@task(name='send_slack_msg')
-def send_slack_message_task(project_details: List[Dict]):
-    total_new_stories = sum([s['stories'] for s in project_details])
-    total_pages = sum([s['pages'] for s in project_details])
-    slack_message = ""
-    slack_message += "Checking {} projects.\n\n".format(len(project_details))
-    for p in project_details:
-        slack_message += p['email_text']
-    logger.info("Done with {} projects".format(len(project_details)))
-    logger.info("  {} stories over {} pages".format(total_new_stories, total_pages))
-    slack_message += "Done - pulled {} stories over {} pages total.\n\n" \
-                     "(An automated email from your friendly neighborhood story processor)" \
-        .format(total_new_stories, total_pages)
-    if get_slack_config():
-        slack_config = get_slack_config()
-        notifications.send_slack_msg(slack_config['channel_id'],slack_config['bot_token'],"Feminicide Catchup: {} stories".format(total_new_stories),slack_message)
-    else:
-        logger.info("Not sending any slack updates")
-
 if __name__ == '__main__':
 
     logger = logging.getLogger(__name__)
@@ -163,6 +145,8 @@ if __name__ == '__main__':
         if WORKER_COUNT > 1:
             flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
         # read parameters
+        data_source_name = "unposted"
+        start_time = Parameter("start_time", default=time.time())
         stories_per_page = Parameter("stories_per_page", default=DEFAULT_STORIES_PER_PAGE)
         logger.info("    will request {} stories/page".format(stories_per_page))
         # 1. list all the project we need to work on
@@ -172,9 +156,10 @@ if __name__ == '__main__':
                                                     page_size=unmapped(stories_per_page))
         # 3. send email with results of operations
         send_email_task(project_statuses)
-        send_slack_message_task(project_statuses)
+        prefect_tasks.send_slack_message_task(project_statuses, data_source_name, start_time)
 
     # run the whole thing
     flow.run(parameters={
         'stories_per_page': DEFAULT_STORIES_PER_PAGE,
+        'start_time': time.time(),
     })

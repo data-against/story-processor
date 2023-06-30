@@ -9,7 +9,6 @@ from prefect import Flow, task, Parameter
 from newscatcherapi import NewsCatcherApiClient
 from prefect.executors import LocalDaskExecutor
 import requests.exceptions
-
 import processor
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models

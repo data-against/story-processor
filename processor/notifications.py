@@ -1,10 +1,8 @@
 import logging
 import smtplib
 import ssl
-from typing import List
 from slack_bolt import App
 from typing import List
-from slack_sdk import WebClient
 from processor import is_email_configured, get_email_config
 
 
