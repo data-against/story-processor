@@ -4,15 +4,15 @@ from typing import List, Dict
 import time
 from prefect import Flow, Parameter, task, unmapped
 from prefect.executors import LocalDaskExecutor
-
 import processor
 import processor.database.stories_db as stories_db
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
-from processor import get_mc_legacy_client, get_email_config, is_email_configured
+from processor import get_mc_legacy_client, get_email_config, is_email_configured, get_slack_config
 import processor.projects as projects
 import processor.tasks as tasks
 import processor.notifications as notifications
+import scripts.tasks as prefect_tasks
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
 DEFAULT_MAX_STORIES_PER_PROJECT = 20000  # make sure we don't do too many stories each cron run (for testing)
@@ -119,7 +119,6 @@ def send_email_task(project_details: List[Dict], start_time: float):
     else:
         logger.info("Not sending any email updates")
 
-
 if __name__ == '__main__':
 
     logger = logging.getLogger(__name__)
@@ -133,6 +132,7 @@ if __name__ == '__main__':
         if WORKER_COUNT > 1:
             flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
         # read parameters
+        data_source_name = Parameter("data_source", default="")
         stories_per_page = Parameter("stories_per_page", default=DEFAULT_STORIES_PER_PAGE)
         max_stories_per_project = Parameter("max_stories_per_project", default=DEFAULT_MAX_STORIES_PER_PROJECT)
         start_time = Parameter("start_time", default=time.time())
@@ -145,10 +145,14 @@ if __name__ == '__main__':
                                                     max_stories=unmapped(max_stories_per_project))
         # 3. send email with results of operations
         send_email_task(project_statuses, start_time)
+        prefect_tasks.send_slack_message_task(project_statuses, data_source_name, start_time)
+
+        
 
     # run the whole thing
     flow.run(parameters={
         'stories_per_page': DEFAULT_STORIES_PER_PAGE,
         'max_stories_per_project': DEFAULT_MAX_STORIES_PER_PROJECT,
+        'data_source': processor.SOURCE_MEDIA_CLOUD,
         'start_time': time.time(),
     })

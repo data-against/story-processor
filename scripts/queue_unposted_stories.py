@@ -6,14 +6,17 @@ import datetime as dt
 from mcmetadata import extract
 import requests
 import sys
+import time
 from waybacknews.searchapi import SearchApiClient
+import processor
 import processor.database.stories_db as stories_db
 from processor.classifiers import download_models
-from processor import get_email_config, is_email_configured, SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER
+from processor import get_email_config, is_email_configured, SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER, get_slack_config
 import processor.projects as projects
 import processor.notifications as notifications
 from processor.tasks import add_entities_to_stories
 import processor.util as util
+import scripts.tasks as prefect_tasks
 
 DEFAULT_STORIES_PER_PAGE = 100  # I found this performs poorly if set higher than 100
 WORKER_COUNT = 8
@@ -126,7 +129,6 @@ def send_email_task(project_details: List[Dict]):
     else:
         logger.info("Not sending any email updates")
 
-
 if __name__ == '__main__':
 
     logger = logging.getLogger(__name__)
@@ -143,6 +145,8 @@ if __name__ == '__main__':
         if WORKER_COUNT > 1:
             flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
         # read parameters
+        data_source_name = "unposted"
+        start_time = Parameter("start_time", default=time.time())
         stories_per_page = Parameter("stories_per_page", default=DEFAULT_STORIES_PER_PAGE)
         logger.info("    will request {} stories/page".format(stories_per_page))
         # 1. list all the project we need to work on
@@ -152,8 +156,10 @@ if __name__ == '__main__':
                                                     page_size=unmapped(stories_per_page))
         # 3. send email with results of operations
         send_email_task(project_statuses)
+        prefect_tasks.send_slack_message_task(project_statuses, data_source_name, start_time)
 
     # run the whole thing
     flow.run(parameters={
         'stories_per_page': DEFAULT_STORIES_PER_PAGE,
+        'start_time': time.time(),
     })

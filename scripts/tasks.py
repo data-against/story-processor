@@ -7,12 +7,11 @@ import mcmetadata as metadata
 from prefect import task
 from functools import lru_cache
 
-from processor import is_email_configured, get_email_config
+from processor import is_email_configured, get_email_config, get_slack_config
 import processor.tasks as celery_tasks
 import processor.notifications as notifications
 from processor.database import stories_db as stories_db
 from processor.database import projects_db as projects_db
-
 logger = logging.getLogger(__name__)
 
 
@@ -55,6 +54,24 @@ def send_email_task(summary: Dict, data_source: str, start_time: float):
                                  email_message)
     else:
         logger.info("Not sending any email updates")
+
+@task(name='send_slack_msg')
+def send_slack_message_task(summary: Dict, data_source: str, start_time: float):
+    duration_secs = time.time() - start_time
+    duration_mins = str(round(duration_secs / 60, 2))
+    slack_message = ""
+    slack_message += "Checking {} projects.\n\n".format(summary['project_count'])
+    slack_message += summary['email_text']
+    slack_message += "\nDone - pulled {} stories.\n\n" \
+                     "(An automated message from your friendly neighborhood {} story processor)" \
+        .format(summary['stories'], data_source)
+    if get_slack_config():
+        slack_config = get_slack_config()
+        notifications.send_slack_msg(slack_config['channel_id'],slack_config['bot_token'],"Feminicide {} Update: {} stories ({} mins)".format(data_source,
+                                                                                     summary['stories'],
+                                                                                     duration_mins), slack_message)
+    else:
+        logger.info("Not sending any slack updates")
 
 
 @task(name='queue_stories_for_classification')
