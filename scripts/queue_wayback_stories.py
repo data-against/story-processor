@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 def load_projects_task() -> List[Dict]:
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
     logger.info("  Found {} projects".format(len(project_list)))
+    #return [p for p in project_list if p['id'] == 166]
     return project_list
 
 
@@ -201,8 +202,8 @@ if __name__ == '__main__':
         results_data = prefect_tasks.queue_stories_for_classification_task(projects_list, stories_with_text,
                                                                            data_source_name)
         # 5. send email with results of operations
-        prefect_tasks.send_email_task(results_data, data_source_name, start_time)
-        prefect_tasks.send_slack_message_task(results_data, data_source_name, start_time)
+        prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
+        prefect_tasks.send_combined_slack_message_task(results_data, data_source_name, start_time)
 
     # run the whole thing
     flow.run(parameters={

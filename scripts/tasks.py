@@ -35,41 +35,75 @@ def fetch_text_task(story: Dict) -> Optional[Dict]:
     return None
 
 
-@task(name='send_email')
-def send_email_task(summary: Dict, data_source: str, start_time: float):
+@task(name='send_combined_email')
+def send_combined_email_task(summary: Dict, data_source: str, start_time: float):
+    # param summary: has keys 'project_count', 'email_text', 'stories'
+    email_message = _get_combined_text(summary['project_count'], summary['email_text'], summary['stories'], data_source)
+    _send_email(data_source, summary['stories'], start_time, email_message)
+
+
+@task(name='send_project_list_email')
+def send_project_list_email_task(project_details: List[Dict], data_source: str, start_time: float):
+    # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
+    total_new_stories = sum([p['stories'] for p in project_details])
+    # total_pages = sum([p['pages'] for p in project_details])
+    combined_email_text = ""
+    for p in project_details:
+        combined_email_text += p['email_text']
+    email_message = _get_combined_text(len(project_details), combined_email_text, total_new_stories, data_source)
+    _send_email(data_source, total_new_stories, start_time, email_message)
+
+
+def _send_email(data_source: str, story_count: int, start_time: float, email_message: str):
     duration_secs = time.time() - start_time
     duration_mins = str(round(duration_secs / 60, 2))
-    email_message = ""
-    email_message += "Checking {} projects.\n\n".format(summary['project_count'])
-    email_message += summary['email_text']
-    email_message += "\nDone - pulled {} stories.\n\n" \
-                     "(An automated email from your friendly neighborhood {} story processor)" \
-        .format(summary['stories'], data_source)
     if is_email_configured():
         email_config = get_email_config()
         notifications.send_email(email_config['notify_emails'],
-                                 "Feminicide {} Update: {} stories ({} mins)".format(data_source,
-                                                                                     summary['stories'],
-                                                                                     duration_mins),
+                                 "Feminicide {} Update: {} stories ({} mins)".format(data_source, story_count, duration_mins),
                                  email_message)
     else:
         logger.info("Not sending any email updates")
 
-@task(name='send_slack_msg')
-def send_slack_message_task(summary: Dict, data_source: str, start_time: float):
+
+def _get_combined_text(project_count: int, email_text: str, story_count: int, data_source: str) -> str:
+    email_message = ""
+    email_message += "Checking {} projects.\n\n".format(project_count)
+    email_message += email_text
+    email_message += "\nDone - pulled {} stories.\n\n" \
+                     "(An automated email from your friendly neighborhood {} story processor)" \
+        .format(story_count, data_source)
+    return email_message
+
+
+@task(name='send_combined_slack_msg')
+def send_combined_slack_message_task(summary: Dict, data_source: str, start_time: float):
+    # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
+    message = _get_combined_text(summary['project_count'], summary['email_text'], summary['stories'], data_source)
+    _send_slack_message(data_source, summary['stories'], start_time, message)
+
+
+@task(name='send_project_list_slack_msg')
+def send_project_list_slack_message_task(project_details: List[Dict], data_source: str, start_time: float):
+    # :param summary: has keys 'project_count', 'email_text', 'stories'
+    total_new_stories = sum([p['stories'] for p in project_details])
+    # total_pages = sum([p['pages'] for p in project_details])
+    combined_text = ""
+    for p in project_details:
+        combined_text += p['email_text']
+    message = _get_combined_text(len(project_details), combined_text, total_new_stories, data_source)
+    _send_slack_message(data_source, total_new_stories, start_time, message)
+
+
+def _send_slack_message(data_source: str, story_count: int, start_time: float, slack_message: str):
     duration_secs = time.time() - start_time
     duration_mins = str(round(duration_secs / 60, 2))
-    slack_message = ""
-    slack_message += "Checking {} projects.\n\n".format(summary['project_count'])
-    slack_message += summary['email_text']
-    slack_message += "\nDone - pulled {} stories.\n\n" \
-                     "(An automated message from your friendly neighborhood {} story processor)" \
-        .format(summary['stories'], data_source)
     if get_slack_config():
         slack_config = get_slack_config()
-        notifications.send_slack_msg(slack_config['channel_id'],slack_config['bot_token'],"Feminicide {} Update: {} stories ({} mins)".format(data_source,
-                                                                                     summary['stories'],
-                                                                                     duration_mins), slack_message)
+        notifications.send_slack_msg(slack_config['channel_id'], slack_config['bot_token'],
+                                     "Feminicide {} Update: {} stories ({} mins)".format(
+                                         data_source, story_count, duration_mins),
+                                     slack_message)
     else:
         logger.info("Not sending any slack updates")
 

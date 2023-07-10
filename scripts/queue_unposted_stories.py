@@ -108,27 +108,6 @@ def process_project_task(project: Dict, page_size: int) -> Dict:
     )
 
 
-@task(name='send_email')
-def send_email_task(project_details: List[Dict]):
-    total_new_stories = sum([s['stories'] for s in project_details])
-    total_pages = sum([s['pages'] for s in project_details])
-    email_message = ""
-    email_message += "Checking {} projects.\n\n".format(len(project_details))
-    for p in project_details:
-        email_message += p['email_text']
-    logger.info("Done with {} projects".format(len(project_details)))
-    logger.info("  {} stories over {} pages".format(total_new_stories, total_pages))
-    email_message += "Done - pulled {} stories over {} pages total.\n\n" \
-                     "(An automated email from your friendly neighborhood story processor)" \
-        .format(total_new_stories, total_pages)
-    if is_email_configured():
-        email_config = get_email_config()
-        notifications.send_email(email_config['notify_emails'],
-                                 "Feminicide Catchup: {} stories".format(total_new_stories),
-                                 email_message)
-    else:
-        logger.info("Not sending any email updates")
-
 if __name__ == '__main__':
 
     logger = logging.getLogger(__name__)
@@ -155,8 +134,8 @@ if __name__ == '__main__':
         project_statuses = process_project_task.map(projects_list,
                                                     page_size=unmapped(stories_per_page))
         # 3. send email with results of operations
-        send_email_task(project_statuses)
-        prefect_tasks.send_slack_message_task(project_statuses, data_source_name, start_time)
+        prefect_tasks.send_project_list_email_task(project_statuses, data_source_name, start_time)
+        prefect_tasks.send_project_list_slack_message_task(project_statuses, data_source_name, start_time)
 
     # run the whole thing
     flow.run(parameters={
