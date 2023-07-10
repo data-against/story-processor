@@ -32,6 +32,7 @@ def send_email(recipients: List[str], subject: str, message: str) -> bool:
     logger.info("  sent")
     return True
 
+
 def send_slack_msg(channel_id,bot_key,subject: str, message: str):
     app = App(token=bot_key)
     header = f"*{subject}*" 
