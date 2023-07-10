@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.3.0
+
+* Add slack integration for notifications (text parallels email notifications)  
+
 ### v3.2.1
 
 * Fix bug that was ignoring KO entity types.  
