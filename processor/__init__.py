@@ -5,13 +5,12 @@ from dotenv import load_dotenv
 import mediacloud.api
 import mediacloud_legacy.api
 from flask import Flask
-#from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk import init
 from typing import Dict
 from sqlalchemy import create_engine
 
-VERSION = "3.3.0"
+VERSION = "3.3.1"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"

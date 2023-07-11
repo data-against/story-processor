@@ -3,6 +3,11 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.3.1
+
+* Tweaks to support more staggered multiple runs throughout day.
+* Increase max DB pool size to support overlapping runs.
+
 ### v3.3.0
 
 * Add slack integration for notifications (text parallels email notifications)  
