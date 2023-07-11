@@ -77,7 +77,8 @@ if SQLALCHEMY_DATABASE_URI is None:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///data.db'
     engine = create_engine(SQLALCHEMY_DATABASE_URI)  # use defaults (probably in test mode)
 else:
-    engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=20, max_overflow=20)  # bumped pool size up for parallel tasks
+    # bumped pool size up for parallel tasks - the max will be sum of `pool_size` and `max_overflow`
+    engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=20, max_overflow=30)
 
 
 ENTITY_SERVER_URL = os.environ['ENTITY_SERVER_URL']

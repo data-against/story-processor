@@ -8,12 +8,10 @@ import requests
 import sys
 import time
 from waybacknews.searchapi import SearchApiClient
-import processor
 import processor.database.stories_db as stories_db
 from processor.classifiers import download_models
-from processor import get_email_config, is_email_configured, SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER, get_slack_config
+from processor import SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER
 import processor.projects as projects
-import processor.notifications as notifications
 from processor.tasks import add_entities_to_stories
 import processor.util as util
 import scripts.tasks as prefect_tasks

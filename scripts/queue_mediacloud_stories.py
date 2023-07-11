@@ -8,20 +8,19 @@ import processor
 import processor.database.stories_db as stories_db
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
-from processor import get_mc_legacy_client, get_email_config, is_email_configured, get_slack_config
+from processor import get_mc_legacy_client
 import processor.projects as projects
 import processor.tasks as tasks
-import processor.notifications as notifications
 import scripts.tasks as prefect_tasks
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
-DEFAULT_MAX_STORIES_PER_PROJECT = 20000  # make sure we don't do too many stories each cron run (for testing)
+DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many stories each cron run (for testing)
 
 WORKER_COUNT = 6  # scale of parallel processing (of project queries)
 
 # use this to make sure we don't fall behind on recent stories, even if a project query is producing more than
 # DEFAULT_MAX_STORIES_PER_PROJECT stories a day
-DEFAULT_DAY_WINDOW = 2
+DEFAULT_DAY_WINDOW = 3
 
 
 @task(name='load_projects')
