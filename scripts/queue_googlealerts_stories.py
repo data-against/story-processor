@@ -1,13 +1,11 @@
-import logging
 import sys
 from typing import List, Dict
 import feedparser
 import time
 import mcmetadata.urls as urls
-from prefect import Flow, task, Parameter
+from prefect import flow, task, get_run_logger
 from urllib.parse import urlparse, parse_qs
-from prefect.executors import LocalDaskExecutor
-
+from prefect_dask.task_runners import DaskTaskRunner
 import processor
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
@@ -18,6 +16,12 @@ DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
 DEFAULT_MAX_STORIES_PER_PROJECT = 200  # 40 * 1000  # make sure we don't do too many stories each cron run (for testing)
 WORKER_COUNT = 16
 
+DaskTaskRunner(
+    cluster_kwargs={
+        "image": "prefecthq/prefect:latest",
+        "n_workers":WORKER_COUNT,
+    },
+)
 
 def _url_from_google_alert_link(link: str) -> str:
     o = urlparse(link)
@@ -27,6 +31,7 @@ def _url_from_google_alert_link(link: str) -> str:
 
 @task(name='load_projects')
 def load_projects_task() -> List[Dict]:
+    logger = get_run_logger()
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
     logger.info("  Checking {} projects".format(len(project_list)))
     return [p for p in project_list if p['rss_url'] and (len(p['rss_url']) > 0)]
@@ -34,6 +39,7 @@ def load_projects_task() -> List[Dict]:
 
 @task(name='fetch_project_stories')
 def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dict]:
+    logger = get_run_logger()
     combined_stories = []
     for p in project_list:
         feed = feedparser.parse(p['rss_url'])
@@ -72,21 +78,19 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
 
 if __name__ == '__main__':
 
-    logger = logging.getLogger(__name__)
-    logger.info("Starting {} story fetch job".format(processor.SOURCE_GOOGLE_ALERTS))
+    @flow(name="googlealerts_stories",task_runner = DaskTaskRunner())
+    def googlealerts_stories_flow(data_source: str):
+        logger = get_run_logger()
+        logger.info("Starting {} story fetch job".format(processor.SOURCE_GOOGLE_ALERTS))
 
-    # important to do because there might be new models on the server!
-    logger.info("  Checking for any new models we need")
-    models_downloaded = download_models()
-    logger.info(f"    models downloaded: {models_downloaded}")
-    if not models_downloaded:
-        sys.exit(1)
-
-    with Flow("story-processor") as flow:
-        if WORKER_COUNT > 1:
-            flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
-        data_source_name = Parameter("data_source", default="")
-        start_time = Parameter("start_time", default=time.time())
+        # important to do because there might be new models on the server!
+        logger.info("  Checking for any new models we need")
+        models_downloaded = download_models()
+        logger.info(f"    models downloaded: {models_downloaded}")
+        if not models_downloaded:
+            sys.exit(1)
+        data_source_name = data_source
+        start_time = time.time()
         # 1. list all the project we need to work on
         projects_list = load_projects_task()
         # 2. fetch all the urls from Google Alerts RSS feeds
@@ -96,13 +100,11 @@ if __name__ == '__main__':
         # 4. post batches of stories for classification
         results_data = prefect_tasks.queue_stories_for_classification_task(projects_list, stories_with_text,
                                                                            data_source_name)
-        # 5. send email with results of operations
-        prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
+        # 5. send email/slack_msg with results of operations
         prefect_tasks.send_combined_slack_message_task(results_data, data_source_name, start_time)
+        prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
+        
 
     # run the whole thing
-    flow.run(parameters={
-        'data_source': processor.SOURCE_GOOGLE_ALERTS,
-        'start_time': time.time(),
-    })
+    googlealerts_stories_flow(processor.SOURCE_GOOGLE_ALERTS)
 

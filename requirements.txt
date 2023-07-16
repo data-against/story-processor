@@ -16,7 +16,8 @@ SQLAlchemy==2.0.*
 alembic==1.10.*
 python-dateutil==2.8.*
 amqp==5.1.*
-prefect==1.4.*  # don't bump up because API changed in v2
+prefect==2.10.*  
+prefect-dask==0.2.4
 gevent==22.10.*
 feedparser==6.0.*
 mediacloud-metadata>=0.9.2

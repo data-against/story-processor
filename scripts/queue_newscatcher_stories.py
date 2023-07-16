@@ -1,13 +1,13 @@
-import logging
+#import prefect  #Will be required if get_run_context is implemented
 import math
 from typing import List, Dict
 import time
 import sys
 import mcmetadata.urls as urls
 import datetime as dt
-from prefect import Flow, task, Parameter
+from prefect import flow, task, get_run_logger
 from newscatcherapi import NewsCatcherApiClient
-from prefect.executors import LocalDaskExecutor
+from prefect_dask.task_runners import DaskTaskRunner
 import requests.exceptions
 import processor
 import processor.database.projects_db as projects_db
@@ -19,25 +19,33 @@ PAGE_SIZE = 100
 DEFAULT_DAY_WINDOW = 3
 WORKER_COUNT = 16
 MAX_CALLS_PER_SEC = 5
-MAX_STORIES_PER_PROJECT = 5000
+MAX_STORIES_PER_PROJECT = 50#5000
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
 newscatcherapi = NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
 
+DaskTaskRunner(
+    cluster_kwargs={
+        "image": "prefecthq/prefect:latest",
+        "n_workers":WORKER_COUNT,
+    },
+)
 
 @task(name='load_projects')
 def load_projects_task() -> List[Dict]:
+    logger = get_run_logger()
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
     projects_with_countries = projects.with_countries(project_list)
     if len(projects_with_countries) == 0:
         raise RuntimeError("No projects with countries ({} projects total) - bailing".format(len(project_list)))
     logger.info("  Found {} projects, checking {} with countries set".format(len(project_list),
                                                                              len(projects_with_countries)))
-    #return [p for p in projects_with_countries if p['id'] == 166]
-    return projects_with_countries
+    return [p for p in projects_with_countries if p['id'] == 166]
+    #return projects_with_countries
 
 
 def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime, page: int = 1) -> Dict:
+    logger = get_run_logger()
     try:
         terms_no_curlies = project['search_terms'].replace('“', '"').replace('”', '"')
         results = newscatcherapi.get_search(
@@ -59,6 +67,7 @@ def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime
 
 @task(name='fetch_project_stories')
 def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dict]:
+    logger = get_run_logger()
     combined_stories = []
     end_date = dt.datetime.now()
     for p in project_list:
@@ -116,25 +125,25 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
             logger.info("  project {} - {} valid stories (after {})".format(p['id'], valid_stories,
                                                                             history.last_publish_date))
             combined_stories += project_stories
+            #print("Task run context:")# Just for testing purposes can be removed if not needed.
+            #print(prefect.context.get_run_context().task_run.dict())# Just for testing purposes can be removed if not needed.
     return combined_stories
 
 
 if __name__ == '__main__':
 
-    logger = logging.getLogger(__name__)
-    logger.info("Starting {} story fetch job".format(processor.SOURCE_NEWSCATCHER))
-
-    # important to do because there might be new models on the server!
-    logger.info("  Checking for any new models we need")
-    models_downloaded = download_models()
-    logger.info(f"    models downloaded: {models_downloaded}")
-    if not models_downloaded:
-        sys.exit(1)
-    with Flow("story-processor") as flow:
-        if WORKER_COUNT > 1:
-            flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
-        data_source_name = Parameter("data_source", default="")
-        start_time = Parameter("start_time", default=time.time())
+    @flow(name="newscatcher_stories",task_runner = DaskTaskRunner())
+    def newscatcher_stories_flow(data_source: str):
+        logger = get_run_logger()
+        logger.info("Starting {} story fetch job".format(processor.SOURCE_NEWSCATCHER))
+        # important to do because there might be new models on the server!
+        logger.info("  Checking for any new models we need")
+        models_downloaded = download_models()
+        logger.info(f"    models downloaded: {models_downloaded}")
+        if not models_downloaded:
+            sys.exit(1)
+        data_source_name = data_source
+        start_time = time.time()
         # 1. list all the project we need to work on
         projects_list = load_projects_task()
         # 2. fetch all the urls from for each project from newscatcher (not mapped, so we can respect rate limiting)
@@ -144,12 +153,9 @@ if __name__ == '__main__':
         # 4. post batches of stories for classification
         results_data = prefect_tasks.queue_stories_for_classification_task(projects_list, stories_with_text,
                                                                            data_source_name)
-        # 5. send email with results of operations
-        prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
+        # 5. send email/slack_msg with results of operations
         prefect_tasks.send_combined_slack_message_task(results_data, data_source_name, start_time)
+        prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
 
     # run the whole thing
-    flow.run(parameters={
-        'data_source': processor.SOURCE_NEWSCATCHER,
-        'start_time': time.time(),
-    })
+    newscatcher_stories_flow(processor.SOURCE_NEWSCATCHER)
