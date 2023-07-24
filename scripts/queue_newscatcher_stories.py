@@ -19,7 +19,7 @@ PAGE_SIZE = 100
 DEFAULT_DAY_WINDOW = 3
 WORKER_COUNT = 16
 MAX_CALLS_PER_SEC = 5
-MAX_STORIES_PER_PROJECT = 50#5000
+MAX_STORIES_PER_PROJECT = 5000
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
 newscatcherapi = NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
@@ -40,8 +40,8 @@ def load_projects_task() -> List[Dict]:
         raise RuntimeError("No projects with countries ({} projects total) - bailing".format(len(project_list)))
     logger.info("  Found {} projects, checking {} with countries set".format(len(project_list),
                                                                              len(projects_with_countries)))
-    return [p for p in projects_with_countries if p['id'] == 166]
-    #return projects_with_countries
+    #return [p for p in projects_with_countries if p['id'] == 166]
+    return projects_with_countries
 
 
 def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime, page: int = 1) -> Dict:
