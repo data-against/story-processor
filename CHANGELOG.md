@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.4.1
+
+* Upgrade sklearn to try and fix deploy compilation crash
+
 ### v3.4.0
 
 * Upgrade to prefect v2
