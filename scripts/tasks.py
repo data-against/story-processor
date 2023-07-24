@@ -1,10 +1,9 @@
 import copy
 import time
 from typing import Dict, Optional, List
-import logging
 import dateutil.parser
 import mcmetadata as metadata
-from prefect import task
+from prefect import task, get_run_logger
 from functools import lru_cache
 
 from processor import is_email_configured, get_email_config, get_slack_config
@@ -12,7 +11,6 @@ import processor.tasks as celery_tasks
 import processor.notifications as notifications
 from processor.database import stories_db as stories_db
 from processor.database import projects_db as projects_db
-logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=50000)
@@ -55,6 +53,7 @@ def send_project_list_email_task(project_details: List[Dict], data_source: str, 
 
 
 def _send_email(data_source: str, story_count: int, start_time: float, email_message: str):
+    logger = get_run_logger()
     duration_secs = time.time() - start_time
     duration_mins = str(round(duration_secs / 60, 2))
     if is_email_configured():
@@ -96,6 +95,7 @@ def send_project_list_slack_message_task(project_details: List[Dict], data_sourc
 
 
 def _send_slack_message(data_source: str, story_count: int, start_time: float, slack_message: str):
+    logger = get_run_logger()
     duration_secs = time.time() - start_time
     duration_mins = str(round(duration_secs / 60, 2))
     if get_slack_config():
@@ -110,6 +110,7 @@ def _send_slack_message(data_source: str, story_count: int, start_time: float, s
 
 @task(name='queue_stories_for_classification')
 def queue_stories_for_classification_task(project_list: List[Dict], stories: List[Dict], datasource: str) -> Dict:
+    logger = get_run_logger()
     total_stories = 0
     email_message = ""
     for p in project_list:

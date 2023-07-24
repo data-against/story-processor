@@ -1,4 +1,3 @@
-import logging
 from typing import List, Dict, Optional
 import time
 import sys
@@ -7,9 +6,9 @@ import threading
 import numpy as np
 import mcmetadata.urls as urls
 import datetime as dt
-from prefect import Flow, task, Parameter, unmapped
+from prefect import flow, task, get_run_logger, unmapped
 from waybacknews.searchapi import SearchApiClient
-from prefect.executors import LocalDaskExecutor
+from prefect_dask.task_runners import DaskTaskRunner
 import requests.exceptions
 import processor
 import processor.database.projects_db as projects_db
@@ -23,12 +22,19 @@ DEFAULT_DAY_WINDOW = 3
 WORKER_COUNT = 8
 MAX_STORIES_PER_PROJECT = 5000
 
+DaskTaskRunner(
+    cluster_kwargs={
+        "image": "prefecthq/prefect:latest",
+        "n_workers":WORKER_COUNT,
+    },
+)
+
 wm_api = SearchApiClient("mediacloud")
-logger = logging.getLogger(__name__)
 
 
 @task(name='load_projects')
 def load_projects_task() -> List[Dict]:
+    logger = get_run_logger()
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
     logger.info("  Found {} projects".format(len(project_list)))
     #return [p for p in project_list if p['id'] == 166]
@@ -55,6 +61,7 @@ def _sources_get(cid: int) -> List[Dict]:
 
 
 def _cached_domains_for_collection(cid: int) -> List[str]:
+    logger = get_run_logger()
     # fetch info if it isn't cached
     if not _sources_are_cached(cid):
         logger.debug(f'Collection {cid}: sources not cached, fetching')
@@ -85,6 +92,7 @@ def _domains_for_project(collection_ids: List[int]) -> List[str]:
 
 @task(name='domains_for_project')
 def fetch_domains_for_projects(project: Dict) -> Dict:
+    logger = get_run_logger()
     domains = _domains_for_project(project['media_collections'])
     logger.info(f"Project {project['id']}/{project['title']}: found {len(domains)} domains")
     updated_project = copy.copy(project)
@@ -99,6 +107,7 @@ def _query_builder(terms: str, language: str, domains: list) -> str:
 
 @task(name='fetch_project_stories')
 def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dict]:
+    logger = get_run_logger()
     combined_stories = []
     end_date = dt.datetime.now() - dt.timedelta(days=DEFAULT_DAY_OFFSET)  # stories don't get processed for a few days
     for p in project_list:
@@ -164,6 +173,7 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
 
 @task(name='fetch_text')
 def fetch_archived_text_task(story: Dict) -> Optional[Dict]:
+    logger = get_run_logger()
     try:
         story_details = requests.get(story['article_url']).json()
         updated_story = copy.copy(story)
@@ -176,20 +186,19 @@ def fetch_archived_text_task(story: Dict) -> Optional[Dict]:
 
 if __name__ == '__main__':
 
-    logger.info("Starting {} story fetch job".format(processor.SOURCE_WAYBACK_MACHINE))
+    @flow(name="wayback_stories",task_runner = DaskTaskRunner())
+    def wayback_stories_flow(data_source: str):
+        logger = get_run_logger()
+        logger.info("Starting {} story fetch job".format(processor.SOURCE_WAYBACK_MACHINE))
 
-    # important to do because there might be new models on the server!
-    logger.info("  Checking for any new models we need")
-    models_downloaded = download_models()
-    logger.info(f"    models downloaded: {models_downloaded}")
-    if not models_downloaded:
-        sys.exit(1)
-
-    with Flow("story-processor") as flow:
-        if WORKER_COUNT > 1:
-            flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
-        data_source_name = Parameter("data_source", default="")
-        start_time = Parameter("start_time", default=time.time())
+        # important to do because there might be new models on the server!
+        logger.info("  Checking for any new models we need")
+        models_downloaded = download_models()
+        logger.info(f"    models downloaded: {models_downloaded}")
+        if not models_downloaded:
+            sys.exit(1)
+        data_source_name = data_source
+        start_time = time.time()
         # 1. list all the project we need to work on
         projects_list = load_projects_task()
         # 2. figure out domains to query for each project
@@ -201,12 +210,10 @@ if __name__ == '__main__':
         # 5. post batches of stories for classification
         results_data = prefect_tasks.queue_stories_for_classification_task(projects_list, stories_with_text,
                                                                            data_source_name)
-        # 5. send email with results of operations
-        prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
+        # 5. send email/slack_msg with results of operations
         prefect_tasks.send_combined_slack_message_task(results_data, data_source_name, start_time)
+        prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
+        
 
     # run the whole thing
-    flow.run(parameters={
-        'data_source': processor.SOURCE_WAYBACK_MACHINE,
-        'start_time': time.time(),
-    })
+    wayback_stories_flow(processor.SOURCE_WAYBACK_MACHINE)
