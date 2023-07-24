@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.4.0
+
+* Upgrade to prefect v2
+
 ### v3.3.1
 
 * Tweaks to support more staggered multiple runs throughout day.
