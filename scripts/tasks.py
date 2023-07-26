@@ -100,13 +100,13 @@ def _send_slack_message(data_source: str, story_count: int, start_time: float, s
     duration_mins = str(round(duration_secs / 60, 2))
     if get_slack_config():
         slack_config = get_slack_config()
-        notifications.send_slack_msg(slack_config['channel_id'], slack_config['bot_token'],
+        notifications.send_slack_msg(slack_config['channel_id'], slack_config['bot_token'],data_source,
                                      "Feminicide {} Update: {} stories ({} mins)".format(
                                          data_source, story_count, duration_mins),
                                      slack_message)
     else:
         logger.info("Not sending any slack updates")
-
+        
 
 @task(name='queue_stories_for_classification')
 def queue_stories_for_classification_task(project_list: List[Dict], stories: List[Dict], datasource: str) -> Dict:

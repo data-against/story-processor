@@ -1,10 +1,12 @@
 import logging
 import smtplib
 import ssl
-from slack_bolt import App
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 from typing import List
 from processor import is_email_configured, get_email_config
-
+import tempfile
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +34,36 @@ def send_email(recipients: List[str], subject: str, message: str) -> bool:
     logger.info("  sent")
     return True
 
+def upload_to_slack(channel_id: str, bot_key: str, source:str, subject:str, file_path: str) -> bool:
+    client = WebClient(token=bot_key)
+    try:
+        response = client.chat_postMessage(channel=channel_id, text=subject)
+        response = client.files_upload(
+            channels=channel_id,
+            file=file_path,
+            title=f"{source.upper()}"
+        )
+        if response["ok"]:
+            return True
+        else:
+            return False
+    except SlackApiError as e:
+        print(f"Slack API error: {e}")
+        return False
 
-def send_slack_msg(channel_id,bot_key,subject: str, message: str):
-    app = App(token=bot_key)
-    header = f"*{subject}*" 
+def send_slack_msg(channel_id, bot_key, data_source:str, subject: str, message: str):
+    header = f"{subject.upper()}"
     formatted_message = f"{header}\n\n{message}"
-    channel = channel_id 
-    response = app.client.chat_postMessage(channel=channel, text=formatted_message)
-    if response['ok']:
+    channel = channel_id
+
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8" ,delete=False) as temp_file:
+        temp_file.write(formatted_message)
+
+    if upload_to_slack(channel, bot_key, data_source, header, temp_file.name):
         logger.info("Slack message sent successfully")
     else:
         logger.error("Failed to send Slack message")
+
+    os.remove(temp_file.name)
+
+
