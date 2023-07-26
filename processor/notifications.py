@@ -34,7 +34,7 @@ def send_email(recipients: List[str], subject: str, message: str) -> bool:
     logger.info("  sent")
     return True
 
-def upload_to_slack(channel_id: str, bot_key: str, source:str, subject:str, file_path: str) -> bool:
+def upload_to_slack(channel_id: str, bot_key: str, source: str, subject: str, file_path: str) -> bool:
     client = WebClient(token=bot_key)
     try:
         response = client.chat_postMessage(channel=channel_id, text=subject)
@@ -51,7 +51,7 @@ def upload_to_slack(channel_id: str, bot_key: str, source:str, subject:str, file
         print(f"Slack API error: {e}")
         return False
 
-def send_slack_msg(channel_id, bot_key, data_source:str, subject: str, message: str):
+def send_slack_msg(channel_id, bot_key, data_source: str, subject: str, message: str):
     header = f"{subject.upper()}"
     formatted_message = f"{header}\n\n{message}"
     channel = channel_id
