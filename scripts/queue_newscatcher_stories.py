@@ -17,7 +17,7 @@ import processor.projects as projects
 import scripts.tasks as prefect_tasks
 
 PAGE_SIZE = 100
-DEFAULT_DAY_WINDOW = 3
+DEFAULT_DAY_WINDOW = 10
 WORKER_COUNT = 16
 MAX_CALLS_PER_SEC = 5
 MAX_STORIES_PER_PROJECT = 5000
@@ -46,6 +46,7 @@ def load_projects_task() -> List[Dict]:
 
 
 def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime, page: int = 1) -> Dict:
+    results = dict(total_hits=0) # start of with a mockup of no results, so we can handle transient errors bette
     logger = get_run_logger()
     try:
         terms_no_curlies = project['search_terms'].replace('“', '"').replace('”', '"')
@@ -59,14 +60,12 @@ def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime
             page=page
         )
     # try to ignore project-level exceptions so we can keep going and process other projects
-    except requests.exceptions.JSONDecodeError as jse:
-        logger.error("Couldn't parse response on project {}".format(project['id']))
-        logger.exception(jse)
-        results = []
     except newscatcherapi.newscatcherapi_exception.NewsCatcherApiException as ncae:
         logger.error("Couldn't get Newscatcher results for project {} - check query ({})".format(project['id'], ncae))
         logger.exception(ncae)
-        results = []
+    except requests.exceptions.RequestException as re:
+        logger.error("Fetch-related response on project {} - {}".format(project['id'], re))
+        logger.exception(re)
     return results
 
 
