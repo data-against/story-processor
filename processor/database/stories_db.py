@@ -111,15 +111,15 @@ def recent_stories(project_id: int, above_threshold: bool, limit: int = 5) -> Li
     earliest_date = dt.date.today() - dt.timedelta(days=7)
     session = Session()
     q = session.execute(
-    select(Story)
-    .where(
-        (Story.project_id == project_id) &
-        (Story.above_threshold == above_threshold) &
-        (Story.published_date > earliest_date)
-    )
-    .order_by(func.random())
-    .limit(limit)
-    .all())#[updated]
+        select(Story)
+        .where(
+            (Story.project_id == project_id) &
+            (Story.above_threshold == above_threshold) &
+            (Story.published_date > earliest_date)
+        )
+        .order_by(func.random())
+        .limit(limit)
+        )
     stories = [s for s in q]
     return stories
 
@@ -162,7 +162,7 @@ def _run_query(query: str) -> List:
     with processor.engine.begin() as connection:
         result = connection.execute(text(query))
         for row in result:
-            data.append(dict(row))
+            data.append(row._mapping)
     return data
 
 
