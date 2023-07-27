@@ -17,7 +17,7 @@ import processor.projects as projects
 import scripts.tasks as prefect_tasks
 
 PAGE_SIZE = 100
-DEFAULT_DAY_WINDOW = 10
+DEFAULT_DAY_WINDOW = 5
 WORKER_COUNT = 16
 MAX_CALLS_PER_SEC = 5
 MAX_STORIES_PER_PROJECT = 5000
