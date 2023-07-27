@@ -19,6 +19,6 @@ SELECT processed_date::date as day, above_threshold,  count(*) as stories from s
 
 SELECT published_date::date as day, above_threshold,  count(*) as stories from stories where project_id=23 and above_threshold is True group by 1, 2 order by 1 DESC limit 10;
 
-**Latest above threshold stories for a project
+**Latest above threshold stories for a project**
 
 SELECT published_date, above_threshold,  stories_id from stories where project_id=23 and above_threshold is True order by published_date DESC limit 20;
