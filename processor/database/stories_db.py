@@ -110,7 +110,7 @@ def recent_stories(project_id: int, above_threshold: bool, limit: int = 5) -> Li
     """
     earliest_date = dt.date.today() - dt.timedelta(days=7)
     session = Session()
-    q = session.execute(
+    result = session.execute(
         select(Story)
         .where(
             (Story.project_id == project_id) &
@@ -120,8 +120,7 @@ def recent_stories(project_id: int, above_threshold: bool, limit: int = 5) -> Li
         .order_by(func.random())
         .limit(limit)
         )
-    stories = [s for s in q]
-    return stories
+    return result.scalars().all()
 
 
 def _stories_by_date_col(column_name: str, project_id: int = None, platform: str = None, above_threshold: bool = None,
