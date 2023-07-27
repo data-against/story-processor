@@ -115,7 +115,7 @@ def process_project_task(project: Dict, page_size: int) -> Dict:
 
 if __name__ == '__main__':
 
-    @flow(name="unposted_stories",task_runner = DaskTaskRunner())
+    @flow(name="unposted_stories", task_runner=DaskTaskRunner())
     def unposted_stories_flow(default_stories_each_page: int):
         logger = get_run_logger()
         logger.info("Starting story catchup job")

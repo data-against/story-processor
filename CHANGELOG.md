@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.4.5
+
+* Fix naming on WM task that conflicted with another task
+
 ### v3.4.4
 
 * Better error handling for Newscatcher, longer window of days to search within

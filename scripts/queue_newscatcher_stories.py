@@ -136,7 +136,7 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
 
 if __name__ == '__main__':
 
-    @flow(name="newscatcher_stories",task_runner = DaskTaskRunner())
+    @flow(name="newscatcher_stories", task_runner=DaskTaskRunner())
     def newscatcher_stories_flow(data_source: str):
         logger = get_run_logger()
         logger.info("Starting {} story fetch job".format(processor.SOURCE_NEWSCATCHER))

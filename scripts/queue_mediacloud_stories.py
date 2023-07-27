@@ -105,8 +105,8 @@ def process_project_task(project: Dict, page_size: int, max_stories: int) -> Dic
 
 if __name__ == '__main__':
 
-    @flow(name="mediacloud_stories",task_runner = DaskTaskRunner())
-    def mediacloud_stories_flow(data_source: str,stories_each_page: int,max_stories_each_project: int):
+    @flow(name="mediacloud_stories", task_runner=DaskTaskRunner())
+    def mediacloud_stories_flow(data_source: str, stories_each_page: int, max_stories_each_project: int):
         logger = get_run_logger()
         logger.info("Starting {} story fetch job".format(processor.SOURCE_MEDIA_CLOUD))
         # important to do because there might new models on the server!

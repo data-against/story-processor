@@ -25,7 +25,7 @@ MAX_STORIES_PER_PROJECT = 5000
 DaskTaskRunner(
     cluster_kwargs={
         "image": "prefecthq/prefect:latest",
-        "n_workers":WORKER_COUNT,
+        "n_workers": WORKER_COUNT,
     },
 )
 
@@ -102,7 +102,8 @@ def fetch_domains_for_projects(project: Dict) -> Dict:
 
 def _query_builder(terms: str, language: str, domains: list) -> str:
     terms_no_curlies = terms.replace('“', '"').replace('”', '"')
-    return "({}) AND (language:{}) AND ({})".format(terms_no_curlies, language, " OR ".join([f"domain:{d}" for d in domains]))
+    return "({}) AND (language:{}) AND ({})".format(terms_no_curlies, language, " OR ".join(
+        [f"domain:{d}" for d in domains]))
 
 
 @task(name='fetch_project_stories')
@@ -140,7 +141,8 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
                 if valid_stories > MAX_STORIES_PER_PROJECT:
                     break
                 total_hits = wm_api.count(project_query, start_date, end_date)
-                logger.info("Project {}/{} - {} total stories (since {})".format(p['id'], p['title'], total_hits, start_date))
+                logger.info("Project {}/{} - {} total stories (since {})".format(p['id'], p['title'],
+                                                                                 total_hits, start_date))
                 for page in wm_api.all_articles(project_query, start_date, end_date, page_size=PAGE_SIZE):
                     if valid_stories > MAX_STORIES_PER_PROJECT:
                         break
@@ -171,7 +173,7 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
     return combined_stories
 
 
-@task(name='fetch_text')
+@task(name='fetch_archived_text')
 def fetch_archived_text_task(story: Dict) -> Optional[Dict]:
     logger = get_run_logger()
     try:
@@ -186,7 +188,7 @@ def fetch_archived_text_task(story: Dict) -> Optional[Dict]:
 
 if __name__ == '__main__':
 
-    @flow(name="wayback_stories",task_runner = DaskTaskRunner())
+    @flow(name="wayback_stories", task_runner=DaskTaskRunner())
     def wayback_stories_flow(data_source: str):
         logger = get_run_logger()
         logger.info("Starting {} story fetch job".format(processor.SOURCE_WAYBACK_MACHINE))
