@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.4.4
+
+* Better error handling for Newscatcher, longer window of days to search within
+
 ### v3.4.3
 
 * More work on SQLalchemy v2 integration to fix web dashboard
