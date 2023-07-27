@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.4.3
+
+* More work on SQLalchemy v2 integration to fix web dashboard
+
 ### v3.4.2
 
 * Fix query results architecture to work on dashboard errors
