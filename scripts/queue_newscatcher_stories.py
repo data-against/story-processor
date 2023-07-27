@@ -7,6 +7,7 @@ import mcmetadata.urls as urls
 import datetime as dt
 from prefect import flow, task, get_run_logger
 from newscatcherapi import NewsCatcherApiClient
+import newscatcherapi.newscatcherapi_exception
 from prefect_dask.task_runners import DaskTaskRunner
 import requests.exceptions
 import processor
@@ -57,10 +58,14 @@ def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime
             to_=end_date.strftime("%Y-%m-%d"),
             page=page
         )
+    # try to ignore project-level exceptions so we can keep going and process other projects
     except requests.exceptions.JSONDecodeError as jse:
         logger.error("Couldn't parse response on project {}".format(project['id']))
         logger.exception(jse)
-        # just ignore and keep going so at least we can get stories processed through the pipeline for other projects
+        results = []
+    except newscatcherapi.newscatcherapi_exception.NewsCatcherApiException as ncae:
+        logger.error("Couldn't get Newscatcher results for project {} - check query ({})".format(project['id'], ncae))
+        logger.exception(ncae)
         results = []
     return results
 
