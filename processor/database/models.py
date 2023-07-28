@@ -1,4 +1,4 @@
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Column, BigInteger, Integer, DateTime, Float, Boolean, String
 from dateutil.parser import parse
 import datetime as dt
@@ -6,31 +6,33 @@ import logging
 
 import processor
 
-Base = declarative_base()
-
 logger = logging.getLogger(__name__)
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 class Story(Base):
     __tablename__ = 'stories'
 
-    id = Column(Integer, primary_key=True)
-    stories_id = Column(BigInteger)
-    project_id = Column(Integer)
-    model_id = Column(Integer)
-    model_score = Column(Float)
-    model_1_score = Column(Float)
-    model_2_score = Column(Float)
-    published_date = Column(DateTime)
-    queued_date = Column(DateTime)
-    processed_date = Column(DateTime)
-    posted_date = Column(DateTime)
-    above_threshold = Column(Boolean)
-    source = Column(String)
-    url = Column(String)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    stories_id: Mapped[int] = mapped_column(BigInteger)
+    project_id: Mapped[int] = mapped_column(Integer)
+    model_id: Mapped[int] = mapped_column(Integer)
+    model_score: Mapped[float] = mapped_column(Float)
+    model_1_score: Mapped[float] = mapped_column(Float)
+    model_2_score: Mapped[float] = mapped_column(Float)
+    published_date: Mapped[dt.datetime] = mapped_column(DateTime)
+    queued_date: Mapped[dt.datetime] = mapped_column(DateTime)
+    processed_date: Mapped[dt.datetime] = mapped_column(DateTime)
+    posted_date: Mapped[dt.datetime] = mapped_column(DateTime)
+    above_threshold: Mapped[bool] = mapped_column(Boolean)
+    source: Mapped[str] = mapped_column(String)
+    url: Mapped[str] = mapped_column(String)
 
     def __repr__(self):
-        return '<Story id={}>'.format(self.id)
+        return '<Story id={} source={}>'.format(self.id, self.source)
 
     @staticmethod
     def from_source(story, source):
@@ -60,12 +62,12 @@ class Story(Base):
 class ProjectHistory(Base):
     __tablename__ = 'projects'
 
-    id = Column(Integer, primary_key=True)
-    last_processed_id = Column(BigInteger)
-    last_publish_date = Column(DateTime)
-    last_url = Column(String)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    last_processed_id: Mapped[int] = mapped_column(BigInteger)
+    last_publish_date: Mapped[dt.datetime] = mapped_column(DateTime)
+    last_url: Mapped[str] = mapped_column(String)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime)
 
     def __repr__(self):
         return '<ProjectHistory id={}>'.format(self.id)

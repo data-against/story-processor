@@ -6,7 +6,8 @@ import sys
 import mcmetadata.urls as urls
 import datetime as dt
 from prefect import flow, task, get_run_logger
-from newscatcherapi import NewsCatcherApiClient
+import newscatcherapi
+import newscatcherapi.newscatcherapi_exception
 from prefect_dask.task_runners import DaskTaskRunner
 import requests.exceptions
 import processor
@@ -16,13 +17,13 @@ import processor.projects as projects
 import scripts.tasks as prefect_tasks
 
 PAGE_SIZE = 100
-DEFAULT_DAY_WINDOW = 3
+DEFAULT_DAY_WINDOW = 5
 WORKER_COUNT = 16
 MAX_CALLS_PER_SEC = 5
 MAX_STORIES_PER_PROJECT = 5000
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
-newscatcherapi = NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
+nc_api_client = newscatcherapi.NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
 
 DaskTaskRunner(
     cluster_kwargs={
@@ -45,10 +46,11 @@ def load_projects_task() -> List[Dict]:
 
 
 def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime, page: int = 1) -> Dict:
+    results = dict(total_hits=0) # start of with a mockup of no results, so we can handle transient errors bette
     logger = get_run_logger()
     try:
         terms_no_curlies = project['search_terms'].replace('“', '"').replace('”', '"')
-        results = newscatcherapi.get_search(
+        results = nc_api_client.get_search(
             q=terms_no_curlies,
             lang=project['language'],
             countries=[p.strip() for p in project['newscatcher_country'].split(",")],
@@ -57,11 +59,13 @@ def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime
             to_=end_date.strftime("%Y-%m-%d"),
             page=page
         )
-    except requests.exceptions.JSONDecodeError as jse:
-        logger.error("Couldn't parse response on project {}".format(project['id']))
-        logger.exception(jse)
-        # just ignore and keep going so at least we can get stories processed through the pipeline for other projects
-        results = []
+    # try to ignore project-level exceptions so we can keep going and process other projects
+    except newscatcherapi.newscatcherapi_exception.NewsCatcherApiException as ncae:
+        logger.error("Couldn't get Newscatcher results for project {} - check query ({})".format(project['id'], ncae))
+        logger.exception(ncae)
+    except requests.exceptions.RequestException as re:
+        logger.error("Fetch-related response on project {} - {}".format(project['id'], re))
+        logger.exception(re)
     return results
 
 

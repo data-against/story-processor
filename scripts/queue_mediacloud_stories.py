@@ -14,18 +14,18 @@ import processor.tasks as tasks
 import scripts.tasks as prefect_tasks
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
-DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many stories each cron run (for testing)
+DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many stories each cron run
 
 WORKER_COUNT = 6  # scale of parallel processing (of project queries)
 
 # use this to make sure we don't fall behind on recent stories, even if a project query is producing more than
 # DEFAULT_MAX_STORIES_PER_PROJECT stories a day
-DEFAULT_DAY_WINDOW = 3
+DEFAULT_DAY_WINDOW = 5
 
 DaskTaskRunner(
     cluster_kwargs={
         "image": "prefecthq/prefect:latest",
-        "n_workers":WORKER_COUNT,
+        "n_workers": WORKER_COUNT,
     },
 )
 
