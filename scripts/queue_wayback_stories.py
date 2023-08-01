@@ -62,21 +62,26 @@ def _sources_get(cid: int) -> List[Dict]:
     return domains
 
 
+def _domains_for_collection(cid: int) -> List[str]:
+    limit = 1000
+    offset = 0
+    sources = []
+    mc_api = processor.get_mc_client()
+    while True:
+        response = mc_api.source_list(collection_id=cid, limit=limit, offset=offset)
+        sources += response['results']
+        if response['next'] is None:
+            break
+        offset += limit
+    return [s['name'] for s in sources if s['name'] is not None]  # grab just the domain names
+
+
 def _cached_domains_for_collection(cid: int) -> List[str]:
     logger = get_run_logger()
     # fetch info if it isn't cached
     if not _sources_are_cached(cid):
         logger.debug(f'Collection {cid}: sources not cached, fetching')
-        limit = 1000
-        offset = 0
-        sources = []
-        mc_api = processor.get_mc_client()
-        while True:
-            response = mc_api.source_list(collection_id=cid, limit=limit, offset=offset)
-            sources += response['results']
-            if response['next'] is None:
-                break
-            offset += limit
+        sources = _domains_for_collection(cid)
         _sources_set(cid, sources)
     else:
         # otherwise, load up cache to reduce server queries and runtime overall
@@ -88,7 +93,7 @@ def _cached_domains_for_collection(cid: int) -> List[str]:
 def _domains_for_project(collection_ids: List[int]) -> List[str]:
     all_domains = []
     for cid in collection_ids:  # fetch all the domains in each collection
-        all_domains += _cached_domains_for_collection(cid)
+        all_domains += _domains_for_collection(cid)  # remove cache because Prefect failing to serials with thread lock error :-(
     return list(set(all_domains))  # make them unique
 
 

@@ -30,7 +30,7 @@ nc_api_client = newscatcherapi.NewsCatcherApiClient(x_api_key=processor.NEWSCATC
 DaskTaskRunner(
     cluster_kwargs={
         "image": "prefecthq/prefect:latest",
-        "n_workers":WORKER_COUNT,
+        "n_workers": WORKER_COUNT,
     },
 )
 
