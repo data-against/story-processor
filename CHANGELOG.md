@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.4.6
+
+* Redo database session management to try and fix production out-of-connections errors 
+
 ### v3.4.5
 
 * Fix naming on WM task that conflicted with another task
