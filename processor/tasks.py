@@ -5,10 +5,12 @@ from typing import List, Dict
 import logging
 import time
 from json.decoder import JSONDecodeError
+from sqlalchemy.orm.session import Session
 
 import processor.database.stories_db as stories_db
 from processor import path_to_log_dir
 from processor.celery import app
+import processor.database as database
 import processor.projects as projects
 import processor.entities as entities
 import processor.util as util
@@ -26,7 +28,7 @@ ACCEPTED_ENTITY_TYPES = ["PERSON", "PER", "GPE", "LOC", "FAC", "DATE", "TIME", #
                          "PS", "DT", "TI", "LC"]  # korean types
 
 
-def _add_confidence_to_stories(project: Dict, stories: List[Dict]) -> List[Dict]:
+def _add_confidence_to_stories(session: Session, project: Dict, stories: List[Dict]) -> List[Dict]:
     probs = projects.classify_stories(project, stories)
     for idx, s in enumerate(stories):
         s['confidence'] = probs['model_scores'][idx]
@@ -35,7 +37,7 @@ def _add_confidence_to_stories(project: Dict, stories: List[Dict]) -> List[Dict]
         s['model_1_score'] = probs['model_1_scores'][idx] if probs['model_1_scores'] is not None else None
         s['model_2_score'] = probs['model_2_scores'][idx] if probs['model_2_scores'] is not None else None
     # keep an auditable log in our own local database
-    stories_db.update_stories_processed_date_score(stories)
+    stories_db.update_stories_processed_date_score(session, stories)
     return stories
 
 
@@ -82,33 +84,35 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
         logger.debug('{}: classify {} stories (model {})'.format(project['id'], len(stories),
                                                                  project['language_model_id']))
         # now classify the stories again the model specified for the project (this cleans up the story dicts too)
-        stories_with_confidence = _add_confidence_to_stories(project, stories)
-        for s in stories_with_confidence:
-            logger.debug("  classify: {}/{} - {} - {}".format(project['id'], project['language_model_id'],
-                                                              s['stories_id'], s['confidence']))
-        # only stories above project score threshold should be posted
-        stories_above_threshold = projects.remove_low_confidence_stories(project.get('min_confidence', 0),
-                                                                         stories_with_confidence)
-        # pull out entities, if there is an env-var to a server set (only do this on above-threshold stories)
-        stories_with_entities = add_entities_to_stories(stories_above_threshold)
-        # remove data we aren't going to send to the server (and log)
-        stories_to_send = projects.prep_stories_for_posting(project, stories_with_entities)
-        if projects.LOG_LAST_POST_TO_FILE:  # helpful for debugging (the last project post will be written to a file)
-            with open(os.path.join(path_to_log_dir,
-                                   '{}-all-stories-{}.json'.format(project['id'], time.strftime("%Y%m%d-%H%M%S"))),
-                      'w', encoding='utf-8') as f:
-                json.dump(stories_to_send, f, ensure_ascii=False, indent=4)
-        # mark the stories in the local DB that we intend to send
-        stories_db.update_stories_above_threshold(stories_to_send)
-        # now actually post them (in chunks just to make sure no single page is too big and causes a HTTP 413 error)
-        logger.info('{}: {} stories to post'.format(project['id'], len(stories_to_send)))
-        for page_to_send in util.chunks(stories_to_send, 100):
-            projects.post_results(project, page_to_send)
-            for s in page_to_send:  # for auditing, keep a log in the container of the results posted to main server
-                logger.debug("  post: {}/{} - {} - {}".format(s['project_id'], s['language_model_id'],
-                                                              s['stories_id'], s['confidence']))
-            # and track that we posted the stories that we did in our local debug DB
-            stories_db.update_stories_posted_date(page_to_send)
+        Session = database.get_session_maker()
+        with Session() as session:
+            stories_with_confidence = _add_confidence_to_stories(session, project, stories)
+            for s in stories_with_confidence:
+                logger.debug("  classify: {}/{} - {} - {}".format(project['id'], project['language_model_id'],
+                                                                  s['stories_id'], s['confidence']))
+            # only stories above project score threshold should be posted
+            stories_above_threshold = projects.remove_low_confidence_stories(project.get('min_confidence', 0),
+                                                                             stories_with_confidence)
+            # pull out entities, if there is an env-var to a server set (only do this on above-threshold stories)
+            stories_with_entities = add_entities_to_stories(stories_above_threshold)
+            # remove data we aren't going to send to the server (and log)
+            stories_to_send = projects.prep_stories_for_posting(project, stories_with_entities)
+            if projects.LOG_LAST_POST_TO_FILE:  # helpful for debugging (the last project post will be written to a file)
+                with open(os.path.join(path_to_log_dir,
+                                       '{}-all-stories-{}.json'.format(project['id'], time.strftime("%Y%m%d-%H%M%S"))),
+                          'w', encoding='utf-8') as f:
+                    json.dump(stories_to_send, f, ensure_ascii=False, indent=4)
+            # mark the stories in the local DB that we intend to send
+            stories_db.update_stories_above_threshold(session, stories_to_send)
+            # now actually post them (in chunks just to make sure no single page is too big and causes a HTTP 413 error)
+            logger.info('{}: {} stories to post'.format(project['id'], len(stories_to_send)))
+            for page_to_send in util.chunks(stories_to_send, 100):
+                projects.post_results(project, page_to_send)
+                for s in page_to_send:  # for auditing, keep a log in the container of the results posted to main server
+                    logger.debug("  post: {}/{} - {} - {}".format(s['project_id'], s['language_model_id'],
+                                                                  s['stories_id'], s['confidence']))
+                # and track that we posted the stories that we did in our local debug DB
+                stories_db.update_stories_posted_date(session, page_to_send)
     except requests.exceptions.HTTPError as err:
         # on failure requeue to try again
         logger.warning("{}: Failed to post {} results".format(project['id'], len(stories)))

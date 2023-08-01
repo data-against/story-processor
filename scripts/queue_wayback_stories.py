@@ -10,7 +10,9 @@ from prefect import flow, task, get_run_logger, unmapped
 from waybacknews.searchapi import SearchApiClient
 from prefect_dask.task_runners import DaskTaskRunner
 import requests.exceptions
+
 import processor
+import processor.database as database
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
 import processor.projects as projects
@@ -114,7 +116,9 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
     for p in project_list:
         project_stories = []
         valid_stories = 0
-        history = projects_db.get_history(p['id'])
+        Session = database.get_session_maker()
+        with Session() as session:
+            history = projects_db.get_history(session, p['id'])
         page_number = 1
         # only search stories since the last search (if we've done one before)
         start_date = end_date - dt.timedelta(days=DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW)

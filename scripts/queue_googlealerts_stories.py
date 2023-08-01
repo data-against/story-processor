@@ -7,6 +7,7 @@ from prefect import flow, task, get_run_logger
 from urllib.parse import urlparse, parse_qs
 from prefect_dask.task_runners import DaskTaskRunner
 import processor
+import processor.database as database
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
 import processor.projects as projects
@@ -46,7 +47,9 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
         project_stories = []
         valid_stories = 0
         logger.info("Project {}/{} - {} stories".format(p['id'], p['title'], len(feed.entries)))
-        history = projects_db.get_history(p['id'])
+        Session = database.get_session_maker()
+        with Session() as session:
+            history = projects_db.get_history(session, p['id'])
         for item in feed.entries:
             # only process stories published after the last check we ran?
             #published_date = dateutil.parser.parse(item['published'])

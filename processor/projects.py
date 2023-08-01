@@ -9,6 +9,7 @@ import time
 from processor import FEMINICIDE_API_KEY, VERSION, path_to_log_dir
 import processor.classifiers as classifiers
 import processor.apiclient as apiclient
+import processor.database as database
 import processor.database.projects_db as projects_db
 
 logger = logging.getLogger(__name__)
@@ -57,12 +58,14 @@ def load_project_list(force_reload: bool = False, overwrite_last_story=False, do
         else:
             _all_projects = []
         # update the local history file, which tracks the latest processed_stories_id we've run for each project
-        for project in _all_projects:
-            project_history = projects_db.get_history(project['id'])
-            if (project_history is None) or overwrite_last_story:
-                projects_db.add_history(project['id'], project['latest_processed_stories_id'])
-                logger.info("    added/overwrote {} to local history".format(project['id']))
-            project['local_processed_stories_id'] = projects_db.get_history(project['id']).last_processed_id
+        Session = database.get_session_maker()
+        with Session() as session:
+            for project in _all_projects:
+                project_history = projects_db.get_history(session, project['id'])
+                if (project_history is None) or overwrite_last_story:
+                    projects_db.add_history(session, project['id'], project['latest_processed_stories_id'])
+                    logger.info("    added/overwrote {} to local history".format(project['id']))
+                project['local_processed_stories_id'] = projects_db.get_history(session, project['id']).last_processed_id
         return _all_projects
     except Exception as e:
         # bail completely if we can't load the config file

@@ -7,6 +7,7 @@ import requests
 import sys
 import time
 from waybacknews.searchapi import SearchApiClient
+import processor.database as database
 import processor.database.stories_db as stories_db
 from processor.classifiers import download_models
 from processor import SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER
@@ -37,72 +38,74 @@ def load_projects_task() -> List[Dict]:
 @task(name='process_project')
 def process_project_task(project: Dict, page_size: int) -> Dict:
     logger = get_run_logger()
-    project_email_message = ""
-    project_email_message += "Project {} - {}:\n".format(project['id'], project['title'])
-    needing_posting_count = stories_db.unposted_above_story_count(project['id'], DATE_LIMIT)
-    logger.info("Project {} - {} unposted above threshold stories to process".format(
-        project['id'], needing_posting_count))
     story_count = 0
     page_count = 0
-    wm_api = SearchApiClient("mediacloud")
-    if needing_posting_count > 0:
-        db_stories = stories_db.unposted_stories(project['id'], DATE_LIMIT)
-        for db_stories_page in util.chunks(db_stories, page_size):
-            # find the matching story from the source
-            source_stories = []
-            for s in db_stories_page:
-                try:
-                    if s['source'] == SOURCE_WAYBACK_MACHINE:
-                        url_for_query = s['url'].replace("/", "\\/").replace(":", "\\:")
-                        matching_stories = wm_api.sample(f"url:{url_for_query}", dt.datetime(2010, 1, 1),
-                                                         dt.datetime(2030, 1, 1))
-                        matching_story = requests.get(matching_stories[0]['article_url']).json()  # fetch the content (in `snippet`)
-                        matching_story['stories_id'] = s['id']
-                        matching_story['source'] = s['source']
-                        matching_story['media_url'] = matching_story['domain']
-                        matching_story['media_name'] = matching_story['domain']
-                        matching_story['publish_date'] = matching_story['publication_date']
-                        matching_story['log_db_id'] = s['id']
-                        matching_story['project_id'] =s['project_id']
-                        matching_story['language_model_id'] = project['language_model_id']
-                        matching_story['story_text'] = matching_story['snippet']
-                        source_stories += [matching_story]
-                    elif s['source'] == SOURCE_NEWSCATCHER:
-                        metadata = extract(url=s['url'])
-                        story = dict(
-                            stories_id=s['stories_id'],
-                            source=s['source'],
-                            language=metadata['language'],
-                            media_url=metadata['canonical_domain'],
-                            media_name=metadata['canonical_domain'],
-                            publish_date=str(metadata['publication_date']),
-                            title=metadata['article_title'],
-                            url=metadata['url'],  # resolved
-                            log_db_id=s['stories_id'],
-                            project_id=s['project_id'],
-                            language_model_id=project['language_model_id'],
-                            story_text=metadata['text_content']
-                        )
-                        source_stories += [story]
-                except Exception as e:
-                    logger.warning(f"Skipping {s['url']} due to {e}")
-            # add in entities
-            source_stories = add_entities_to_stories(source_stories)
-            # add in the scores from the logging db
-            db_story_2_score = {r['stories_id']: r for r in db_stories_page}
-            for s in source_stories:
-                s['confidence'] = db_story_2_score[s['stories_id']]['model_score']
-                s['model_1_score'] = db_story_2_score[s['stories_id']]['model_1_score']
-                s['model_2_score'] = db_story_2_score[s['stories_id']]['model_2_score']
-            # strip unneeded fields
-            stories_to_send = projects.prep_stories_for_posting(project, source_stories)
-            # send to main server
-            projects.post_results(project, stories_to_send)
-            # and log that we did it
-            stories_db.update_stories_posted_date(stories_to_send)
-            story_count += len(stories_to_send)
-            logger.info("    sent page of {} stories for project {}".format(len(stories_to_send), project['id']))
-            page_count += 1
+    project_email_message = ""
+    Session = database.get_session_maker()
+    with Session as session:
+        project_email_message += "Project {} - {}:\n".format(project['id'], project['title'])
+        needing_posting_count = stories_db.unposted_above_story_count(session, project['id'], DATE_LIMIT)
+        logger.info("Project {} - {} unposted above threshold stories to process".format(
+            project['id'], needing_posting_count))
+        wm_api = SearchApiClient("mediacloud")
+        if needing_posting_count > 0:
+            db_stories = stories_db.unposted_stories(session, project['id'], DATE_LIMIT)
+            for db_stories_page in util.chunks(db_stories, page_size):
+                # find the matching story from the source
+                source_stories = []
+                for s in db_stories_page:
+                    try:
+                        if s['source'] == SOURCE_WAYBACK_MACHINE:
+                            url_for_query = s['url'].replace("/", "\\/").replace(":", "\\:")
+                            matching_stories = wm_api.sample(f"url:{url_for_query}", dt.datetime(2010, 1, 1),
+                                                             dt.datetime(2030, 1, 1))
+                            matching_story = requests.get(matching_stories[0]['article_url']).json()  # fetch the content (in `snippet`)
+                            matching_story['stories_id'] = s['id']
+                            matching_story['source'] = s['source']
+                            matching_story['media_url'] = matching_story['domain']
+                            matching_story['media_name'] = matching_story['domain']
+                            matching_story['publish_date'] = matching_story['publication_date']
+                            matching_story['log_db_id'] = s['id']
+                            matching_story['project_id'] =s['project_id']
+                            matching_story['language_model_id'] = project['language_model_id']
+                            matching_story['story_text'] = matching_story['snippet']
+                            source_stories += [matching_story]
+                        elif s['source'] == SOURCE_NEWSCATCHER:
+                            metadata = extract(url=s['url'])
+                            story = dict(
+                                stories_id=s['stories_id'],
+                                source=s['source'],
+                                language=metadata['language'],
+                                media_url=metadata['canonical_domain'],
+                                media_name=metadata['canonical_domain'],
+                                publish_date=str(metadata['publication_date']),
+                                title=metadata['article_title'],
+                                url=metadata['url'],  # resolved
+                                log_db_id=s['stories_id'],
+                                project_id=s['project_id'],
+                                language_model_id=project['language_model_id'],
+                                story_text=metadata['text_content']
+                            )
+                            source_stories += [story]
+                    except Exception as e:
+                        logger.warning(f"Skipping {s['url']} due to {e}")
+                # add in entities
+                source_stories = add_entities_to_stories(source_stories)
+                # add in the scores from the logging db
+                db_story_2_score = {r['stories_id']: r for r in db_stories_page}
+                for s in source_stories:
+                    s['confidence'] = db_story_2_score[s['stories_id']]['model_score']
+                    s['model_1_score'] = db_story_2_score[s['stories_id']]['model_1_score']
+                    s['model_2_score'] = db_story_2_score[s['stories_id']]['model_2_score']
+                # strip unneeded fields
+                stories_to_send = projects.prep_stories_for_posting(project, source_stories)
+                # send to main server
+                projects.post_results(project, stories_to_send)
+                # and log that we did it
+                stories_db.update_stories_posted_date(session, stories_to_send)
+                story_count += len(stories_to_send)
+                logger.info("    sent page of {} stories for project {}".format(len(stories_to_send), project['id']))
+                page_count += 1
     logger.info("  sent {} stories for project {} total (of {})".format(story_count, project['id'], needing_posting_count))
     #  add a summary to the email we are generating
     project_email_message += "    posted {} stories from db ({} pages)\n\n".format(story_count, page_count)

@@ -19,6 +19,7 @@ Create the Dokku apps
   * `dokku rabbitmq:create story-processor-q-nc`
   * `dokku rabbitmq:create story-processor-q-wm`
 5. setup a postgres database: `dokku postgres:create story-processor-db`
+  * you might want then connect to it and do something like `alter system set max_connections = 500;` to give the rather inefficient code some extra headroom 
 6. create an app:
   * `dokku apps:create story-processor-nc`
   * `dokku apps:create story-processor-wm`
