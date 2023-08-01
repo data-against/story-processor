@@ -18,21 +18,14 @@ from processor.classifiers import download_models
 import processor.projects as projects
 import scripts.tasks as prefect_tasks
 
+
 PAGE_SIZE = 100
-DEFAULT_DAY_WINDOW = 5
-WORKER_COUNT = 16
-MAX_CALLS_PER_SEC = 5
+DEFAULT_DAY_WINDOW = 3
 MAX_STORIES_PER_PROJECT = 5000
+MAX_CALLS_PER_SEC = 5
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
 nc_api_client = newscatcherapi.NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
-
-DaskTaskRunner(
-    cluster_kwargs={
-        "image": "prefecthq/prefect:latest",
-        "n_workers": WORKER_COUNT,
-    },
-)
 
 @task(name='load_projects')
 def load_projects_task() -> List[Dict]:
@@ -48,7 +41,7 @@ def load_projects_task() -> List[Dict]:
 
 
 def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime, page: int = 1) -> Dict:
-    results = dict(total_hits=0) # start of with a mockup of no results, so we can handle transient errors bette
+    results = dict(total_hits=0)  # start of with a mockup of no results, so we can handle transient errors bette
     logger = get_run_logger()
     try:
         terms_no_curlies = project['search_terms'].replace('“', '"').replace('”', '"')

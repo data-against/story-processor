@@ -20,16 +20,9 @@ import scripts.tasks as prefect_tasks
 
 PAGE_SIZE = 1000
 DEFAULT_DAY_OFFSET = 4
-DEFAULT_DAY_WINDOW = 5
-WORKER_COUNT = 8
+DEFAULT_DAY_WINDOW = 3
 MAX_STORIES_PER_PROJECT = 5000
-
-DaskTaskRunner(
-    cluster_kwargs={
-        "image": "prefecthq/prefect:latest",
-        "n_workers": WORKER_COUNT,
-    },
-)
+TEXT_FETCH_TIMEOUT = 5  # seconds to wait for full text fetch to complete
 
 wm_api = SearchApiClient("mediacloud")
 
@@ -186,7 +179,7 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
 def fetch_archived_text_task(story: Dict) -> Optional[Dict]:
     logger = get_run_logger()
     try:
-        story_details = requests.get(story['article_url']).json()
+        story_details = requests.get(story['article_url'], timeout=TEXT_FETCH_TIMEOUT).json()
         updated_story = copy.copy(story)
         updated_story['story_text'] = story_details['snippet']
         return updated_story
@@ -214,17 +207,16 @@ if __name__ == '__main__':
         projects_list = load_projects_task()
         # 2. figure out domains to query for each project
         projects_with_domains = fetch_domains_for_projects.map(projects_list)
-        # 3. fetch all the urls from for each project from wayback machine (serially by project)
+        # 3. fetch all the urls from for each project from wayback machine (serially so we don't have to flatten 😖)
         all_stories = fetch_project_stories_task(projects_with_domains, unmapped(data_source_name))
         # 4. fetch pre-parsed content (will happen in parallel by story)
         stories_with_text = fetch_archived_text_task.map(all_stories)
         # 5. post batches of stories for classification
         results_data = prefect_tasks.queue_stories_for_classification_task(projects_list, stories_with_text,
                                                                            data_source_name)
-        # 5. send email/slack_msg with results of operations
+        # 6. send email/slack_msg with results of operations
         prefect_tasks.send_combined_slack_message_task(results_data, data_source_name, start_time)
         prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
-        
 
     # run the whole thing
     wayback_stories_flow(processor.SOURCE_WAYBACK_MACHINE)

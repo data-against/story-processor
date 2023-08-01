@@ -16,20 +16,10 @@ import processor.tasks as tasks
 import scripts.tasks as prefect_tasks
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
-DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many stories each cron run
-
-WORKER_COUNT = 6  # scale of parallel processing (of project queries)
-
 # use this to make sure we don't fall behind on recent stories, even if a project query is producing more than
 # DEFAULT_MAX_STORIES_PER_PROJECT stories a day
 DEFAULT_DAY_WINDOW = 5
-
-DaskTaskRunner(
-    cluster_kwargs={
-        "image": "prefecthq/prefect:latest",
-        "n_workers": WORKER_COUNT,
-    },
-)
+DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many stories each cron run
 
 
 @task(name='load_projects')
@@ -134,9 +124,6 @@ if __name__ == '__main__':
         # 3. send email/slack_msg with results of operations
         prefect_tasks.send_project_list_slack_message_task(project_statuses, data_source_name, start_time)
         prefect_tasks.send_project_list_email_task(project_statuses, data_source_name, start_time)
-        
-
-        
 
     # run the whole thing
     mediacloud_stories_flow(processor.SOURCE_MEDIA_CLOUD,DEFAULT_STORIES_PER_PAGE,DEFAULT_MAX_STORIES_PER_PROJECT)
