@@ -5,6 +5,7 @@ import json
 from typing import Dict, List
 from itertools import chain
 
+import processor.database as database
 from processor import create_flask_app, VERSION, PLATFORMS
 from processor.projects import load_project_list
 import processor.database.stories_db as stories_db
@@ -37,17 +38,19 @@ def a_project(project_id_str: int):
     # pull out the project info
     project_id = int(project_id_str)
     project = [p for p in load_project_list(download_if_missing=True) if p['id'] == project_id][0]
-    # show overall ingest over last two weeks
-    data_for_graph = _prep_for_stacked_graph(
-        [stories_db.stories_by_published_day(platform=p, project_id=project_id, limit=30) for p in PLATFORMS],
-        PLATFORMS)
-    # show some recent story results
-    stories_above = stories_db.recent_stories(project_id, True)
-    stories_below = stories_db.recent_stories(project_id, False)
-    # some other stats
-    unposted_above_story_count = stories_db.unposted_above_story_count(project_id)
-    posted_above_story_count = stories_db.posted_above_story_count(project_id)
-    below_story_count = stories_db.below_story_count(project_id)
+    Session = database.get_session_maker()
+    with Session() as session:
+        # show overall ingest over last two weeks
+        data_for_graph = _prep_for_stacked_graph(
+            [stories_db.stories_by_published_day(session, platform=p, project_id=project_id, limit=30) for p in PLATFORMS],
+            PLATFORMS)
+        # show some recent story results
+        stories_above = stories_db.recent_stories(session, project_id, True)
+        stories_below = stories_db.recent_stories(session, project_id, False)
+        # some other stats
+        unposted_above_story_count = stories_db.unposted_above_story_count(session, project_id)
+        posted_above_story_count = stories_db.posted_above_story_count(session, project_id)
+        below_story_count = stories_db.below_story_count(session, project_id)
     try:
         above_threshold_pct = 100 * (unposted_above_story_count + posted_above_story_count) / below_story_count
     except ZeroDivisionError:
@@ -74,9 +77,10 @@ def _platform_history(date_type: str, project_id: int = None) -> List[Dict]:
         func = stories_db.stories_by_published_day
     else:
         raise RuntimeError("invalid `date_type` of '{}'".format(date_type))
-    return _prep_for_stacked_graph(
-        [func(project_id=project_id, platform=p) for p in PLATFORMS],
-        PLATFORMS)
+    Session = database.get_session_maker()
+    with Session() as session:
+        data_results = [func(session, project_id=project_id, platform=p) for p in PLATFORMS]
+    return _prep_for_stacked_graph(data_results, PLATFORMS)
 @app.route("/api/platform-history/<date_type>", methods=['GET'])
 def platform_history(date_type: str):
     return jsonify(_platform_history(date_type))
@@ -86,10 +90,11 @@ def project_platform_history(project_id_str: str, date_type: str):
 
 
 def _processed_result_history(project_id: int = None) -> List[Dict]:
-    return _prep_for_stacked_graph(
-        [stories_db.stories_by_processed_day(project_id=project_id, above_threshold=True),
-         stories_db.stories_by_processed_day(project_id=project_id, above_threshold=False)],
-        ['above threshold', 'below threshold'])
+    Session = database.get_session_maker()
+    with Session() as session:
+        data_results = [stories_db.stories_by_processed_day(session, project_id=project_id, above_threshold=True),
+                        stories_db.stories_by_processed_day(session, project_id=project_id, above_threshold=False)]
+    return _prep_for_stacked_graph(data_results, ['above threshold', 'below threshold'])
 @app.route("/api/processed-result-history", methods=['GET'])
 def processed_result_history():
     return jsonify(_processed_result_history())
@@ -101,7 +106,13 @@ def project_processed_result_history(project_id_str: str):
 @app.route("/api/projects/<project_id_str>/binned-model-scores", methods=['GET'])
 def project_model_scores(project_id_str):
     project_id = int(project_id_str)
-    data = stories_db.project_binned_model_scores(project_id)
+    Session = database.get_session_maker()
+    with Session() as session:
+        results = stories_db.project_binned_model_scores(session, project_id)
+        data = []
+        # to go from Decimal to something that can be json serialized
+        for row in results:
+            data.append(dict(value=float(row['value']), frequency=int(row['frequency'])))
     return jsonify(data)
 
 

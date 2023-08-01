@@ -4,7 +4,9 @@ import time
 import sys
 from prefect import flow, task, get_run_logger, unmapped
 from prefect_dask.task_runners import DaskTaskRunner
+
 import processor
+import processor.database as database
 import processor.database.stories_db as stories_db
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
@@ -80,12 +82,15 @@ def process_project_task(project: Dict, page_size: int, max_stories: int) -> Dic
             page_count += 1
             story_count += len(page_of_stories)
             # and log that we got and queued them all
-            stories_to_queue = stories_db.add_stories(page_of_stories, project, processor.SOURCE_MEDIA_CLOUD)
-            tasks.classify_and_post_worker.delay(project, stories_to_queue)
-            project_last_processed_stories_id = stories_to_queue[-1]['processed_stories_id']
-            # important to write this update now, because we have queued up the task to process these stories
-            # the task queue will manage retrying with the stories if it fails with this batch
-            projects_db.update_history(project['id'], last_processed_stories_id=project_last_processed_stories_id)
+            Session = database.get_session_maker()
+            with Session() as session:
+                stories_to_queue = stories_db.add_stories(session, page_of_stories, project,
+                                                          processor.SOURCE_MEDIA_CLOUD)
+                tasks.classify_and_post_worker.delay(project, stories_to_queue)
+                project_last_processed_stories_id = stories_to_queue[-1]['processed_stories_id']
+                # important to write this update now, because we have queued up the task to process these stories
+                # the task queue will manage retrying with the stories if it fails with this batch
+                projects_db.update_history(session, project['id'], last_processed_stories_id=project_last_processed_stories_id)
         else:
             more_stories = False
     logger.info("  queued {} stories for project {}/{} (in {} pages)".format(story_count, project['id'],

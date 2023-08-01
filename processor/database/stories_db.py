@@ -2,23 +2,21 @@ import datetime as dt
 from typing import List, Dict
 import logging
 import copy
-import sys
-
 from sqlalchemy.sql import func
-from sqlalchemy import text,update,select
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text, update, select
+from sqlalchemy.orm.session import Session
 
 import processor
 from processor.database.models import Story
 
-Session = sessionmaker(bind=processor.engine)
 
 logger = logging.getLogger(__name__)
 
 
-def add_stories(source_story_list: List[Dict], project: Dict, source: str) -> List[Dict]:
+def add_stories(session: Session, source_story_list: List[Dict], project: Dict, source: str) -> List[Dict]:
     """
     Logging: Track metadata about all the stories we process we, so we can audit it later (like a log file).
+    :param session:
     :param source_story_list:
     :param project:
     :param source:
@@ -34,7 +32,6 @@ def add_stories(source_story_list: List[Dict], project: Dict, source: str) -> Li
         db_story.above_threshold = False
         mc_story['db_story'] = db_story
     # now insert in batch to the database
-    session = Session()
     session.add_all([s['db_story'] for s in new_source_story_list])
     session.commit()
     # only keep ones that inserted correctly
@@ -43,7 +40,6 @@ def add_stories(source_story_list: List[Dict], project: Dict, source: str) -> Li
         s['log_db_id'] = s['db_story'].id  # keep track of the db id, so we can use it later to update this story
     if source != processor.SOURCE_MEDIA_CLOUD:
         # these stories don't have a stories_id, which we use later, so set it to the id and save
-        session = Session()
         for s in new_source_story_list:
             s['stories_id'] = s['db_story'].id  # since these don't have a stories_id, set it to the database PK id
             session.execute(update(Story).where(Story.id == s['log_db_id']).values(stories_id=s['log_db_id'])) #[updated]
@@ -53,14 +49,14 @@ def add_stories(source_story_list: List[Dict], project: Dict, source: str) -> Li
     return new_source_story_list
 
 
-def update_stories_processed_date_score(stories: List) -> None:
+def update_stories_processed_date_score(session: Session, stories: List) -> None:
     """
     Logging: Once we have run the stories through the classifier models we want to save the scores.
+    :param session:
     :param stories:
     :return:
     """
     now = dt.datetime.now()
-    session = Session()
     for s in stories:
         if 'log_db_id' in s:  # more gracefully fail in test scenarios
             session.execute(update(Story)
@@ -74,42 +70,42 @@ def update_stories_processed_date_score(stories: List) -> None:
     session.commit()
 
 
-def update_stories_above_threshold(stories: List) -> None:
+def update_stories_above_threshold(session: Session, stories: List) -> None:
     """
     Logging: Also keep track which stories were above the classifier score threshold on the project right now.
     Ones above should be sent to the server.
+    :param session:
     :param stories:
     :return:
     """
-    session = Session()
     for s in stories:
         session.execute(update(Story).where(Story.id == s['log_db_id']).values(above_threshold=True))#[updated]
     session.commit()
 
 
-def update_stories_posted_date(stories: List) -> None:
+def update_stories_posted_date(session: Session, stories: List) -> None:
     """
     Logging: Keep track of when we sent stories above threshold to the main server.
+    :param session:
     :param stories:
     :return:
     """
     now = dt.datetime.now()
-    session = Session()
     for s in stories:
         session.execute(update(Story).where(Story.id == s['log_db_id']).values(posted_date=now))#[updated]
     session.commit()
 
 
-def recent_stories(project_id: int, above_threshold: bool, limit: int = 5) -> List[Story]:
+def recent_stories(session: Session, project_id: int, above_threshold: bool, limit: int = 5) -> List[Story]:
     """
     UI: show a list of the most recent stories we have processed
+    :param session:
     :param project_id:
     :param above_threshold:
     :param limit:
     :return:
     """
     earliest_date = dt.date.today() - dt.timedelta(days=7)
-    session = Session()
     result = session.execute(
         select(Story)
         .where(
@@ -123,8 +119,8 @@ def recent_stories(project_id: int, above_threshold: bool, limit: int = 5) -> Li
     return result.scalars().all()
 
 
-def _stories_by_date_col(column_name: str, project_id: int = None, platform: str = None, above_threshold: bool = None,
-                         is_posted: bool = None, limit: int = 30) -> List:
+def _stories_by_date_col(session: Session, column_name: str, project_id: int = None, platform: str = None,
+                         above_threshold: bool = None, is_posted: bool = None, limit: int = 30) -> List:
     earliest_date = dt.date.today() - dt.timedelta(days=limit)
     clauses = []
     if project_id is not None:
@@ -138,52 +134,51 @@ def _stories_by_date_col(column_name: str, project_id: int = None, platform: str
     query = "select "+column_name+"::date as day, count(1) as stories from stories " \
             "where ("+column_name+" is not Null) and ("+column_name+" >= '{}'::DATE) AND {} " \
             "group by 1 order by 1 DESC".format(earliest_date, " AND ".join(clauses))
-    return _run_query(query)
+    return _run_query(session, query)
 
 
-def stories_by_posted_day(project_id: int = None, platform: str = None, above_threshold: bool = True,
+def stories_by_posted_day(session: Session, project_id: int = None, platform: str = None, above_threshold: bool = True,
                           is_posted: bool = None, limit: int = 45) -> List:
-    return _stories_by_date_col('processed_date', project_id, platform, above_threshold, is_posted, limit)
+    return _stories_by_date_col(session, 'processed_date', project_id, platform, above_threshold, is_posted, limit)
 
 
-def stories_by_processed_day(project_id: int = None, platform: str = None, above_threshold: bool = None,
+def stories_by_processed_day(session: Session, project_id: int = None, platform: str = None, above_threshold: bool = None,
                              is_posted: bool = None, limit: int = 45) -> List:
-    return _stories_by_date_col('processed_date', project_id, platform, above_threshold, is_posted, limit)
+    return _stories_by_date_col(session, 'processed_date', project_id, platform, above_threshold, is_posted, limit)
 
 
-def stories_by_published_day(project_id: int = None, platform: str = None, above_threshold: bool = None,
+def stories_by_published_day(session: Session, project_id: int = None, platform: str = None, above_threshold: bool = None,
                              is_posted: bool = None, limit: int = 30) -> List:
-    return _stories_by_date_col('published_date', project_id, platform, above_threshold, is_posted, limit)
+    return _stories_by_date_col(session, 'published_date', project_id, platform, above_threshold, is_posted, limit)
 
 
-def _run_query(query: str) -> List:
+def _run_query(session: Session, query: str) -> List:
+    results = session.execute(text(query))
     data = []
-    with processor.engine.begin() as connection:
-        result = connection.execute(text(query))
-        for row in result:
-            data.append(row._mapping)
+    for row in results:
+        data.append(row._mapping)
     return data
 
 
-def _run_count_query(query: str) -> int:
-    data = _run_query(query)
+def _run_count_query(session: Session, query: str) -> int:
+    data = _run_query(session, query)
     return data[0]['count']
 
 
-def unposted_above_story_count(project_id: int, limit: int = None) -> int:
+def unposted_above_story_count(session: Session, project_id: int, limit: int = None) -> int:
     """
     UI: How many stories about threshold have *not* been sent to main server (should be zero!).
     """
     date_clause = "(posted_date is not Null)"
     if limit:
         earliest_date = dt.date.today() - dt.timedelta(days=limit)
-        date_clause+= " AND (posted_date >= '{}'::DATE)".format(earliest_date)
+        date_clause += " AND (posted_date >= '{}'::DATE)".format(earliest_date)
     query = "select count(1) from stories where project_id={} and above_threshold is True and {}".\
         format(project_id, date_clause)
-    return _run_count_query(query)
+    return _run_count_query(session, query)
 
 
-def posted_above_story_count(project_id: int) -> int:
+def posted_above_story_count(session: Session, project_id: int) -> int:
     """
     UI: How many stories above threshold have we sent to the main server (like all should be)
     :param project_id:
@@ -192,10 +187,10 @@ def posted_above_story_count(project_id: int) -> int:
     query = "select count(1) from stories " \
             "where project_id={} and posted_date is not Null and above_threshold is True".\
         format(project_id)
-    return _run_count_query(query)
+    return _run_count_query(session, query)
 
 
-def below_story_count(project_id: int) -> int:
+def below_story_count(session: Session, project_id: int) -> int:
     """
     UI: How many stories total were below threshold (should be same as uposted_stories)
     :param project_id:
@@ -203,10 +198,10 @@ def below_story_count(project_id: int) -> int:
     """
     query = "select count(1) from stories where project_id={} and above_threshold is False".\
         format(project_id)
-    return _run_count_query(query)
+    return _run_count_query(session, query)
 
 
-def unposted_stories(project_id: int, limit: int):
+def unposted_stories(session: Session, project_id: int, limit: int):
     """
     How many stories were not posted to hte main server (should be same as below_story_count)
     :return:
@@ -223,10 +218,10 @@ def unposted_stories(project_id: int, limit: int):
         filter(Story.posted_date is None)
     return q.all()
     """
-    return _run_query(query)
+    return _run_query(session, query)
 
 
-def project_binned_model_scores(project_id: int) -> List:
+def project_binned_model_scores(session: Session, project_id: int) -> List:
     query = """
         select ROUND(CAST(model_score as numeric), 1) as value, count(1) as frequency
         from stories
@@ -234,4 +229,4 @@ def project_binned_model_scores(project_id: int) -> List:
         group by 1
         order by 1
     """.format(project_id)
-    return _run_query(query)
+    return _run_query(session, query)

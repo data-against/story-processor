@@ -3,7 +3,8 @@ import json
 import unittest
 
 import processor.tasks as tasks
-from processor import get_mc_client, SOURCE_MEDIA_CLOUD
+import processor.database as database
+from processor import SOURCE_MEDIA_CLOUD
 from processor.test import test_fixture_dir
 from processor.test.test_projects import TEST_EN_PROJECT
 
@@ -24,7 +25,9 @@ class TestTasks(unittest.TestCase):
                 s = json.load(f)
                 s['source'] = SOURCE_MEDIA_CLOUD
                 stories_with_text.append(s)
-        classified_stories = tasks._add_confidence_to_stories(project, stories_with_text)
+        Session = database.get_session_maker()
+        with Session() as session:
+            classified_stories = tasks._add_confidence_to_stories(session, project, stories_with_text)
         assert len(classified_stories) == len(stories_with_text)
         return classified_stories
 

@@ -9,6 +9,7 @@ from functools import lru_cache
 from processor import is_email_configured, get_email_config, get_slack_config
 import processor.tasks as celery_tasks
 import processor.notifications as notifications
+import processor.database as database
 from processor.database import stories_db as stories_db
 from processor.database import projects_db as projects_db
 
@@ -123,15 +124,17 @@ def queue_stories_for_classification_task(project_list: List[Dict], stories: Lis
                 if 'source_publish_date' in s:
                     s['publish_date'] = s['source_publish_date']
             # and log that we got and queued them all
-            project_stories = stories_db.add_stories(project_stories, p, datasource)
-            if len(project_stories) > 0:  # don't queue up unnecessary tasks
-                # important to do this *after* we add the stories_id here
-                celery_tasks.classify_and_post_worker.delay(p, project_stories)
-                # important to write this update now, because we have queued up the task to process these stories
-                # the task queue will manage retrying with the stories if it fails with this batch
-                publish_dates = [dateutil.parser.parse(s['source_publish_date']) for s in project_stories]
-                latest_date = max(publish_dates)
-                projects_db.update_history(p['id'], last_publish_date=latest_date, last_url=project_stories[0]['url'])
+            Session = database.get_session_maker()
+            with Session() as session:
+                project_stories = stories_db.add_stories(session, project_stories, p, datasource)
+                if len(project_stories) > 0:  # don't queue up unnecessary tasks
+                    # important to do this *after* we add the stories_id here
+                    celery_tasks.classify_and_post_worker.delay(p, project_stories)
+                    # important to write this update now, because we have queued up the task to process these stories
+                    # the task queue will manage retrying with the stories if it fails with this batch
+                    publish_dates = [dateutil.parser.parse(s['source_publish_date']) for s in project_stories]
+                    latest_date = max(publish_dates)
+                    projects_db.update_history(session, p['id'], last_publish_date=latest_date, last_url=project_stories[0]['url'])
         logger.info("  queued {} stories for project {}/{}".format(total_stories, p['id'], p['title']))
     return dict(
         email_text=email_message,

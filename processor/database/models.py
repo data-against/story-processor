@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Column, BigInteger, Integer, DateTime, Float, Boolean, String
+from sqlalchemy import BigInteger, Integer, DateTime, Float, Boolean, String
 from dateutil.parser import parse
 import datetime as dt
 import logging
