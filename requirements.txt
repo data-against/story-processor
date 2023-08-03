@@ -6,19 +6,22 @@ mediacloud==4.0.*
 mediacloud-api-legacy==3.*
 gunicorn==20.1.*
 dateparser==1.1.*
-scikit-learn==1.0.1  # freeze this here for model serialization compatability
+scikit-learn==1.0.2  # freeze this here for model serialization compatability
 sentry-sdk[flask]==1.20.*
 tensorflow-hub==0.13.*
 tensorflow-text==2.10.*
 tensorflow==2.10.*  # freeze here due to cross-platform install challenges
 psycopg2==2.9.*
-SQLAlchemy==1.4.*
+SQLAlchemy==2.0.*
 alembic==1.10.*
 python-dateutil==2.8.*
 amqp==5.1.*
-prefect==1.4.*  # don't bump up because API changed in v2
+prefect==2.10.*  
+prefect-dask==0.2.*
 gevent==22.10.*
 feedparser==6.0.*
 mediacloud-metadata>=0.9.2
 newscatcherapi==0.7.*
 wayback-news-search==1.0.*
+slack_sdk==3.21.*
+slack-bolt==1.18.*

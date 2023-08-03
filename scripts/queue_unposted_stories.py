@@ -1,27 +1,34 @@
-import logging
 from typing import List, Dict
-from prefect import Flow, Parameter, task, unmapped
-from prefect.executors import LocalDaskExecutor
+from prefect import flow, task, get_run_logger, unmapped
+from prefect_dask.task_runners import DaskTaskRunner
 import datetime as dt
 from mcmetadata import extract
 import requests
 import sys
+import time
 from waybacknews.searchapi import SearchApiClient
 import processor.database.stories_db as stories_db
 from processor.classifiers import download_models
-from processor import get_email_config, is_email_configured, SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER
+from processor import SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER
 import processor.projects as projects
-import processor.notifications as notifications
 from processor.tasks import add_entities_to_stories
 import processor.util as util
+import scripts.tasks as prefect_tasks
 
 DEFAULT_STORIES_PER_PAGE = 100  # I found this performs poorly if set higher than 100
 WORKER_COUNT = 8
 DATE_LIMIT = 30
 
+DaskTaskRunner(
+    cluster_kwargs={
+        "image": "prefecthq/prefect:latest",
+        "n_workers":WORKER_COUNT,
+    },
+)
 
 @task(name='load_projects')
 def load_projects_task() -> List[Dict]:
+    logger = get_run_logger()
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
     logger.info("  Checking {} projects".format(len(project_list)))
     return project_list
@@ -29,6 +36,7 @@ def load_projects_task() -> List[Dict]:
 
 @task(name='process_project')
 def process_project_task(project: Dict, page_size: int) -> Dict:
+    logger = get_run_logger()
     project_email_message = ""
     project_email_message += "Project {} - {}:\n".format(project['id'], project['title'])
     needing_posting_count = stories_db.unposted_above_story_count(project['id'], DATE_LIMIT)
@@ -105,55 +113,30 @@ def process_project_task(project: Dict, page_size: int) -> Dict:
     )
 
 
-@task(name='send_email')
-def send_email_task(project_details: List[Dict]):
-    total_new_stories = sum([s['stories'] for s in project_details])
-    total_pages = sum([s['pages'] for s in project_details])
-    email_message = ""
-    email_message += "Checking {} projects.\n\n".format(len(project_details))
-    for p in project_details:
-        email_message += p['email_text']
-    logger.info("Done with {} projects".format(len(project_details)))
-    logger.info("  {} stories over {} pages".format(total_new_stories, total_pages))
-    email_message += "Done - pulled {} stories over {} pages total.\n\n" \
-                     "(An automated email from your friendly neighborhood story processor)" \
-        .format(total_new_stories, total_pages)
-    if is_email_configured():
-        email_config = get_email_config()
-        notifications.send_email(email_config['notify_emails'],
-                                 "Feminicide Catchup: {} stories".format(total_new_stories),
-                                 email_message)
-    else:
-        logger.info("Not sending any email updates")
-
-
 if __name__ == '__main__':
 
-    logger = logging.getLogger(__name__)
-    logger.info("Starting story catchup job")
-
-    # important to do because there might new models on the server!
-    logger.info("  Checking for any new models we need")
-    models_downloaded = download_models()
-    logger.info(f"    models downloaded: {models_downloaded}")
-    if not models_downloaded:
-        sys.exit(1)
-
-    with Flow("story-processor") as flow:
-        if WORKER_COUNT > 1:
-            flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
-        # read parameters
-        stories_per_page = Parameter("stories_per_page", default=DEFAULT_STORIES_PER_PAGE)
+    @flow(name="unposted_stories",task_runner = DaskTaskRunner())
+    def unposted_stories_flow(default_stories_each_page: int):
+        logger = get_run_logger()
+        logger.info("Starting story catchup job")
+        logger.info("  Checking for any new models we need")
+        models_downloaded = download_models()
+        logger.info(f"    models downloaded: {models_downloaded}")
+        if not models_downloaded:
+            sys.exit(1)
+        data_source_name = "unposted"
+        start_time = time.time()
+        stories_per_page = default_stories_each_page
         logger.info("    will request {} stories/page".format(stories_per_page))
         # 1. list all the project we need to work on
         projects_list = load_projects_task()
         # 2. process all the projects (in parallel)
         project_statuses = process_project_task.map(projects_list,
                                                     page_size=unmapped(stories_per_page))
-        # 3. send email with results of operations
-        send_email_task(project_statuses)
+        # 3. send email/slack_msg with results of operations
+        prefect_tasks.send_project_list_slack_message_task(project_statuses, data_source_name, start_time)
+        prefect_tasks.send_project_list_email_task(project_statuses, data_source_name, start_time)
+        
 
     # run the whole thing
-    flow.run(parameters={
-        'stories_per_page': DEFAULT_STORIES_PER_PAGE,
-    })
+    unposted_stories_flow(DEFAULT_STORIES_PER_PAGE)

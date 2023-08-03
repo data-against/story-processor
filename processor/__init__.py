@@ -5,13 +5,12 @@ from dotenv import load_dotenv
 import mediacloud.api
 import mediacloud_legacy.api
 from flask import Flask
-#from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk import init
 from typing import Dict
 from sqlalchemy import create_engine
 
-VERSION = "3.2.1"
+VERSION = "3.4.4"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
@@ -77,7 +76,8 @@ if SQLALCHEMY_DATABASE_URI is None:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///data.db'
     engine = create_engine(SQLALCHEMY_DATABASE_URI)  # use defaults (probably in test mode)
 else:
-    engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=20, max_overflow=20)  # bumped pool size up for parallel tasks
+    # bumped pool size up for parallel tasks - the max will be sum of `pool_size` and `max_overflow`
+    engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=20, max_overflow=30)
 
 
 ENTITY_SERVER_URL = os.environ['ENTITY_SERVER_URL']
@@ -89,6 +89,17 @@ NEWSCATCHER_API_KEY = os.environ['NEWSCATCHER_API_KEY']
 if NEWSCATCHER_API_KEY is None:
     logger.warning("  ⚠️ No NEWSCATCHER_API_KEY is specified. We won't be fetching from Newscatcher.")
 
+SLACK_APP_TOKEN = os.environ.get('SLACK_APP_TOKEN', None) 
+if SLACK_APP_TOKEN is None:
+    logger.warning("  ⚠️ No SLACK_APP_TOKEN env var specified. We won't be sending slack updates.")
+
+SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN', None)  
+if SLACK_BOT_TOKEN is None:
+    logger.warning("  ⚠️ No SLACK_BOT_TOKEN env var specified. We won't be sending slack updates.")
+
+SLACK_CHANNEL_ID = os.environ.get('SLACK_CHANNEL_ID', None)  
+if SLACK_CHANNEL_ID is None:
+    logger.warning("  ⚠️ No CHANNEL_ID env var specified. We won't be sending slack updates.")
 
 def get_mc_client() -> mediacloud.api.DirectoryApi:
     """
@@ -131,4 +142,11 @@ def get_email_config() -> Dict:
         port=os.environ.get('SMTP_PORT', None),
         from_address=os.environ.get('SMTP_FROM', None),
         notify_emails=os.environ.get('NOTIFY_EMAILS', "").split(",")
+    )
+
+def get_slack_config() -> Dict:
+    return dict(
+        app_token=SLACK_APP_TOKEN,
+        bot_token=SLACK_BOT_TOKEN,
+        channel_id=SLACK_CHANNEL_ID,
     )

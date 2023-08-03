@@ -1,38 +1,47 @@
-import logging
 import datetime as dt
 from typing import List, Dict
 import time
-from prefect import Flow, Parameter, task, unmapped
-from prefect.executors import LocalDaskExecutor
-
+import sys
+from prefect import flow, task, get_run_logger, unmapped
+from prefect_dask.task_runners import DaskTaskRunner
 import processor
 import processor.database.stories_db as stories_db
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
-from processor import get_mc_legacy_client, get_email_config, is_email_configured
+from processor import get_mc_legacy_client
 import processor.projects as projects
 import processor.tasks as tasks
-import processor.notifications as notifications
+import scripts.tasks as prefect_tasks
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
-DEFAULT_MAX_STORIES_PER_PROJECT = 20000  # make sure we don't do too many stories each cron run (for testing)
+DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many stories each cron run
 
 WORKER_COUNT = 6  # scale of parallel processing (of project queries)
 
 # use this to make sure we don't fall behind on recent stories, even if a project query is producing more than
 # DEFAULT_MAX_STORIES_PER_PROJECT stories a day
-DEFAULT_DAY_WINDOW = 2
+DEFAULT_DAY_WINDOW = 5
+
+DaskTaskRunner(
+    cluster_kwargs={
+        "image": "prefecthq/prefect:latest",
+        "n_workers": WORKER_COUNT,
+    },
+)
 
 
 @task(name='load_projects')
 def load_projects_task() -> List[Dict]:
+    logger = get_run_logger()
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
     logger.info("  Checking {} projects".format(len(project_list)))
+    #return [p for p in project_list if p['id'] == 166]
     return project_list
 
 
 @task(name='process_project')
 def process_project_task(project: Dict, page_size: int, max_stories: int) -> Dict:
+    logger = get_run_logger()
     mc = get_mc_legacy_client()
     project_last_processed_stories_id = project['local_processed_stories_id']
     project_email_message = ""
@@ -94,48 +103,22 @@ def process_project_task(project: Dict, page_size: int, max_stories: int) -> Dic
     )
 
 
-@task(name='send_email')
-def send_email_task(project_details: List[Dict], start_time: float):
-    duration_secs = time.time() - start_time
-    duration_mins = str(round(duration_secs/60, 2))
-    total_new_stories = sum([s['stories'] for s in project_details])
-    total_pages = sum([s['pages'] for s in project_details])
-    email_message = ""
-    email_message += "Checking {} projects.\n\n".format(len(project_details))
-    for p in project_details:
-        email_message += p['email_text']
-    logger.info("Done with {} projects".format(len(project_details)))
-    logger.info("  {} stories over {} pages".format(total_new_stories, total_pages))
-    email_message += "Done - pulled {} stories over {} pages total.\n\n" \
-                     "(An automated email from your friendly neighborhood {} story processor)" \
-        .format(total_new_stories, total_pages, processor.SOURCE_MEDIA_CLOUD)
-    if is_email_configured():
-        email_config = get_email_config()
-        notifications.send_email(email_config['notify_emails'],
-                                 "Feminicide {} Update: {} stories ({} mins)".format(processor.SOURCE_MEDIA_CLOUD,
-                                                                                     total_new_stories,
-                                                                                     duration_mins),
-                                 email_message)
-    else:
-        logger.info("Not sending any email updates")
-
-
 if __name__ == '__main__':
 
-    logger = logging.getLogger(__name__)
-    logger.info("Starting {} story fetch job".format(processor.SOURCE_MEDIA_CLOUD))
-
-    # important to do because there might new models on the server!
-    logger.info("  Checking for any new models we need")
-    download_models()
-
-    with Flow("story-processor") as flow:
-        if WORKER_COUNT > 1:
-            flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
-        # read parameters
-        stories_per_page = Parameter("stories_per_page", default=DEFAULT_STORIES_PER_PAGE)
-        max_stories_per_project = Parameter("max_stories_per_project", default=DEFAULT_MAX_STORIES_PER_PROJECT)
-        start_time = Parameter("start_time", default=time.time())
+    @flow(name="mediacloud_stories",task_runner = DaskTaskRunner())
+    def mediacloud_stories_flow(data_source: str,stories_each_page: int,max_stories_each_project: int):
+        logger = get_run_logger()
+        logger.info("Starting {} story fetch job".format(processor.SOURCE_MEDIA_CLOUD))
+        # important to do because there might new models on the server!
+        logger.info("  Checking for any new models we need")
+        models_downloaded = download_models()
+        logger.info(f"    models downloaded: {models_downloaded}")
+        if not models_downloaded:
+            sys.exit(1)
+        data_source_name = data_source
+        stories_per_page = stories_each_page
+        max_stories_per_project = max_stories_each_project
+        start_time = time.time()
         logger.info("    will request {} stories/page (up to {})".format(stories_per_page, max_stories_per_project))
         # 1. list all the project we need to work on
         projects_list = load_projects_task()
@@ -143,12 +126,12 @@ if __name__ == '__main__':
         project_statuses = process_project_task.map(projects_list,
                                                     page_size=unmapped(stories_per_page),
                                                     max_stories=unmapped(max_stories_per_project))
-        # 3. send email with results of operations
-        send_email_task(project_statuses, start_time)
+        # 3. send email/slack_msg with results of operations
+        prefect_tasks.send_project_list_slack_message_task(project_statuses, data_source_name, start_time)
+        prefect_tasks.send_project_list_email_task(project_statuses, data_source_name, start_time)
+        
+
+        
 
     # run the whole thing
-    flow.run(parameters={
-        'stories_per_page': DEFAULT_STORIES_PER_PAGE,
-        'max_stories_per_project': DEFAULT_MAX_STORIES_PER_PROJECT,
-        'start_time': time.time(),
-    })
+    mediacloud_stories_flow(processor.SOURCE_MEDIA_CLOUD,DEFAULT_STORIES_PER_PAGE,DEFAULT_MAX_STORIES_PER_PROJECT)

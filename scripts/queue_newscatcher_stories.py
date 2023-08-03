@@ -1,15 +1,15 @@
-import logging
+#import prefect  #Will be required if get_run_context is implemented
 import math
 from typing import List, Dict
 import time
 import sys
 import mcmetadata.urls as urls
 import datetime as dt
-from prefect import Flow, task, Parameter
-from newscatcherapi import NewsCatcherApiClient
-from prefect.executors import LocalDaskExecutor
+from prefect import flow, task, get_run_logger
+import newscatcherapi
+import newscatcherapi.newscatcherapi_exception
+from prefect_dask.task_runners import DaskTaskRunner
 import requests.exceptions
-
 import processor
 import processor.database.projects_db as projects_db
 from processor.classifiers import download_models
@@ -17,17 +17,24 @@ import processor.projects as projects
 import scripts.tasks as prefect_tasks
 
 PAGE_SIZE = 100
-DEFAULT_DAY_WINDOW = 3
+DEFAULT_DAY_WINDOW = 5
 WORKER_COUNT = 16
 MAX_CALLS_PER_SEC = 5
-MAX_STORIES_PER_PROJECT = 10000
+MAX_STORIES_PER_PROJECT = 5000
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
-newscatcherapi = NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
+nc_api_client = newscatcherapi.NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
 
+DaskTaskRunner(
+    cluster_kwargs={
+        "image": "prefecthq/prefect:latest",
+        "n_workers":WORKER_COUNT,
+    },
+)
 
 @task(name='load_projects')
 def load_projects_task() -> List[Dict]:
+    logger = get_run_logger()
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
     projects_with_countries = projects.with_countries(project_list)
     if len(projects_with_countries) == 0:
@@ -39,9 +46,11 @@ def load_projects_task() -> List[Dict]:
 
 
 def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime, page: int = 1) -> Dict:
+    results = dict(total_hits=0) # start of with a mockup of no results, so we can handle transient errors bette
+    logger = get_run_logger()
     try:
         terms_no_curlies = project['search_terms'].replace('“', '"').replace('”', '"')
-        results = newscatcherapi.get_search(
+        results = nc_api_client.get_search(
             q=terms_no_curlies,
             lang=project['language'],
             countries=[p.strip() for p in project['newscatcher_country'].split(",")],
@@ -50,16 +59,19 @@ def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime
             to_=end_date.strftime("%Y-%m-%d"),
             page=page
         )
-    except requests.exceptions.JSONDecodeError as jse:
-        logger.error("Couldn't parse response on project {}".format(project['id']))
-        logger.exception(jse)
-        # just ignore and keep going so at least we can get stories processed through the pipeline for other projects
-        results = []
+    # try to ignore project-level exceptions so we can keep going and process other projects
+    except newscatcherapi.newscatcherapi_exception.NewsCatcherApiException as ncae:
+        logger.error("Couldn't get Newscatcher results for project {} - check query ({})".format(project['id'], ncae))
+        logger.exception(ncae)
+    except requests.exceptions.RequestException as re:
+        logger.error("Fetch-related response on project {} - {}".format(project['id'], re))
+        logger.exception(re)
     return results
 
 
 @task(name='fetch_project_stories')
 def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dict]:
+    logger = get_run_logger()
     combined_stories = []
     end_date = dt.datetime.now()
     for p in project_list:
@@ -117,25 +129,25 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
             logger.info("  project {} - {} valid stories (after {})".format(p['id'], valid_stories,
                                                                             history.last_publish_date))
             combined_stories += project_stories
+            #print("Task run context:")# Just for testing purposes can be removed if not needed.
+            #print(prefect.context.get_run_context().task_run.dict())# Just for testing purposes can be removed if not needed.
     return combined_stories
 
 
 if __name__ == '__main__':
 
-    logger = logging.getLogger(__name__)
-    logger.info("Starting {} story fetch job".format(processor.SOURCE_NEWSCATCHER))
-
-    # important to do because there might be new models on the server!
-    logger.info("  Checking for any new models we need")
-    models_downloaded = download_models()
-    logger.info(f"    models downloaded: {models_downloaded}")
-    if not models_downloaded:
-        sys.exit(1)
-    with Flow("story-processor") as flow:
-        if WORKER_COUNT > 1:
-            flow.executor = LocalDaskExecutor(scheduler="threads", num_workers=WORKER_COUNT)
-        data_source_name = Parameter("data_source", default="")
-        start_time = Parameter("start_time", default=time.time())
+    @flow(name="newscatcher_stories",task_runner = DaskTaskRunner())
+    def newscatcher_stories_flow(data_source: str):
+        logger = get_run_logger()
+        logger.info("Starting {} story fetch job".format(processor.SOURCE_NEWSCATCHER))
+        # important to do because there might be new models on the server!
+        logger.info("  Checking for any new models we need")
+        models_downloaded = download_models()
+        logger.info(f"    models downloaded: {models_downloaded}")
+        if not models_downloaded:
+            sys.exit(1)
+        data_source_name = data_source
+        start_time = time.time()
         # 1. list all the project we need to work on
         projects_list = load_projects_task()
         # 2. fetch all the urls from for each project from newscatcher (not mapped, so we can respect rate limiting)
@@ -145,11 +157,9 @@ if __name__ == '__main__':
         # 4. post batches of stories for classification
         results_data = prefect_tasks.queue_stories_for_classification_task(projects_list, stories_with_text,
                                                                            data_source_name)
-        # 5. send email with results of operations
-        prefect_tasks.send_email_task(results_data, data_source_name, start_time)
+        # 5. send email/slack_msg with results of operations
+        prefect_tasks.send_combined_slack_message_task(results_data, data_source_name, start_time)
+        prefect_tasks.send_combined_email_task(results_data, data_source_name, start_time)
 
     # run the whole thing
-    flow.run(parameters={
-        'data_source': processor.SOURCE_NEWSCATCHER,
-        'start_time': time.time(),
-    })
+    newscatcher_stories_flow(processor.SOURCE_NEWSCATCHER)

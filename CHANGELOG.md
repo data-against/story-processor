@@ -3,6 +3,35 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.4.4
+
+* Better error handling for Newscatcher, longer window of days to search within
+
+### v3.4.3
+
+* More work on SQLalchemy v2 integration to fix web dashboard
+
+### v3.4.2
+
+* Fix query results architecture to work on dashboard errors
+
+### v3.4.1
+
+* Upgrade sklearn to try and fix deploy compilation crash
+
+### v3.4.0
+
+* Upgrade to prefect v2
+
+### v3.3.1
+
+* Tweaks to support more staggered multiple runs throughout day.
+* Increase max DB pool size to support overlapping runs.
+
+### v3.3.0
+
+* Add slack integration for notifications (text parallels email notifications)  
+
 ### v3.2.1
 
 * Fix bug that was ignoring KO entity types.  
