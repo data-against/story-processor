@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.5.1
+
+* Bump up dependency versions to keep up to date on things
+
 ### v3.5.0
 
 * Support sending updates to Slack as a file upload instead of a giant post
