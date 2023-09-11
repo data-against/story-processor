@@ -126,3 +126,5 @@ logs/*.json
 *.tgz
 .DS_Store
 *.tar.gz
+tmp/*.json
+.scrapy
