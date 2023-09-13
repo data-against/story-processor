@@ -46,7 +46,7 @@ BROKER_URL = os.environ.get('BROKER_URL', None)
 if BROKER_URL is None:
     logger.warning("  ⚠️ No BROKER_URL env var specified. Using sqlite, which will perform poorly")
     BROKER_URL = "db+sqlite:///results.sqlite"
-logger.info("  Queue at {}".format(BROKER_URL))
+#logger.info("  Queue at {}".format(BROKER_URL))
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)  # optional
 if SENTRY_DSN:
@@ -55,15 +55,15 @@ if SENTRY_DSN:
          integrations=[CeleryIntegration()])
     ignore_logger('trafilatura.utils')
     logger.info("  SENTRY_DSN: {}".format(SENTRY_DSN))
-else:
-    logger.info("  Not logging errors to Sentry")
+#else:
+#    logger.info("  Not logging errors to Sentry")
 
 FEMINICIDE_API_URL = os.environ.get('FEMINICIDE_API_URL', None)
 if FEMINICIDE_API_URL is None:
     logger.error("  ❌ No FEMINICIDE_API_URL is specified. Bailing because we can't list projects to run!")
     sys.exit(1)
-else:
-    logger.info("  Config server at at {}".format(FEMINICIDE_API_URL))
+#else:
+#    logger.info("  Config server at at {}".format(FEMINICIDE_API_URL))
 
 FEMINICIDE_API_KEY = os.environ.get('FEMINICIDE_API_KEY', None)
 if FEMINICIDE_API_KEY is None:
@@ -89,15 +89,15 @@ NEWSCATCHER_API_KEY = os.environ['NEWSCATCHER_API_KEY']
 if NEWSCATCHER_API_KEY is None:
     logger.warning("  ⚠️ No NEWSCATCHER_API_KEY is specified. We won't be fetching from Newscatcher.")
 
-SLACK_APP_TOKEN = os.environ.get('SLACK_APP_TOKEN', None) 
+SLACK_APP_TOKEN = os.environ.get('SLACK_APP_TOKEN', None)
 if SLACK_APP_TOKEN is None:
     logger.warning("  ⚠️ No SLACK_APP_TOKEN env var specified. We won't be sending slack updates.")
 
-SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN', None)  
+SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN', None)
 if SLACK_BOT_TOKEN is None:
     logger.warning("  ⚠️ No SLACK_BOT_TOKEN env var specified. We won't be sending slack updates.")
 
-SLACK_CHANNEL_ID = os.environ.get('SLACK_CHANNEL_ID', None)  
+SLACK_CHANNEL_ID = os.environ.get('SLACK_CHANNEL_ID', None)
 if SLACK_CHANNEL_ID is None:
     logger.warning("  ⚠️ No CHANNEL_ID env var specified. We won't be sending slack updates.")
 
