@@ -29,7 +29,7 @@ logger.info("-------------------------------------------------------------------
 logger.info("Starting up Feminicide Story Processor v{}".format(VERSION))
 # supress annoying "not enough comments" and "using custom extraction" notes# logger = logging.getLogger(__name__)
 loggers_to_skip = ['trafilatura.core', 'trafilatura.metadata', 'readability.readability',
-                   'trafilatura.readability_lxml', 'trafilatura.htmlprocessing']
+                   'trafilatura.readability_lxml', 'trafilatura.htmlprocessing', 'trafilatura.xml']
 for item in loggers_to_skip:
     logging.getLogger(item).setLevel(logging.WARNING)
 
