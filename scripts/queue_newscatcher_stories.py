@@ -23,7 +23,7 @@ import scripts.tasks as tasks
 POOL_SIZE = 2
 PAGE_SIZE = 100
 DEFAULT_DAY_WINDOW = 3
-MAX_STORIES_PER_PROJECT = 5000
+MAX_STORIES_PER_PROJECT = 200  #5000
 MAX_CALLS_PER_SEC = 5
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
@@ -71,13 +71,18 @@ def _project_story_worker(p: Dict) -> List[Dict]:
     end_date = dt.datetime.now()
     project_stories = []
     valid_stories = 0
-    Session = database.get_session_maker()
-    with Session() as session:
-        history = projects_db.get_history(session, p['id'])
+    try:  # be careful here so database errors don't mess us up
+        Session = database.get_session_maker()
+        with Session() as session:
+            history = projects_db.get_history(session, p['id'])
+    except Exception as e:
+        logger.error("Couldn't get history for project {} - {}".format(p['id'], e))
+        logger.exception(e)
+        history = None
     page_number = 1
     # only search stories since the last search (if we've done one before)
     start_date = end_date - dt.timedelta(days=DEFAULT_DAY_WINDOW)
-    if history.last_publish_date is not None:
+    if history and (history.last_publish_date is not None):
         # make sure we don't accidentally cut off a half day we haven't queried against yet
         # this is OK because duplicates will get screened out later in the pipeline
         local_start_date = history.last_publish_date - dt.timedelta(days=1)
