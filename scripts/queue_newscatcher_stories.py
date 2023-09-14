@@ -6,6 +6,7 @@ import datetime as dt
 import newscatcherapi
 import newscatcherapi.newscatcherapi_exception
 import requests.exceptions
+import mcmetadata as metadata
 import logging
 import itertools
 from multiprocessing import Pool
@@ -23,7 +24,7 @@ import scripts.tasks as tasks
 POOL_SIZE = 16
 PAGE_SIZE = 100
 DEFAULT_DAY_WINDOW = 3
-MAX_STORIES_PER_PROJECT = 200  #5000
+MAX_STORIES_PER_PROJECT = 1000  #5000
 MAX_CALLS_PER_SEC = 5
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
@@ -41,7 +42,7 @@ def load_projects() -> List[Dict]:
     logger.info("  Found {} projects, checking {} with countries set".format(len(project_list),
                                                                              len(projects_with_countries)))
     #return [p for p in projects_with_countries if p['id'] == 166]
-    #return projects_with_countries[3:5]
+    #return projects_with_countries[12:15]
     return projects_with_countries
 
 
@@ -156,7 +157,9 @@ def fetch_text(stories: List[Dict]) -> List[Dict]:
         nonlocal stories, stories_to_return
         matching_input_stories = [s for s in stories if s['url'] == response_data['original_url']]
         for s in matching_input_stories:
-            s['story_text'] = response_data['html_content']
+            story_metadata = metadata.extract(s['url'], response_data['html_content'])
+            s['story_text'] = story_metadata['text_content']
+            s['publish_date'] = story_metadata['publication_date'] # this is a date object
             stories_to_return.append(s)
     # download them all in parallel... will take a while
     fetcher.fetch_all_html([s['url'] for s in stories], handle_parse)

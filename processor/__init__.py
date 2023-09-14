@@ -10,7 +10,7 @@ from sentry_sdk import init
 from typing import Dict
 from sqlalchemy import create_engine
 
-VERSION = "3.6.0b2"
+VERSION = "3.6.0b3"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
@@ -28,7 +28,8 @@ logger = logging.getLogger(__name__)
 logger.info("------------------------------------------------------------------------")
 logger.info("Starting up Feminicide Story Processor v{}".format(VERSION))
 # supress annoying "not enough comments" and "using custom extraction" notes# logger = logging.getLogger(__name__)
-loggers_to_skip = ['trafilatura.core', 'trafilatura.metadata', 'readability.readability']
+loggers_to_skip = ['trafilatura.core', 'trafilatura.metadata', 'readability.readability',
+                   'trafilatura.readability_lxml', 'trafilatura.htmlprocessing']
 for item in loggers_to_skip:
     logging.getLogger(item).setLevel(logging.WARNING)
 

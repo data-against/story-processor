@@ -1,7 +1,6 @@
 from typing import List, Dict, Any, Callable, Optional
 import scrapy
 from scrapy.crawler import CrawlerProcess
-import json
 
 
 class UrlSpider(scrapy.Spider):
