@@ -8,9 +8,8 @@ from flask import Flask
 from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk import init
 from typing import Dict
-from sqlalchemy import create_engine
 
-VERSION = "3.6.0b3"
+VERSION = "3.6.0b5"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
@@ -74,11 +73,6 @@ if FEMINICIDE_API_KEY is None:
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', None)
 if SQLALCHEMY_DATABASE_URI is None:
     logger.warning("  ⚠️ ️No SQLALCHEMY_DATABASE_URI is specified. Using sqlite which will perform poorly")
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///data.db'
-    engine = create_engine(SQLALCHEMY_DATABASE_URI)  # use defaults (probably in test mode)
-else:
-    # bumped pool size up for parallel tasks - the max will be sum of `pool_size` and `max_overflow`
-    engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=20, max_overflow=30)
 
 
 ENTITY_SERVER_URL = os.environ['ENTITY_SERVER_URL']

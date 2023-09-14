@@ -140,8 +140,9 @@ def queue_stories_for_classification(project_list: List[Dict], stories: List[Dic
             for s in project_stories:
                 if 'source_publish_date' in s:
                     s['publish_date'] = s['source_publish_date']
-            # and log that we got and queued them all
-            Session = database.get_session_maker()
+            # and log that we got and queued them all (this might happen a loooooong time after we last used the DB,
+            # so lets be careful here and reset the engine before using the session)
+            Session = database.get_session_maker(reset_pool=True)
             with Session() as session:
                 project_stories = stories_db.add_stories(session, project_stories, p, datasource)
                 if len(project_stories) > 0:  # don't queue up unnecessary tasks
