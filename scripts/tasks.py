@@ -136,7 +136,7 @@ def queue_stories_for_classification(project_list: List[Dict], stories: List[Dic
         email_message += "Project {} - {}: {} stories\n".format(p['id'], p['title'], len(project_stories))
         total_stories += len(project_stories)
         if len(project_stories) > 0:
-            # External source has guess dates (Newscatcher/Google), so use that
+            # External source has guessed dates (Newscatcher/Google), so use that
             for s in project_stories:
                 if 'source_publish_date' in s:
                     s['publish_date'] = s['source_publish_date']

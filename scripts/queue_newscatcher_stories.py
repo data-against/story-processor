@@ -20,7 +20,7 @@ import processor.fetcher as fetcher
 import scripts.tasks as tasks
 
 
-POOL_SIZE = 2
+POOL_SIZE = 16
 PAGE_SIZE = 100
 DEFAULT_DAY_WINDOW = 3
 MAX_STORIES_PER_PROJECT = 200  #5000
@@ -30,6 +30,7 @@ DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 nc_api_client = newscatcherapi.NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def load_projects() -> List[Dict]:

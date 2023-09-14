@@ -10,7 +10,7 @@ class UrlSpider(scrapy.Spider):
     custom_settings: Dict[str, Any] = {
         "COOKIES_ENABLED": False,
         #"HTTPCACHE_ENABLED": True,  # useful to have set True locally for repetative runs while debugging code changes
-        "LOG_LEVEL": "WARNING",
+        "LOG_LEVEL": "INFO",
         "AUTOTHROTTLE_ENABLED": True,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
         "AUTOTHROTTLE_TARGET_CONCURRENCY": 10,
