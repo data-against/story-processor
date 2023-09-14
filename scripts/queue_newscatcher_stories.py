@@ -129,7 +129,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     current_page = _fetch_results(p, start_date, end_date, page_number)
                     # stay below rate limiting
         logger.info("  project {} - {} valid stories (after {})".format(p['id'], valid_stories,
-                                                                        history.last_publish_date))
+                                                                        history.last_publish_date if history else '?'))
     return project_stories
 
 
