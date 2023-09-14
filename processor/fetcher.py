@@ -1,4 +1,5 @@
 from typing import List, Dict, Any, Callable, Optional
+import logging
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
@@ -10,10 +11,11 @@ class UrlSpider(scrapy.Spider):
         "COOKIES_ENABLED": False,
         #"HTTPCACHE_ENABLED": True,  # useful to have set True locally for repetative runs while debugging code changes
         "LOG_LEVEL": "INFO",
-        "AUTOTHROTTLE_ENABLED": True,
+        "CONCURRENT_REQUESTS": 64,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
+        "AUTOTHROTTLE_ENABLED": True,
         "AUTOTHROTTLE_TARGET_CONCURRENCY": 10,
-        "DOWNLOAD_TIMEOUT": 60,
+        "DOWNLOAD_TIMEOUT": 30,
         "USER_AGENT": 'Data Against Feminicides bot for open academic research (+http://datoscontrafeminicidio.net/)',
     }
 
@@ -29,6 +31,8 @@ class UrlSpider(scrapy.Spider):
         """
         super(UrlSpider, self).__init__(*args, **kwargs)
         self.on_parse = handle_parse
+        logging.getLogger('scrapy').setLevel(logging.INFO)
+        logging.getLogger('scrapy.core.engine').setLevel(logging.INFO)
 
     def parse(self, response):
         # grab the original, undirected URL so we can relink later
