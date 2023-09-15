@@ -9,7 +9,7 @@ from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk import init
 from typing import Dict
 
-VERSION = "3.6.0b5"
+VERSION = "3.6.0b6"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"

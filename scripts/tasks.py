@@ -6,7 +6,7 @@ import mcmetadata as metadata
 from prefect import task, get_run_logger
 from functools import lru_cache
 
-from processor import is_email_configured, get_email_config, get_slack_config
+from processor import is_email_configured, get_email_config, get_slack_config, VERSION
 import processor.tasks as celery_tasks
 import processor.notifications as notifications
 import processor.database as database
@@ -65,7 +65,8 @@ def _send_email(data_source: str, story_count: int, start_time: float, email_mes
     if is_email_configured():
         email_config = get_email_config()
         notifications.send_email(email_config['notify_emails'],
-                                 "Feminicide {} Update: {} stories ({} mins)".format(data_source, story_count, duration_mins),
+                                 "Feminicide {} Update: {} stories ({} mins) - v{}".format(data_source, story_count,
+                                                                                           duration_mins, VERSION),
                                  email_message)
     else:
         logger.info("Not sending any email updates")
@@ -114,9 +115,9 @@ def _send_slack_message(data_source: str, story_count: int, start_time: float, s
     duration_mins = str(round(duration_secs / 60, 2))
     if get_slack_config():
         slack_config = get_slack_config()
-        notifications.send_slack_msg(slack_config['channel_id'], slack_config['bot_token'],data_source,
-                                     "Feminicide {} Update: {} stories ({} mins)".format(
-                                         data_source, story_count, duration_mins),
+        notifications.send_slack_msg(slack_config['channel_id'], slack_config['bot_token'], data_source,
+                                     "Feminicide {} Update: {} stories ({} mins) - v{}".format(
+                                         data_source, story_count, duration_mins, VERSION),
                                      slack_message)
     else:
         logger.info("Not sending any slack updates")
