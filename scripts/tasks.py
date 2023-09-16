@@ -126,7 +126,7 @@ def _send_slack_message(data_source: str, story_count: int, start_time: float, s
 @task(name='queue_stories_for_classification')
 def queue_stories_for_classification_task(project_list: List[Dict], stories: List[Dict], datasource: str) -> Dict:
     run_logger = get_run_logger()
-    queue_stories_for_classification(project_list, stories, datasource, run_logger)
+    return queue_stories_for_classification(project_list, stories, datasource, run_logger)
 
 
 def queue_stories_for_classification(project_list: List[Dict], stories: List[Dict], datasource: str, the_logger) -> Dict:
