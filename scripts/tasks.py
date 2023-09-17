@@ -154,7 +154,7 @@ def queue_stories_for_classification(project_list: List[Dict], stories: List[Dic
                     publish_dates = [dateutil.parser.parse(s['source_publish_date']) for s in project_stories]
                     latest_date = max(publish_dates)
                     projects_db.update_history(session, p['id'], last_publish_date=latest_date, last_url=project_stories[0]['url'])
-        the_logger.info("  queued {} stories for project {}/{}".format(total_stories, p['id'], p['title']))
+        the_logger.info("  queued {} stories for project {}/{}".formatlen(len(project_stories), p['id'], p['title']))
     return dict(
         email_text=email_message,
         project_count=len(project_list),
