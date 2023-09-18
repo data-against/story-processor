@@ -3,7 +3,7 @@ from typing import List, Dict
 import logging
 import copy
 from sqlalchemy.sql import func
-from sqlalchemy import text, update, select
+from sqlalchemy import text, update, select, delete
 from sqlalchemy.orm.session import Session
 
 import processor
@@ -230,3 +230,14 @@ def project_binned_model_scores(session: Session, project_id: int) -> List:
         order by 1
     """.format(project_id)
     return _run_query(session, query)
+
+def delete_old_stories(session: Session, age: int = 62) -> None: 
+    '''
+    Delete stories that have been posted more than 62 days ago.
+    '''
+    today = dt.datetime.now()
+    date_cutoff = today - dt.timedelta(days = age)
+    session.execute(
+        delete(Story).where(Story.queued_date<date_cutoff)
+    )
+    session.commit()
