@@ -168,10 +168,10 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
             logger.info("  project {} - {} valid stories (after {})".format(p['id'], valid_stories,
                                                                             history.last_publish_date))
             combined_stories += project_stories
-        except RuntimeError as re:
+        except Exception as e:
             # perhaps a query syntax error? log it, but keep going so other projects succeed
-            logger.error(f"  project {p['id']} - failed to fetch stories (likely a query syntax error)")
-            logger.exception(re)
+            logger.error(f"  project {p['id']} - failed to fetch stories (likely a query syntax or connection error)")
+            logger.exception(e)
     return combined_stories
 
 
