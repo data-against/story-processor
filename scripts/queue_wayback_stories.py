@@ -21,7 +21,7 @@ import scripts.tasks as prefect_tasks
 PAGE_SIZE = 1000
 DEFAULT_DAY_OFFSET = 4
 DEFAULT_DAY_WINDOW = 3
-MAX_STORIES_PER_PROJECT = 5000
+MAX_STORIES_PER_PROJECT = 1000  # set lower so we get _some_ data without prefect error'ing out
 TEXT_FETCH_TIMEOUT = 5  # seconds to wait for full text fetch to complete
 
 wm_api = SearchApiClient("mediacloud")
@@ -124,7 +124,7 @@ def fetch_project_stories_task(project_list: Dict, data_source: str) -> List[Dic
             # make sure we don't accidentally cut off a half day we haven't queried against yet
             # this is OK because duplicates will get screened out later in the pipeline
             local_start_date = history.last_publish_date - dt.timedelta(days=1)
-            start_date = min(local_start_date, start_date)
+            start_date = max(local_start_date, start_date)
         # if query is too big we need to split it up
         full_project_query = _query_builder(p['search_terms'], p['language'], p['domains'])
         project_queries = [full_project_query]
