@@ -60,7 +60,7 @@ def _send_email(data_source: str, story_count: int, start_time: float, email_mes
     if is_email_configured():
         email_config = get_email_config()
         notifications.send_email(email_config['notify_emails'],
-                                 "Feminicide {} Update: {} stories ({} mins) - v[}".format(data_source, story_count,
+                                 "Feminicide {} Update: {} stories ({} mins) - v{}".format(data_source, story_count,
                                                                                            duration_mins, VERSION),
                                  email_message)
     else:
