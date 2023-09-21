@@ -88,7 +88,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
         # make sure we don't accidentally cut off a half day we haven't queried against yet
         # this is OK because duplicates will get screened out later in the pipeline
         local_start_date = history.last_publish_date - dt.timedelta(days=1)
-        start_date = min(local_start_date, start_date)
+        start_date = max(local_start_date, start_date)
     current_page = _fetch_results(p, start_date, end_date, page_number)
     total_hits = current_page['total_hits']
     logger.info("Project {}/{} - {} total stories (since {})".format(p['id'], p['title'], total_hits, start_date))
