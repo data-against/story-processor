@@ -72,7 +72,6 @@ def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime
 def _project_story_worker(p: Dict) -> List[Dict]:
     end_date = dt.datetime.now()
     project_stories = []
-    valid_stories = 0
     try:  # be careful here so database errors don't mess us up
         Session = database.get_session_maker()
         with Session() as session:
@@ -98,6 +97,8 @@ def _project_story_worker(p: Dict) -> List[Dict]:
         while keep_going:
             logger.debug("  {} - page {}: {} stories".format(p['id'], page_number, len(current_page['articles'])))
             for item in current_page['articles']:
+                if len(project_stories) > MAX_STORIES_PER_PROJECT:
+                    break;
                 real_url = item['link']
                 # removing this check for now, because I'm not sure if stories are ordered consistently
                 """
@@ -121,7 +122,6 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     # too bad there isn't somewhere we can store the `id` (string)
                 )
                 project_stories.append(info)
-                valid_stories += 1
             if keep_going:  # check after page is processed
                 keep_going = (page_number < page_count) and (len(project_stories) <= MAX_STORIES_PER_PROJECT)
                 if keep_going:
@@ -129,7 +129,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     time.sleep(DELAY_SECS)
                     current_page = _fetch_results(p, start_date, end_date, page_number)
                     # stay below rate limiting
-        logger.info("  project {} - {} valid stories (after {})".format(p['id'], valid_stories, start_date))
+        logger.info("  project {} - {} valid stories (after {})".format(p['id'], len(project_stories), start_date))
     return project_stories
 
 
