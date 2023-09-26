@@ -10,7 +10,10 @@ def get_projects_list() -> Dict:
     :return:
     """
     path = FEMINICIDE_API_URL + '/api/story_processor/projects.json'
-    return _get_json(path)
+    data = _get_json(path)
+    for p in data:
+        p['search_terms'] = p['search_terms'].replace(u'\xa0', u' ')
+    return data
 
 
 def get_language_models_list() -> Dict:
