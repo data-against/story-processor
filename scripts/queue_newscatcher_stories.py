@@ -156,7 +156,7 @@ def fetch_text(stories: List[Dict]) -> List[Dict]:
         nonlocal stories, stories_to_return
         matching_input_stories = [s for s in stories if s['url'] == response_data['original_url']]
         for s in matching_input_stories:
-            story_metadata = metadata.extract(s['url'], response_data['html_content'])
+            story_metadata = metadata.extract(s['url'], response_data['content'])
             s['story_text'] = story_metadata['text_content']
             s['publish_date'] = story_metadata['publication_date'] # this is a date object
             stories_to_return.append(s)
