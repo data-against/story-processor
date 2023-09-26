@@ -6,7 +6,7 @@ import mcmetadata as metadata
 from prefect import task, get_run_logger
 from functools import lru_cache
 
-from processor import is_email_configured, get_email_config, get_slack_config
+from processor import is_email_configured, get_email_config, get_slack_config, VERSION
 import processor.tasks as celery_tasks
 import processor.notifications as notifications
 import processor.database as database
@@ -37,12 +37,18 @@ def fetch_text_task(story: Dict) -> Optional[Dict]:
 @task(name='send_combined_email')
 def send_combined_email_task(summary: Dict, data_source: str, start_time: float):
     # param summary: has keys 'project_count', 'email_text', 'stories'
+    logger = get_run_logger()
+    send_combined_email(summary, data_source, start_time, logger)
+
+
+def send_combined_email(summary: Dict, data_source: str, start_time: float, logger):
     email_message = _get_combined_text(summary['project_count'], summary['email_text'], summary['stories'], data_source)
-    _send_email(data_source, summary['stories'], start_time, email_message)
+    _send_email(data_source, summary['stories'], start_time, email_message, logger)
 
 
 @task(name='send_project_list_email')
 def send_project_list_email_task(project_details: List[Dict], data_source: str, start_time: float):
+    logger = get_run_logger()
     # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
     total_new_stories = sum([p['stories'] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
@@ -50,17 +56,17 @@ def send_project_list_email_task(project_details: List[Dict], data_source: str, 
     for p in project_details:
         combined_email_text += p['email_text']
     email_message = _get_combined_text(len(project_details), combined_email_text, total_new_stories, data_source)
-    _send_email(data_source, total_new_stories, start_time, email_message)
+    _send_email(data_source, total_new_stories, start_time, email_message, logger)
 
 
-def _send_email(data_source: str, story_count: int, start_time: float, email_message: str):
-    logger = get_run_logger()
+def _send_email(data_source: str, story_count: int, start_time: float, email_message: str, logger):
     duration_secs = time.time() - start_time
     duration_mins = str(round(duration_secs / 60, 2))
     if is_email_configured():
         email_config = get_email_config()
         notifications.send_email(email_config['notify_emails'],
-                                 "Feminicide {} Update: {} stories ({} mins)".format(data_source, story_count, duration_mins),
+                                 "Feminicide {} Update: {} stories ({} mins) - v{}".format(data_source, story_count,
+                                                                                           duration_mins, VERSION),
                                  email_message)
     else:
         logger.info("Not sending any email updates")
@@ -78,13 +84,22 @@ def _get_combined_text(project_count: int, email_text: str, story_count: int, da
 
 @task(name='send_combined_slack_msg')
 def send_combined_slack_message_task(summary: Dict, data_source: str, start_time: float):
+    logger = get_run_logger()
+    send_combined_slack_message(summary, data_source, start_time, logger)
+
+
+def send_combined_slack_message(summary: Dict, data_source: str, start_time: float, logger):
     # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
     message = _get_combined_text(summary['project_count'], summary['email_text'], summary['stories'], data_source)
-    _send_slack_message(data_source, summary['stories'], start_time, message)
+    _send_slack_message(data_source, summary['stories'], start_time, message, logger)
 
 
 @task(name='send_project_list_slack_msg')
 def send_project_list_slack_message_task(project_details: List[Dict], data_source: str, start_time: float):
+    send_project_list_slack_message(project_details, data_source, start_time)
+
+
+def send_project_list_slack_message(project_details: List[Dict], data_source: str, start_time: float):
     # :param summary: has keys 'project_count', 'email_text', 'stories'
     total_new_stories = sum([p['stories'] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
@@ -95,15 +110,14 @@ def send_project_list_slack_message_task(project_details: List[Dict], data_sourc
     _send_slack_message(data_source, total_new_stories, start_time, message)
 
 
-def _send_slack_message(data_source: str, story_count: int, start_time: float, slack_message: str):
-    logger = get_run_logger()
+def _send_slack_message(data_source: str, story_count: int, start_time: float, slack_message: str, logger):
     duration_secs = time.time() - start_time
     duration_mins = str(round(duration_secs / 60, 2))
     if get_slack_config():
         slack_config = get_slack_config()
-        notifications.send_slack_msg(slack_config['channel_id'], slack_config['bot_token'],data_source,
-                                     "Feminicide {} Update: {} stories ({} mins)".format(
-                                         data_source, story_count, duration_mins),
+        notifications.send_slack_msg(slack_config['channel_id'], slack_config['bot_token'], data_source,
+                                     "Feminicide {} Update: {} stories ({} mins) - v{}".format(
+                                         data_source, story_count, duration_mins, VERSION),
                                      slack_message)
     else:
         logger.info("Not sending any slack updates")
@@ -111,7 +125,11 @@ def _send_slack_message(data_source: str, story_count: int, start_time: float, s
 
 @task(name='queue_stories_for_classification')
 def queue_stories_for_classification_task(project_list: List[Dict], stories: List[Dict], datasource: str) -> Dict:
-    logger = get_run_logger()
+    run_logger = get_run_logger()
+    return queue_stories_for_classification(project_list, stories, datasource, run_logger)
+
+
+def queue_stories_for_classification(project_list: List[Dict], stories: List[Dict], datasource: str, the_logger) -> Dict:
     total_stories = 0
     email_message = ""
     for p in project_list:
@@ -119,12 +137,13 @@ def queue_stories_for_classification_task(project_list: List[Dict], stories: Lis
         email_message += "Project {} - {}: {} stories\n".format(p['id'], p['title'], len(project_stories))
         total_stories += len(project_stories)
         if len(project_stories) > 0:
-            # External source has guess dates (Newscatcher/Google), so use that
+            # External source has guessed dates (Newscatcher/Google), so use that
             for s in project_stories:
                 if 'source_publish_date' in s:
                     s['publish_date'] = s['source_publish_date']
-            # and log that we got and queued them all
-            Session = database.get_session_maker()
+            # and log that we got and queued them all (this might happen a loooooong time after we last used the DB,
+            # so lets be careful here and reset the engine before using the session)
+            Session = database.get_session_maker(reset_pool=True)
             with Session() as session:
                 project_stories = stories_db.add_stories(session, project_stories, p, datasource)
                 if len(project_stories) > 0:  # don't queue up unnecessary tasks
@@ -135,7 +154,7 @@ def queue_stories_for_classification_task(project_list: List[Dict], stories: Lis
                     publish_dates = [dateutil.parser.parse(s['source_publish_date']) for s in project_stories]
                     latest_date = max(publish_dates)
                     projects_db.update_history(session, p['id'], last_publish_date=latest_date, last_url=project_stories[0]['url'])
-        logger.info("  queued {} stories for project {}/{}".format(total_stories, p['id'], p['title']))
+        the_logger.info("  queued {} stories for project {}/{}".format(len(project_stories), p['id'], p['title']))
     return dict(
         email_text=email_message,
         project_count=len(project_list),

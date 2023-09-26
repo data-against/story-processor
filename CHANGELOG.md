@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.6.0
+
+* Refactoring some processors to use Scrapy for content fetch parallelization instead of prefect. 
+
 ### v3.5.1
 
 * Bump up dependency versions to keep up to date on things
