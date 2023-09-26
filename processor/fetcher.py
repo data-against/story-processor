@@ -43,7 +43,9 @@ class UrlSpider(scrapy.Spider):
         return None
 
 
-def fetch_all_html(urls: List[str], handle_parse: Callable) -> List[Dict]:
+def fetch_all_html(urls: List[str], handle_parse: Callable) -> None:
+    if len(urls) == 0:
+        return
     process = CrawlerProcess()
     process.crawl(UrlSpider, handle_parse=handle_parse, start_urls=urls)
     process.start()
