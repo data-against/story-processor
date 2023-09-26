@@ -142,7 +142,8 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                         # path to pre-parsed content JSON - so we don't have to fetch and parse the HTML ourselves
                         extracted_content_url=item['article_url'],
                         url=item['url'],
-                        source_publish_date=item['publish_date'],
+                        # the rest of the pipeline expects a str, @see tasks.queue_stories_for_classification
+                        source_publish_date=str(item['publish_date']),
                         title=item['title'],
                         source=processor.SOURCE_WAYBACK_MACHINE,
                         project_id=p['id'],
