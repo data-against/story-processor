@@ -24,13 +24,13 @@ def add_stories(session: Session, source_story_list: List[Dict], project: Dict, 
     """
     new_source_story_list = copy.copy(source_story_list)
     now = dt.datetime.now()
-    for mc_story in new_source_story_list:
-        db_story = Story.from_source(mc_story, source)
+    for discovered_story in new_source_story_list:
+        db_story = Story.from_source(discovered_story, source)
         db_story.project_id = project['id']
         db_story.model_id = project['language_model_id']
         db_story.queued_date = now
         db_story.above_threshold = False
-        mc_story['db_story'] = db_story
+        discovered_story['db_story'] = db_story
     # now insert in batch to the database
     session.add_all([s['db_story'] for s in new_source_story_list])
     session.commit()
@@ -39,13 +39,14 @@ def add_stories(session: Session, source_story_list: List[Dict], project: Dict, 
     for s in new_source_story_list:
         s['log_db_id'] = s['db_story'].id  # keep track of the db id, so we can use it later to update this story
     if source != processor.SOURCE_MEDIA_CLOUD:
-        # these stories don't have a stories_id, which we use later, so set it to the id and save
+        # these stories don't have a stories_id, which we use later, so set it to the local-database id and save
         for s in new_source_story_list:
             s['stories_id'] = s['db_story'].id  # since these don't have a stories_id, set it to the database PK id
-            session.execute(update(Story).where(Story.id == s['log_db_id']).values(stories_id=s['log_db_id'])) #[updated]
+            session.execute(update(Story).where(Story.id == s['log_db_id']).values(stories_id=s['log_db_id']))
         session.commit()
     for s in new_source_story_list:  # free the DB objects back for GC
-        del s['db_story']
+        if 'db_story' in s:  # a little extra safety
+            del s['db_story']
     return new_source_story_list
 
 

@@ -8,9 +8,8 @@ from flask import Flask
 from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk import init
 from typing import Dict
-from sqlalchemy import create_engine
 
-VERSION = "3.5.2wm2"
+VERSION = "3.6.0wm1"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
@@ -28,7 +27,8 @@ logger = logging.getLogger(__name__)
 logger.info("------------------------------------------------------------------------")
 logger.info("Starting up Feminicide Story Processor v{}".format(VERSION))
 # supress annoying "not enough comments" and "using custom extraction" notes# logger = logging.getLogger(__name__)
-loggers_to_skip = ['trafilatura.core', 'trafilatura.metadata', 'readability.readability']
+loggers_to_skip = ['trafilatura.core', 'trafilatura.metadata', 'readability.readability',
+                   'trafilatura.readability_lxml', 'trafilatura.htmlprocessing', 'trafilatura.xml']
 for item in loggers_to_skip:
     logging.getLogger(item).setLevel(logging.WARNING)
 
@@ -46,7 +46,7 @@ BROKER_URL = os.environ.get('BROKER_URL', None)
 if BROKER_URL is None:
     logger.warning("  ⚠️ No BROKER_URL env var specified. Using sqlite, which will perform poorly")
     BROKER_URL = "db+sqlite:///results.sqlite"
-logger.info("  Queue at {}".format(BROKER_URL))
+#logger.info("  Queue at {}".format(BROKER_URL))
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)  # optional
 if SENTRY_DSN:
@@ -55,15 +55,15 @@ if SENTRY_DSN:
          integrations=[CeleryIntegration()])
     ignore_logger('trafilatura.utils')
     logger.info("  SENTRY_DSN: {}".format(SENTRY_DSN))
-else:
-    logger.info("  Not logging errors to Sentry")
+#else:
+#    logger.info("  Not logging errors to Sentry")
 
 FEMINICIDE_API_URL = os.environ.get('FEMINICIDE_API_URL', None)
 if FEMINICIDE_API_URL is None:
     logger.error("  ❌ No FEMINICIDE_API_URL is specified. Bailing because we can't list projects to run!")
     sys.exit(1)
-else:
-    logger.info("  Config server at at {}".format(FEMINICIDE_API_URL))
+#else:
+#    logger.info("  Config server at at {}".format(FEMINICIDE_API_URL))
 
 FEMINICIDE_API_KEY = os.environ.get('FEMINICIDE_API_KEY', None)
 if FEMINICIDE_API_KEY is None:
@@ -73,11 +73,6 @@ if FEMINICIDE_API_KEY is None:
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', None)
 if SQLALCHEMY_DATABASE_URI is None:
     logger.warning("  ⚠️ ️No SQLALCHEMY_DATABASE_URI is specified. Using sqlite which will perform poorly")
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///data.db'
-    engine = create_engine(SQLALCHEMY_DATABASE_URI)  # use defaults (probably in test mode)
-else:
-    # bumped pool size up for parallel tasks - the max will be sum of `pool_size` and `max_overflow`
-    engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_size=20, max_overflow=30)
 
 
 ENTITY_SERVER_URL = os.environ['ENTITY_SERVER_URL']
@@ -89,15 +84,15 @@ NEWSCATCHER_API_KEY = os.environ['NEWSCATCHER_API_KEY']
 if NEWSCATCHER_API_KEY is None:
     logger.warning("  ⚠️ No NEWSCATCHER_API_KEY is specified. We won't be fetching from Newscatcher.")
 
-SLACK_APP_TOKEN = os.environ.get('SLACK_APP_TOKEN', None) 
+SLACK_APP_TOKEN = os.environ.get('SLACK_APP_TOKEN', None)
 if SLACK_APP_TOKEN is None:
     logger.warning("  ⚠️ No SLACK_APP_TOKEN env var specified. We won't be sending slack updates.")
 
-SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN', None)  
+SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN', None)
 if SLACK_BOT_TOKEN is None:
     logger.warning("  ⚠️ No SLACK_BOT_TOKEN env var specified. We won't be sending slack updates.")
 
-SLACK_CHANNEL_ID = os.environ.get('SLACK_CHANNEL_ID', None)  
+SLACK_CHANNEL_ID = os.environ.get('SLACK_CHANNEL_ID', None)
 if SLACK_CHANNEL_ID is None:
     logger.warning("  ⚠️ No CHANNEL_ID env var specified. We won't be sending slack updates.")
 
