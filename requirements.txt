@@ -7,7 +7,7 @@ mediacloud-api-legacy==3.*
 gunicorn==21.*
 dateparser==1.1.*
 scikit-learn==1.0.2  # freeze this here for model serialization compatability
-sentry-sdk[flask]==1.30.*
+sentry-sdk[flask]==1.31.*
 tensorflow-hub==0.*
 tensorflow-text==2.*
 tensorflow==2.10.*  # freeze here due to cross-platform install challenges
@@ -25,4 +25,5 @@ newscatcherapi==0.7.*
 wayback-news-search==1.0.*
 slack_sdk==3.22.*
 slack-bolt==1.18.*
-scrapy==2.10.*
+scrapy==2.11.*
+mc-providers==0.2.*
