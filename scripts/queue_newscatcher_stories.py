@@ -21,11 +21,11 @@ import processor.fetcher as fetcher
 import scripts.tasks as tasks
 
 
-POOL_SIZE = 16
+POOL_SIZE = 16  # parellel fetch for story URL lists (by project)
 PAGE_SIZE = 100
-DEFAULT_DAY_WINDOW = 3
-MAX_STORIES_PER_PROJECT = 2000
-MAX_CALLS_PER_SEC = 5
+DEFAULT_DAY_WINDOW = 3  # don't look for stories that are too lod
+MAX_STORIES_PER_PROJECT = 2000  # can't process all the stories for queries that are too big
+MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
 nc_api_client = newscatcherapi.NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)
@@ -72,7 +72,6 @@ def _fetch_results(project: Dict, start_date: dt.datetime, end_date: dt.datetime
 def _project_story_worker(p: Dict) -> List[Dict]:
     end_date = dt.datetime.now()
     project_stories = []
-    valid_stories = 0
     try:  # be careful here so database errors don't mess us up
         Session = database.get_session_maker()
         with Session() as session:
@@ -98,6 +97,8 @@ def _project_story_worker(p: Dict) -> List[Dict]:
         while keep_going:
             logger.debug("  {} - page {}: {} stories".format(p['id'], page_number, len(current_page['articles'])))
             for item in current_page['articles']:
+                if len(project_stories) > MAX_STORIES_PER_PROJECT:
+                    break;
                 real_url = item['link']
                 # removing this check for now, because I'm not sure if stories are ordered consistently
                 """
@@ -121,7 +122,6 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     # too bad there isn't somewhere we can store the `id` (string)
                 )
                 project_stories.append(info)
-                valid_stories += 1
             if keep_going:  # check after page is processed
                 keep_going = (page_number < page_count) and (len(project_stories) <= MAX_STORIES_PER_PROJECT)
                 if keep_going:
@@ -129,7 +129,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     time.sleep(DELAY_SECS)
                     current_page = _fetch_results(p, start_date, end_date, page_number)
                     # stay below rate limiting
-        logger.info("  project {} - {} valid stories (after {})".format(p['id'], valid_stories, start_date))
+        logger.info("  project {} - {} valid stories (after {})".format(p['id'], len(project_stories), start_date))
     return project_stories
 
 
@@ -156,7 +156,7 @@ def fetch_text(stories: List[Dict]) -> List[Dict]:
         nonlocal stories, stories_to_return
         matching_input_stories = [s for s in stories if s['url'] == response_data['original_url']]
         for s in matching_input_stories:
-            story_metadata = metadata.extract(s['url'], response_data['html_content'])
+            story_metadata = metadata.extract(s['url'], response_data['content'])
             s['story_text'] = story_metadata['text_content']
             s['publish_date'] = story_metadata['publication_date'] # this is a date object
             stories_to_return.append(s)

@@ -9,7 +9,7 @@ from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk import init
 from typing import Dict
 
-VERSION = "3.6.0nc8"
+VERSION = "3.6.0wm1"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
@@ -97,7 +97,7 @@ if SLACK_CHANNEL_ID is None:
     logger.warning("  ⚠️ No CHANNEL_ID env var specified. We won't be sending slack updates.")
 
 
-def get_mc_client() -> mediacloud.api.DirectoryApi:
+def get_mc_directory_client() -> mediacloud.api.DirectoryApi:
     """
     A central place to get the Media Cloud client
     :return: an media cloud client with the API key from the environment variable

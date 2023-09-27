@@ -37,13 +37,15 @@ class UrlSpider(scrapy.Spider):
     def parse(self, response):
         # grab the original, undirected URL so we can relink later
         orig_url = response.request.meta['redirect_urls'][0] if 'redirect_urls' in response.request.meta else response.request.url
-        story_data = dict(html_content=response.text, final_url=response.request.url, original_url=orig_url)
+        story_data = dict(content=response.text, final_url=response.request.url, original_url=orig_url)
         if self.on_parse:
             self.on_parse(story_data)
         return None
 
 
-def fetch_all_html(urls: List[str], handle_parse: Callable) -> List[Dict]:
+def fetch_all_html(urls: List[str], handle_parse: Callable) -> None:
+    if len(urls) == 0:
+        return
     process = CrawlerProcess()
     process.crawl(UrlSpider, handle_parse=handle_parse, start_urls=urls)
     process.start()
