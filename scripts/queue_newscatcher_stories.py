@@ -21,11 +21,11 @@ import processor.fetcher as fetcher
 import scripts.tasks as tasks
 
 
-POOL_SIZE = 16
+POOL_SIZE = 16  # parellel fetch for story URL lists (by project)
 PAGE_SIZE = 100
-DEFAULT_DAY_WINDOW = 3
-MAX_STORIES_PER_PROJECT = 2000
-MAX_CALLS_PER_SEC = 5
+DEFAULT_DAY_WINDOW = 3  # don't look for stories that are too lod
+MAX_STORIES_PER_PROJECT = 2000  # can't process all the stories for queries that are too big
+MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
 nc_api_client = newscatcherapi.NewsCatcherApiClient(x_api_key=processor.NEWSCATCHER_API_KEY)

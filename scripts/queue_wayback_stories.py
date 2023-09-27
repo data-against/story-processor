@@ -20,10 +20,10 @@ import processor.projects as projects
 import scripts.tasks as tasks
 
 POOL_SIZE = 8  # used for fetching project domains and listing stories in parallel
-DEFAULT_DAY_OFFSET = 4
-DEFAULT_DAY_WINDOW = 3
+DEFAULT_DAY_OFFSET = 4  # stories don't get processed for a few days
+DEFAULT_DAY_WINDOW = 3  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 PAGE_SIZE = 1000
-MAX_STORIES_PER_PROJECT = 1000
+MAX_STORIES_PER_PROJECT = 5000  # we can't process all the stories for queries that are too big
 
 wm_provider = OnlineNewsWaybackMachineProvider()
 
