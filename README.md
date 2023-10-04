@@ -1,8 +1,23 @@
 Feminicide Story Processor
 ==========================
 
-Grab stories from various archives, run them against "feminicide story" classifiers, post results to a 
-central server.
+Grab stories from various archives, run them against bespoke classifiers created wth activist groups, post results to a 
+central server. Part of the larger [Data Against Feminicide / Datos Contra El Feminicidio](http://datoscontrafeminicidio.net) project.
+
+### Related Academic Papers and Presentations
+
+Bhargava, R., Suresh, H., Dogan, A.L., So, W., Suárez Val, H. Fumega, S., D’Ignazio, C. [_News as Data for Activists: 
+a case study in feminicide counterdata production_](https://github.com/browninstitute/c-plus-j-website/raw/main/proceedings/Session9Group2.pdf). 
+2022 Conference + Journalism Conference (C+J22).
+
+Suresh, H., Dogan, A. L., Movva, R., Bhargava, R., So, W., Martinez Cuba, A., Taurino, G., García-Montes, 
+M., Cruxen, I., & D’Ignazio, C. (2022). [_Towards Intersectional Feminist and Participatory ML: A Case Study in 
+Supporting Feminicide Counterdata Collection_](https://dl.acm.org/doi/10.1145/3531146.3533132). 2022 Conference on 
+Fairness, Accountability and Transparency (FAccT22).
+
+D'Ignazio, C., Cruxên, I., Val, H. S., Cuba, A. M., García-Montes, M., Fumega, S., Suresh, H. & So, W. (2022). [_Feminicide 
+and counterdata production: Activist efforts to monitor and challenge gender-related violence_](https://www.cell.com/patterns/pdf/S2666-3899(22)00127-1.pdf).
+ Patterns, 3(7).
 
 Install for Development
 -----------------------
