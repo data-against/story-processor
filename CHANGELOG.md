@@ -3,6 +3,55 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.6.0
+
+* Refactoring newscatcher and wayback-machine processors to use Scrapy for content fetch parallelization instead of prefect. 
+
+### v3.5.1
+
+* Bump up dependency versions to keep up to date on things
+
+### v3.5.0
+
+* Support sending updates to Slack as a file upload instead of a giant post
+
+### v3.4.6
+
+* Redo database session management to try and fix production out-of-connections errors 
+
+### v3.4.5
+
+* Fix naming on WM task that conflicted with another task
+
+### v3.4.4
+
+* Better error handling for Newscatcher, longer window of days to search within
+
+### v3.4.3
+
+* More work on SQLalchemy v2 integration to fix web dashboard
+
+### v3.4.2
+
+* Fix query results architecture to work on dashboard errors
+
+### v3.4.1
+
+* Upgrade sklearn to try and fix deploy compilation crash
+
+### v3.4.0
+
+* Upgrade to prefect v2
+
+### v3.3.1
+
+* Tweaks to support more staggered multiple runs throughout day.
+* Increase max DB pool size to support overlapping runs.
+
+### v3.3.0
+
+* Add slack integration for notifications (text parallels email notifications)  
+
 ### v3.2.1
 
 * Fix bug that was ignoring KO entity types.  

@@ -12,6 +12,7 @@ class TestApiClient(unittest.TestCase):
         assert len(project_list) > 0
         for p in project_list:
             assert 'search_terms' in p
+            assert '\xa0' not in p['search_terms']
             assert 'start_date' in p
             assert 'media_collections' in p
             assert 'min_confidence' in p
