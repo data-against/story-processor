@@ -51,7 +51,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pybind11
+          pip install wheel
           pip install -r requirements.txt
 
       - name: Set up db and models
