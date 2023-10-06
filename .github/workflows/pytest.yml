@@ -1,8 +1,17 @@
-name: tests
+name: ci-unit-test
 
+# Trigger CI on pushes to `main` branch OR PRs raised to `main` branch OR manual triggers
 on:
-#  pull_request:
-#    branches: [ "main" ]
+  push:
+    paths-ignore:
+      - '**.md'
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - '**.md'
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -18,18 +27,11 @@ env:
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/story_processor_db
 
 jobs:
-
-  tests-job:
-
+  unit-test:
     runs-on: ubuntu-latest
-
-    # Service containers to run with `container-job`
     services:
-      # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres:14.8
-        # Provide the password for postgres
         env:
           POSTGRES_DB: story_processor_db
           POSTGRES_PASSWORD: postgres
@@ -44,17 +46,21 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install wheel
           pip install -r requirements.txt
 
-      - name: Set up db and models
+      - name: Database setup
         run: |
           alembic upgrade head
           ./scripts/download-models.sh
