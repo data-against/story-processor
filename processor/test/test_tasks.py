@@ -13,7 +13,7 @@ class TestTasks(unittest.TestCase):
 
     def _sample_story_ids(self):
         # this loads read data from a real request from a log file on the real server
-        with open(os.path.join(test_fixture_dir, "aapf_samples.json")) as f:
+        with open(os.path.join(test_fixture_dir, "aapf_samples.json"), encoding="utf-8") as f:
             sample_stories = json.load(f)
         story_ids = [s['stories_id'] for s in sample_stories]
         return story_ids
@@ -21,7 +21,7 @@ class TestTasks(unittest.TestCase):
     def _classify_story_ids(self, project, story_ids):
         stories_with_text = []
         for sid in story_ids:
-            with open(os.path.join(test_fixture_dir, f'mc-story-{sid}.json'), 'r') as f:
+            with open(os.path.join(test_fixture_dir, f'mc-story-{sid}.json'), 'r', encoding="utf-8") as f:
                 s = json.load(f)
                 s['source'] = SOURCE_MEDIA_CLOUD
                 stories_with_text.append(s)
@@ -55,7 +55,7 @@ class TestTasks(unittest.TestCase):
         story_ids = self._sample_story_ids()
         stories_with_text = []
         for sid in story_ids:
-            with open(os.path.join(test_fixture_dir, f'mc-story-{sid}.json'), 'r') as f:
+            with open(os.path.join(test_fixture_dir, f'mc-story-{sid}.json'), 'r', encoding="utf-8") as f:
                 s = json.load(f)
                 s['source'] = SOURCE_MEDIA_CLOUD
                 stories_with_text.append(s)
