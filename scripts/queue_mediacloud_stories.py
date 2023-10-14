@@ -18,7 +18,7 @@ DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
 # use this to make sure we don't fall behind on recent stories, even if a project query is producing more than
 # DEFAULT_MAX_STORIES_PER_PROJECT stories a day
 DEFAULT_DAY_WINDOW = 5
-DEFAULT_MAX_STORIES_PER_PROJECT = 100  # make sure we don't do too many stories each cron run
+DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many stories each cron run
 
 logger = logging.getLogger(__name__)
 
