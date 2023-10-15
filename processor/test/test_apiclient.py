@@ -8,6 +8,7 @@ class TestApiClient(unittest.TestCase):
 
     def test_get_projects_list(self):
         project_list = apiclient.get_projects_list()
+        assert isinstance(project_list, list)
         assert len(project_list) > 0
         for p in project_list:
             assert 'search_terms' in p
@@ -21,6 +22,7 @@ class TestApiClient(unittest.TestCase):
 
     def test_get_language_models_list(self):
         models_list = apiclient.get_language_models_list()
+        assert isinstance(models_list, list)
         assert len(models_list) > 0
         prefixes = []
         for p in models_list:
