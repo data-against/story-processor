@@ -1,5 +1,6 @@
-import requests
 from typing import Dict
+
+import requests
 
 from processor import ENTITY_SERVER_URL
 

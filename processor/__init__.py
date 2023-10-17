@@ -1,13 +1,14 @@
-import os
 import logging
+import os
 import sys
-from dotenv import load_dotenv
+from typing import Dict
+
 import mediacloud.api
 import mediacloud_legacy.api
+from dotenv import load_dotenv
 from flask import Flask
-from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk import init
-from typing import Dict
+from sentry_sdk.integrations.logging import ignore_logger
 
 VERSION = "3.6.0"
 SOURCE_GOOGLE_ALERTS = "google-alerts"

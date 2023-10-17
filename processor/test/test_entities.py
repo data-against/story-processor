@@ -1,9 +1,9 @@
-import os
 import json
+import os
 import unittest
 
-from processor.test import test_fixture_dir
 import processor.entities as entities
+from processor.test import test_fixture_dir
 
 
 class TestEntities(unittest.TestCase):

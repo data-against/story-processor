@@ -1,7 +1,8 @@
-import unittest
-import os
 import json
+import os
 import random
+import unittest
+
 from processor import base_dir
 from scripts.queue_wayback_stories import _domains_for_project
 

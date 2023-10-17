@@ -1,10 +1,10 @@
-import os
-import unittest
-import pickle
 import json
+import os
+import pickle
+import unittest
 
-from processor.test import test_fixture_dir
 from processor.classifiers import MODEL_DIR
+from processor.test import test_fixture_dir
 
 
 class TestModels(unittest.TestCase):

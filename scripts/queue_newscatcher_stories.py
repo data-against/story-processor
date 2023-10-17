@@ -1,25 +1,25 @@
-import math
-from typing import List, Dict
-import time
-import mcmetadata.urls as urls
 import datetime as dt
+import itertools
+import logging
+import math
+import sys
+import time
+from multiprocessing import Pool
+from typing import Dict, List
+
+import mcmetadata as metadata
+import mcmetadata.urls as urls
 import newscatcherapi
 import newscatcherapi.newscatcherapi_exception
 import requests.exceptions
-import mcmetadata as metadata
-import logging
-import itertools
-from multiprocessing import Pool
-import sys
 
 import processor
 import processor.database as database
 import processor.database.projects_db as projects_db
-from processor.classifiers import download_models
-import processor.projects as projects
 import processor.fetcher as fetcher
+import processor.projects as projects
 import scripts.tasks as tasks
-
+from processor.classifiers import download_models
 
 POOL_SIZE = 16  # parellel fetch for story URL lists (by project)
 PAGE_SIZE = 100
@@ -98,7 +98,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
             logger.debug("  {} - page {}: {} stories".format(p['id'], page_number, len(current_page['articles'])))
             for item in current_page['articles']:
                 if len(project_stories) > MAX_STORIES_PER_PROJECT:
-                    break;
+                    break
                 real_url = item['link']
                 # removing this check for now, because I'm not sure if stories are ordered consistently
                 """

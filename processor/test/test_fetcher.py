@@ -1,5 +1,6 @@
 import unittest
 from typing import Dict
+
 from processor.fetcher import fetch_all_html
 
 # random samples from our real database

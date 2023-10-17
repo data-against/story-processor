@@ -1,17 +1,19 @@
 import sys
-from typing import List, Dict
-import feedparser
 import time
+from typing import Dict, List
+from urllib.parse import parse_qs, urlparse
+
+import feedparser
 import mcmetadata.urls as urls
-from prefect import flow, task, get_run_logger
-from urllib.parse import urlparse, parse_qs
+from prefect import flow, get_run_logger, task
 from prefect_dask.task_runners import DaskTaskRunner
+
 import processor
 import processor.database as database
 import processor.database.projects_db as projects_db
-from processor.classifiers import download_models
 import processor.projects as projects
 import scripts.tasks as prefect_tasks
+from processor.classifiers import download_models
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
 DEFAULT_MAX_STORIES_PER_PROJECT = 200  # 40 * 1000  # make sure we don't do too many stories each cron run (for testing)

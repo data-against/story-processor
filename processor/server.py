@@ -1,14 +1,14 @@
-import logging
-
-from flask import render_template, jsonify
 import json
-from typing import Dict, List
+import logging
 from itertools import chain
+from typing import Dict, List
+
+from flask import jsonify, render_template
 
 import processor.database as database
-from processor import create_flask_app, VERSION, PLATFORMS
-from processor.projects import load_project_list
 import processor.database.stories_db as stories_db
+from processor import PLATFORMS, VERSION, create_flask_app
+from processor.projects import load_project_list
 
 logger = logging.getLogger(__name__)
 

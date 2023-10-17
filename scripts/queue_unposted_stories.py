@@ -1,20 +1,22 @@
-from typing import List, Dict
-from prefect import flow, task, get_run_logger, unmapped
-from prefect_dask.task_runners import DaskTaskRunner
 import datetime as dt
-from mcmetadata import extract
-import requests
 import sys
 import time
+from typing import Dict, List
+
+import requests
+from mcmetadata import extract
+from prefect import flow, get_run_logger, task, unmapped
+from prefect_dask.task_runners import DaskTaskRunner
 from waybacknews.searchapi import SearchApiClient
+
 import processor.database as database
 import processor.database.stories_db as stories_db
-from processor.classifiers import download_models
-from processor import SOURCE_WAYBACK_MACHINE, SOURCE_NEWSCATCHER
 import processor.projects as projects
-from processor.tasks import add_entities_to_stories
 import processor.util as util
 import scripts.tasks as prefect_tasks
+from processor import SOURCE_NEWSCATCHER, SOURCE_WAYBACK_MACHINE
+from processor.classifiers import download_models
+from processor.tasks import add_entities_to_stories
 
 DEFAULT_STORIES_PER_PAGE = 100  # I found this performs poorly if set higher than 100
 WORKER_COUNT = 8

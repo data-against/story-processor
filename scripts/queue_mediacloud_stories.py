@@ -1,19 +1,20 @@
 import datetime as dt
-from typing import List, Dict
-import time
 import sys
-from prefect import flow, task, get_run_logger, unmapped
+import time
+from typing import Dict, List
+
+from prefect import flow, get_run_logger, task, unmapped
 from prefect_dask.task_runners import DaskTaskRunner
 
 import processor
 import processor.database as database
-import processor.database.stories_db as stories_db
 import processor.database.projects_db as projects_db
-from processor.classifiers import download_models
-from processor import get_mc_legacy_client
+import processor.database.stories_db as stories_db
 import processor.projects as projects
 import processor.tasks as tasks
 import scripts.tasks as prefect_tasks
+from processor import get_mc_legacy_client
+from processor.classifiers import download_models
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
 # use this to make sure we don't fall behind on recent stories, even if a project query is producing more than

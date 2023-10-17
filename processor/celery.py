@@ -1,6 +1,8 @@
 from __future__ import absolute_import
-from celery import Celery
+
 import logging
+
+from celery import Celery
 
 from processor import BROKER_URL
 

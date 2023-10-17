@@ -1,13 +1,15 @@
 import logging
+import os
 import smtplib
 import ssl
-from typing import List
-from processor import is_email_configured, get_email_config
+import tempfile
 import time
+from typing import List
+
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-import tempfile
-import os
+
+from processor import get_email_config, is_email_configured
 
 logger = logging.getLogger(__name__)
 

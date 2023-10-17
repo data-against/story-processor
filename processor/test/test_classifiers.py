@@ -1,6 +1,6 @@
+import json
 import os
 import unittest
-import json
 
 import processor.classifiers as classifiers
 from processor.test import test_fixture_dir

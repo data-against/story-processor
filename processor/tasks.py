@@ -1,19 +1,20 @@
-import os
 import json
-import requests
-from typing import List, Dict
 import logging
+import os
 import time
 from json.decoder import JSONDecodeError
+from typing import Dict, List
+
+import requests
 from sqlalchemy.orm.session import Session
 
+import processor.database as database
 import processor.database.stories_db as stories_db
+import processor.entities as entities
+import processor.projects as projects
+import processor.util as util
 from processor import path_to_log_dir
 from processor.celery import app
-import processor.database as database
-import processor.projects as projects
-import processor.entities as entities
-import processor.util as util
 
 logger = logging.getLogger(__name__)  # get_task_logger(__name__)
 logFormatter = logging.Formatter("[%(levelname)s %(threadName)s] - %(asctime)s - %(name)s - : %(message)s")

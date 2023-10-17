@@ -1,7 +1,8 @@
-import requests
 from typing import Dict
 
-from processor import FEMINICIDE_API_URL, FEMINICIDE_API_KEY
+import requests
+
+from processor import FEMINICIDE_API_KEY, FEMINICIDE_API_URL
 
 
 def get_projects_list() -> Dict:

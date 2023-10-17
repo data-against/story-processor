@@ -1,4 +1,5 @@
 import datetime as dt
+
 from sqlalchemy.orm.session import Session
 
 from processor.database.models import ProjectHistory

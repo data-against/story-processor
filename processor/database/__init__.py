@@ -1,6 +1,7 @@
 from typing import Optional
+
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine, Engine
 
 from processor import SQLALCHEMY_DATABASE_URI
 

@@ -1,9 +1,9 @@
-import os
 import json
+import os
 import unittest
 
-import processor.tasks as tasks
 import processor.database as database
+import processor.tasks as tasks
 from processor import SOURCE_MEDIA_CLOUD
 from processor.test import test_fixture_dir
 from processor.test.test_projects import TEST_EN_PROJECT

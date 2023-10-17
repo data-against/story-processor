@@ -1,23 +1,23 @@
-from typing import List, Dict
-import time
-import sys
 import copy
-import threading
 import datetime as dt
-import logging
 import itertools
+import json
+import logging
+import sys
+import threading
+import time
 from multiprocessing import Pool
+from typing import Dict, List
+
 from mc_providers.onlinenews import OnlineNewsWaybackMachineProvider
 
-import json
-
 import processor
-import processor.fetcher as fetcher
 import processor.database as database
 import processor.database.projects_db as projects_db
-from processor.classifiers import download_models
+import processor.fetcher as fetcher
 import processor.projects as projects
 import scripts.tasks as tasks
+from processor.classifiers import download_models
 
 POOL_SIZE = 8  # used for fetching project domains and listing stories in parallel
 DEFAULT_DAY_OFFSET = 4  # stories don't get processed for a few days

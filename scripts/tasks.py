@@ -1,17 +1,18 @@
 import copy
 import time
-from typing import Dict, Optional, List
+from functools import lru_cache
+from typing import Dict, List, Optional
+
 import dateutil.parser
 import mcmetadata as metadata
-from prefect import task, get_run_logger
-from functools import lru_cache
+from prefect import get_run_logger, task
 
-from processor import is_email_configured, get_email_config, get_slack_config, VERSION
-import processor.tasks as celery_tasks
-import processor.notifications as notifications
 import processor.database as database
-from processor.database import stories_db as stories_db
+import processor.notifications as notifications
+import processor.tasks as celery_tasks
+from processor import VERSION, get_email_config, get_slack_config, is_email_configured
 from processor.database import projects_db as projects_db
+from processor.database import stories_db as stories_db
 
 
 @lru_cache(maxsize=50000)

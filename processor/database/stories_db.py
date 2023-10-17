@@ -1,14 +1,14 @@
-import datetime as dt
-from typing import List, Dict
-import logging
 import copy
-from sqlalchemy.sql import func
-from sqlalchemy import text, update, select, delete
+import datetime as dt
+import logging
+from typing import Dict, List
+
+from sqlalchemy import delete, select, text, update
 from sqlalchemy.orm.session import Session
+from sqlalchemy.sql import func
 
 import processor
 from processor.database.models import Story
-
 
 logger = logging.getLogger(__name__)
 

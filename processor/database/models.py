@@ -1,8 +1,9 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import BigInteger, Integer, DateTime, Float, Boolean, String
-from dateutil.parser import parse
 import datetime as dt
 import logging
+
+from dateutil.parser import parse
+from sqlalchemy import BigInteger, Boolean, DateTime, Float, Integer, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 import processor
 
@@ -50,7 +51,7 @@ class Story(Base):
                 db_story.published_date = story['publish_date']
             else:
                 use_fallback_date = True
-        except Exception as e:
+        except Exception:
             use_fallback_date = True
         if use_fallback_date:
             db_story.published_date = dt.datetime.now()

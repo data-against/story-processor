@@ -1,16 +1,17 @@
-import requests
-from typing import List, Dict
-import os
-import sys
 import json
 import logging
+import os
+import sys
 import time
+from typing import Dict, List
 
-from processor import FEMINICIDE_API_KEY, VERSION, path_to_log_dir
-import processor.classifiers as classifiers
+import requests
+
 import processor.apiclient as apiclient
+import processor.classifiers as classifiers
 import processor.database as database
 import processor.database.projects_db as projects_db
+from processor import FEMINICIDE_API_KEY, VERSION, path_to_log_dir
 
 logger = logging.getLogger(__name__)
 

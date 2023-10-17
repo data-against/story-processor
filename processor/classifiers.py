@@ -1,16 +1,16 @@
-import os
-import logging
-import pickle
-from typing import Dict, List
-import tensorflow_text   # loaded here because the non-english embeddings model needs it
-import tensorflow_hub as hub
-import requests
 import json
+import logging
+import os
+import pickle
 import shutil
+from typing import Dict, List
 from urllib.parse import urlparse
 
-from processor import base_dir
+import requests
+import tensorflow_hub as hub
+
 import processor.apiclient as apiclient
+from processor import base_dir
 
 logger = logging.getLogger(__name__)
 

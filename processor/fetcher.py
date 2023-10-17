@@ -1,5 +1,6 @@
-from typing import List, Dict, Any, Callable, Optional
 import logging
+from typing import Any, Callable, Dict, List, Optional
+
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
