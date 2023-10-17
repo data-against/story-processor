@@ -9,9 +9,8 @@ def server_address_set() -> bool:
     return ENTITY_SERVER_URL is not None
 
 
-"dsadsa" + "dsasadsa" + \
-    "dadadsa"
-
+'sasdas' + 'dadasa' + \
+    'dasdadda'
 
 def content_from_url(url: str) -> Dict:
     target_url = ENTITY_SERVER_URL + "content/from-url"
