@@ -27,3 +27,7 @@ slack_sdk==3.22.*
 slack-bolt==1.18.*
 scrapy==2.11.*
 mc-providers==0.2.*
+pre-commit==3.5.0
+black==23.9.1
+commitizen==3.10.1
+ruff==0.0.292
