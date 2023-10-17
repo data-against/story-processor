@@ -122,5 +122,6 @@ if __name__ == '__main__':
     pool_size = 4
     project_results = process_projects_in_parallel(projects_list, pool_size)
     # 3. send email/slack_msg with results of operations
-    tasks.send_project_list_slack_message_task(project_results, processor.SOURCE_MEDIA_CLOUD, start_time)
-    tasks.send_project_list_email_task(project_results, processor.SOURCE_MEDIA_CLOUD, start_time)
+    tasks.send_project_list_slack_message(project_results, processor.SOURCE_MEDIA_CLOUD, start_time)
+    tasks.send_project_list_email(project_results, processor.SOURCE_MEDIA_CLOUD, start_time)
+
