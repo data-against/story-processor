@@ -17,40 +17,8 @@ exclude = [
 ]
 select = ["E4", "E7", "E9", "F", "I"]
 
-#[tool.commitizen]
-#name = "cz_customize"
-#tag_format = "v$version"
-#version_scheme = "semver"
-#version_provider = "pep621"
-#update_changelog_on_bump = true
-#
-#[tool.commitizen.customize]
-#message_template = "{{change_type}}:{% if show_message %} {{message}}{% endif %}"
-#example = "feat: enable runs through config file"
-#schema = "<type>: <body>"
-#schema_pattern = "(feat|fix|ci|refactor|test|docs):(\\s.*)"
-#commit_parser = "^(?P<change_type>feat|fix|ci|refactor|test|docs):\\s(?P<message>.*)?"
-#
-#[[tool.commitizen.customize.questions]]
-#type = "list"
-#name = "change_type"
-#choices = [
-#    {value = "feat", name = "feat: A new feature"},
-#    {value = "fix", name = "fix: A bug fix"},
-#    {value = "ci", name = "ci: improving Github Actions"},
-#    {value = "refactor", name = "refactor: improve dir structure"},
-#    {value  = "test", name = "test: add tests for new feature"},
-#    {value = "docs", name = "docs: add docs for new feature"}
-#]
-## choices = ["feature", "fix"]  # short version
-#message = "Select the type of change you are committing"
-#
-#[[tool.commitizen.customize.questions]]
-#type = "input"
-#name = "message"
-#message = "Commit message"
-
 [tool.commitizen]
+# Configuration for commitizen, git messages standard
 name = "cz_conventional_commits"
 version = "3.6.0"
 tag_format = "v$version"
