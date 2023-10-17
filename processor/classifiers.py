@@ -9,6 +9,9 @@ from urllib.parse import urlparse
 import requests
 import tensorflow_hub as hub
 
+# loaded here because the non-english embeddings model needs it
+import tensorflow_text  # noqa: F401
+
 import processor.apiclient as apiclient
 from processor import base_dir
 
