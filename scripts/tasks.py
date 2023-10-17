@@ -48,8 +48,10 @@ def send_combined_email(summary: Dict, data_source: str, start_time: float, logg
 
 @task(name='send_project_list_email')
 def send_project_list_email_task(project_details: List[Dict], data_source: str, start_time: float):
+    send_project_list_email(project_details, data_source, start_time)
+
+def send_project_list_email(project_details: List[Dict], data_source: str, start_time: float):
     logger = get_run_logger()
-    # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
     total_new_stories = sum([p['stories'] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
     combined_email_text = ""
@@ -57,7 +59,6 @@ def send_project_list_email_task(project_details: List[Dict], data_source: str, 
         combined_email_text += p['email_text']
     email_message = _get_combined_text(len(project_details), combined_email_text, total_new_stories, data_source)
     _send_email(data_source, total_new_stories, start_time, email_message, logger)
-
 
 def _send_email(data_source: str, story_count: int, start_time: float, email_message: str, logger):
     duration_secs = time.time() - start_time
@@ -100,6 +101,7 @@ def send_project_list_slack_message_task(project_details: List[Dict], data_sourc
 
 
 def send_project_list_slack_message(project_details: List[Dict], data_source: str, start_time: float):
+    logger = get_run_logger()
     # :param summary: has keys 'project_count', 'email_text', 'stories'
     total_new_stories = sum([p['stories'] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
@@ -107,7 +109,7 @@ def send_project_list_slack_message(project_details: List[Dict], data_source: st
     for p in project_details:
         combined_text += p['email_text']
     message = _get_combined_text(len(project_details), combined_text, total_new_stories, data_source)
-    _send_slack_message(data_source, total_new_stories, start_time, message)
+    _send_slack_message(data_source, total_new_stories, start_time, message, logger)
 
 
 def _send_slack_message(data_source: str, story_count: int, start_time: float, slack_message: str, logger):
