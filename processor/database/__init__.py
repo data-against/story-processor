@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from processor import SQLALCHEMY_DATABASE_URI
 
-DEFAULT_ENGINE = 'sqlite:///data.db'
+DEFAULT_ENGINE = "sqlite:///data.db"
 
 # act like singletons
 _engine: Optional[Engine] = None
@@ -23,18 +23,22 @@ def _get_engine(reset_pool: bool = False) -> Engine:
         if reset_pool:
             _engine.dispose()  # this closes the existing pool and automatically recreates it
         return _engine
-    db_uri = DEFAULT_ENGINE if SQLALCHEMY_DATABASE_URI is None else SQLALCHEMY_DATABASE_URI
+    db_uri = (
+        DEFAULT_ENGINE if SQLALCHEMY_DATABASE_URI is None else SQLALCHEMY_DATABASE_URI
+    )
     if db_uri is DEFAULT_ENGINE:
         _engine = create_engine(db_uri)  # use defaults (probably in test mode)
     else:
-        _engine = create_engine(db_uri,
-                                # max connections is pool_size + max_overflow, but max_overflow ones don't sleep after
-                                # being used
-                                pool_size=20, max_overflow=30,
-                                # make sure connections actually work when we first make them, rather than when we
-                                # first use them
-                                pool_pre_ping=True
-                                )
+        _engine = create_engine(
+            db_uri,
+            # max connections is pool_size + max_overflow, but max_overflow ones don't sleep after
+            # being used
+            pool_size=20,
+            max_overflow=30,
+            # make sure connections actually work when we first make them, rather than when we
+            # first use them
+            pool_pre_ping=True,
+        )
     return _engine
 
 

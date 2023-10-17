@@ -27,7 +27,7 @@ tag_format = "v$version"
 [tool.black]
 py39 = true
 include = '\.pyi?$'
-exclude = '''
+force-exclude = '''
 /(
     \.git
   | \.hg
@@ -38,6 +38,7 @@ exclude = '''
   | buck-out
   | build
   | dist
+  | processor/database/alembic/versions/
 
   # The following are specific to Black, you probably don't want those.
   | blib2to3

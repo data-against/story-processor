@@ -25,19 +25,22 @@ DATE_LIMIT = 30
 DaskTaskRunner(
     cluster_kwargs={
         "image": "prefecthq/prefect:latest",
-        "n_workers":WORKER_COUNT,
+        "n_workers": WORKER_COUNT,
     },
 )
 
-@task(name='load_projects')
+
+@task(name="load_projects")
 def load_projects_task() -> List[Dict]:
     logger = get_run_logger()
-    project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
+    project_list = projects.load_project_list(
+        force_reload=True, overwrite_last_story=False
+    )
     logger.info("  Checking {} projects".format(len(project_list)))
     return project_list
 
 
-@task(name='process_project')
+@task(name="process_project")
 def process_project_task(project: Dict, page_size: int) -> Dict:
     logger = get_run_logger()
     story_count = 0
@@ -45,48 +48,66 @@ def process_project_task(project: Dict, page_size: int) -> Dict:
     project_email_message = ""
     Session = database.get_session_maker()
     with Session as session:
-        project_email_message += "Project {} - {}:\n".format(project['id'], project['title'])
-        needing_posting_count = stories_db.unposted_above_story_count(session, project['id'], DATE_LIMIT)
-        logger.info("Project {} - {} unposted above threshold stories to process".format(
-            project['id'], needing_posting_count))
+        project_email_message += "Project {} - {}:\n".format(
+            project["id"], project["title"]
+        )
+        needing_posting_count = stories_db.unposted_above_story_count(
+            session, project["id"], DATE_LIMIT
+        )
+        logger.info(
+            "Project {} - {} unposted above threshold stories to process".format(
+                project["id"], needing_posting_count
+            )
+        )
         wm_api = SearchApiClient("mediacloud")
         if needing_posting_count > 0:
-            db_stories = stories_db.unposted_stories(session, project['id'], DATE_LIMIT)
+            db_stories = stories_db.unposted_stories(session, project["id"], DATE_LIMIT)
             for db_stories_page in util.chunks(db_stories, page_size):
                 # find the matching story from the source
                 source_stories = []
                 for s in db_stories_page:
                     try:
-                        if s['source'] == SOURCE_WAYBACK_MACHINE:
-                            url_for_query = s['url'].replace("/", "\\/").replace(":", "\\:")
-                            matching_stories = wm_api.sample(f"url:{url_for_query}", dt.datetime(2010, 1, 1),
-                                                             dt.datetime(2030, 1, 1))
-                            matching_story = requests.get(matching_stories[0]['article_url']).json()  # fetch the content (in `snippet`)
-                            matching_story['stories_id'] = s['id']
-                            matching_story['source'] = s['source']
-                            matching_story['media_url'] = matching_story['domain']
-                            matching_story['media_name'] = matching_story['domain']
-                            matching_story['publish_date'] = matching_story['publication_date']
-                            matching_story['log_db_id'] = s['id']
-                            matching_story['project_id'] =s['project_id']
-                            matching_story['language_model_id'] = project['language_model_id']
-                            matching_story['story_text'] = matching_story['snippet']
+                        if s["source"] == SOURCE_WAYBACK_MACHINE:
+                            url_for_query = (
+                                s["url"].replace("/", "\\/").replace(":", "\\:")
+                            )
+                            matching_stories = wm_api.sample(
+                                f"url:{url_for_query}",
+                                dt.datetime(2010, 1, 1),
+                                dt.datetime(2030, 1, 1),
+                            )
+                            matching_story = requests.get(
+                                matching_stories[0]["article_url"]
+                            ).json()  # fetch the content (in `snippet`)
+                            matching_story["stories_id"] = s["id"]
+                            matching_story["source"] = s["source"]
+                            matching_story["media_url"] = matching_story["domain"]
+                            matching_story["media_name"] = matching_story["domain"]
+                            matching_story["publish_date"] = matching_story[
+                                "publication_date"
+                            ]
+                            matching_story["log_db_id"] = s["id"]
+                            matching_story["project_id"] = s["project_id"]
+                            matching_story["language_model_id"] = project[
+                                "language_model_id"
+                            ]
+                            matching_story["story_text"] = matching_story["snippet"]
                             source_stories += [matching_story]
-                        elif s['source'] == SOURCE_NEWSCATCHER:
-                            metadata = extract(url=s['url'])
+                        elif s["source"] == SOURCE_NEWSCATCHER:
+                            metadata = extract(url=s["url"])
                             story = dict(
-                                stories_id=s['stories_id'],
-                                source=s['source'],
-                                language=metadata['language'],
-                                media_url=metadata['canonical_domain'],
-                                media_name=metadata['canonical_domain'],
-                                publish_date=str(metadata['publication_date']),
-                                title=metadata['article_title'],
-                                url=metadata['url'],  # resolved
-                                log_db_id=s['stories_id'],
-                                project_id=s['project_id'],
-                                language_model_id=project['language_model_id'],
-                                story_text=metadata['text_content']
+                                stories_id=s["stories_id"],
+                                source=s["source"],
+                                language=metadata["language"],
+                                media_url=metadata["canonical_domain"],
+                                media_name=metadata["canonical_domain"],
+                                publish_date=str(metadata["publication_date"]),
+                                title=metadata["article_title"],
+                                url=metadata["url"],  # resolved
+                                log_db_id=s["stories_id"],
+                                project_id=s["project_id"],
+                                language_model_id=project["language_model_id"],
+                                story_text=metadata["text_content"],
                             )
                             source_stories += [story]
                     except Exception as e:
@@ -94,23 +115,39 @@ def process_project_task(project: Dict, page_size: int) -> Dict:
                 # add in entities
                 source_stories = add_entities_to_stories(source_stories)
                 # add in the scores from the logging db
-                db_story_2_score = {r['stories_id']: r for r in db_stories_page}
+                db_story_2_score = {r["stories_id"]: r for r in db_stories_page}
                 for s in source_stories:
-                    s['confidence'] = db_story_2_score[s['stories_id']]['model_score']
-                    s['model_1_score'] = db_story_2_score[s['stories_id']]['model_1_score']
-                    s['model_2_score'] = db_story_2_score[s['stories_id']]['model_2_score']
+                    s["confidence"] = db_story_2_score[s["stories_id"]]["model_score"]
+                    s["model_1_score"] = db_story_2_score[s["stories_id"]][
+                        "model_1_score"
+                    ]
+                    s["model_2_score"] = db_story_2_score[s["stories_id"]][
+                        "model_2_score"
+                    ]
                 # strip unneeded fields
-                stories_to_send = projects.prep_stories_for_posting(project, source_stories)
+                stories_to_send = projects.prep_stories_for_posting(
+                    project, source_stories
+                )
                 # send to main server
                 projects.post_results(project, stories_to_send)
                 # and log that we did it
                 stories_db.update_stories_posted_date(session, stories_to_send)
                 story_count += len(stories_to_send)
-                logger.info("    sent page of {} stories for project {}".format(len(stories_to_send), project['id']))
+                logger.info(
+                    "    sent page of {} stories for project {}".format(
+                        len(stories_to_send), project["id"]
+                    )
+                )
                 page_count += 1
-    logger.info("  sent {} stories for project {} total (of {})".format(story_count, project['id'], needing_posting_count))
+    logger.info(
+        "  sent {} stories for project {} total (of {})".format(
+            story_count, project["id"], needing_posting_count
+        )
+    )
     #  add a summary to the email we are generating
-    project_email_message += "    posted {} stories from db ({} pages)\n\n".format(story_count, page_count)
+    project_email_message += "    posted {} stories from db ({} pages)\n\n".format(
+        story_count, page_count
+    )
     return dict(
         email_text=project_email_message,
         stories=story_count,
@@ -118,7 +155,7 @@ def process_project_task(project: Dict, page_size: int) -> Dict:
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     @flow(name="unposted_stories", task_runner=DaskTaskRunner())
     def unposted_stories_flow(default_stories_each_page: int):
@@ -136,12 +173,16 @@ if __name__ == '__main__':
         # 1. list all the project we need to work on
         projects_list = load_projects_task()
         # 2. process all the projects (in parallel)
-        project_statuses = process_project_task.map(projects_list,
-                                                    page_size=unmapped(stories_per_page))
+        project_statuses = process_project_task.map(
+            projects_list, page_size=unmapped(stories_per_page)
+        )
         # 3. send email/slack_msg with results of operations
-        prefect_tasks.send_project_list_slack_message_task(project_statuses, data_source_name, start_time)
-        prefect_tasks.send_project_list_email_task(project_statuses, data_source_name, start_time)
-        
+        prefect_tasks.send_project_list_slack_message_task(
+            project_statuses, data_source_name, start_time
+        )
+        prefect_tasks.send_project_list_email_task(
+            project_statuses, data_source_name, start_time
+        )
 
     # run the whole thing
     unposted_stories_flow(DEFAULT_STORIES_PER_PAGE)

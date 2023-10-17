@@ -13,12 +13,14 @@ class TestModels(unittest.TestCase):
     """
 
     def test_nb_model(self):
-        with open(os.path.join(MODEL_DIR, 'usa_1_vectorizer.p'), 'rb') as v:
+        with open(os.path.join(MODEL_DIR, "usa_1_vectorizer.p"), "rb") as v:
             tfidf_vectorizer = pickle.load(v)
-        with open(os.path.join(MODEL_DIR, 'usa_1_model.p'), 'rb') as m:
+        with open(os.path.join(MODEL_DIR, "usa_1_model.p"), "rb") as m:
             nb_model = pickle.load(m)
 
-        with open(os.path.join(test_fixture_dir, "more_sample_stories.json"), encoding="utf-8") as f:
+        with open(
+            os.path.join(test_fixture_dir, "more_sample_stories.json"), encoding="utf-8"
+        ) as f:
             sample_texts = json.load(f)
         vectorized_data = tfidf_vectorizer.transform(sample_texts)
         predictions = nb_model.predict_proba(vectorized_data)
@@ -27,7 +29,9 @@ class TestModels(unittest.TestCase):
         assert round(feminicide_probs[1], 5) == 0.13036
         assert round(feminicide_probs[2], 5) == 0.71464
 
-        with open(os.path.join(test_fixture_dir, "usa_sample_stories.json"), encoding="utf-8") as f:
+        with open(
+            os.path.join(test_fixture_dir, "usa_sample_stories.json"), encoding="utf-8"
+        ) as f:
             sample_texts = json.load(f)
         vectorized_data = tfidf_vectorizer.transform(sample_texts)
         predictions = nb_model.predict_proba(vectorized_data)
