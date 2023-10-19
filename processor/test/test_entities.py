@@ -9,7 +9,7 @@ import processor.entities as entities
 class TestEntities(unittest.TestCase):
 
     def test_entities_from_url(self):
-        with open(os.path.join(test_fixture_dir, "aapf_samples.json")) as f:
+        with open(os.path.join(test_fixture_dir, "aapf_samples.json"), encoding="utf-8") as f:
             samples = json.load(f)
         for s in samples[:5]:  # don't test too many of them
             response = entities.from_url(s['url'])
@@ -20,7 +20,7 @@ class TestEntities(unittest.TestCase):
                 assert len(response['results']['entities']) > 0
 
     def test_ko_supported_langauge(self):
-        with open(os.path.join(test_fixture_dir, "ko_sample_stories.json")) as f:
+        with open(os.path.join(test_fixture_dir, "ko_sample_stories.json"), encoding="utf-8") as f:
             samples = json.load(f)
         for s in samples:
             response = entities.from_content(s, 'ko', 'http://www.shinmoongo.net/159703')
@@ -30,7 +30,7 @@ class TestEntities(unittest.TestCase):
             assert len(response['results']['entities']) > 0
 
     def test_entities_from_content(self):
-        with open(os.path.join(test_fixture_dir, "aapf_samples.json")) as f:
+        with open(os.path.join(test_fixture_dir, "aapf_samples.json"), encoding="utf-8") as f:
             samples = json.load(f)
         for s in samples[:5]:  # don't test to many of them
             response1 = entities.content_from_url(s['url'])
