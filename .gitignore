@@ -130,4 +130,4 @@ tmp/*.json
 .scrapy
 
 # Local Development
-docker*
+docker-conf/
