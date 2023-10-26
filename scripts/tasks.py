@@ -7,6 +7,7 @@ import dateutil.parser
 import logging
 import mcmetadata as metadata
 
+from prefect import get_run_logger, task
 import processor.database as database
 import processor.notifications as notifications
 import processor.tasks as celery_tasks
