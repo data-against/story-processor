@@ -1,100 +1,136 @@
-import os
 import logging
+import os
 import sys
-from dotenv import load_dotenv
+from typing import Dict
+
 import mediacloud.api
 import mediacloud_legacy.api
+from dotenv import load_dotenv
 from flask import Flask
-from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk import init
-from typing import Dict
+from sentry_sdk.integrations.logging import ignore_logger
 
 VERSION = "3.6.0"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
 SOURCE_WAYBACK_MACHINE = "wayback-machine"
-PLATFORMS = [SOURCE_GOOGLE_ALERTS, SOURCE_MEDIA_CLOUD, SOURCE_NEWSCATCHER, SOURCE_WAYBACK_MACHINE]
+PLATFORMS = [
+    SOURCE_GOOGLE_ALERTS,
+    SOURCE_MEDIA_CLOUD,
+    SOURCE_NEWSCATCHER,
+    SOURCE_WAYBACK_MACHINE,
+]
 
 load_dotenv()  # load config from .env file (local) or env vars (production)
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-path_to_log_dir = os.path.join(base_dir, 'logs')
+path_to_log_dir = os.path.join(base_dir, "logs")
 
 # set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(levelname)s | %(name)s | %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+)
 logger = logging.getLogger(__name__)
 logger.info("------------------------------------------------------------------------")
 logger.info("Starting up Feminicide Story Processor v{}".format(VERSION))
 # supress annoying "not enough comments" and "using custom extraction" notes# logger = logging.getLogger(__name__)
-loggers_to_skip = ['trafilatura.core', 'trafilatura.metadata', 'readability.readability',
-                   'trafilatura.readability_lxml', 'trafilatura.htmlprocessing', 'trafilatura.xml']
+loggers_to_skip = [
+    "trafilatura.core",
+    "trafilatura.metadata",
+    "readability.readability",
+    "trafilatura.readability_lxml",
+    "trafilatura.htmlprocessing",
+    "trafilatura.xml",
+]
 for item in loggers_to_skip:
     logging.getLogger(item).setLevel(logging.WARNING)
 
 # read in environment variables
-MC_API_TOKEN = os.environ.get('MC_API_TOKEN', None)  # sensitive, so don't log it
+MC_API_TOKEN = os.environ.get("MC_API_TOKEN", None)  # sensitive, so don't log it
 if MC_API_TOKEN is None:
-    logger.error("  ❌ No MC_API_TOKEN env var specified. Pathetically refusing to start!")
+    logger.error(
+        "  ❌ No MC_API_TOKEN env var specified. Pathetically refusing to start!"
+    )
     sys.exit(1)
 
-MC_LEGACY_API_KEY = os.environ.get('MC_LEGACY_API_KEY', None)
+MC_LEGACY_API_KEY = os.environ.get("MC_LEGACY_API_KEY", None)
 if MC_LEGACY_API_KEY is None:
-    logger.warning("  ⚠️ No MC_LEGACY_API_KEY env var specified. Will continue without support for that.")
+    logger.warning(
+        "  ⚠️ No MC_LEGACY_API_KEY env var specified. Will continue without support for that."
+    )
 
-BROKER_URL = os.environ.get('BROKER_URL', None)
+BROKER_URL = os.environ.get("BROKER_URL", None)
 if BROKER_URL is None:
-    logger.warning("  ⚠️ No BROKER_URL env var specified. Using sqlite, which will perform poorly")
+    logger.warning(
+        "  ⚠️ No BROKER_URL env var specified. Using sqlite, which will perform poorly"
+    )
     BROKER_URL = "db+sqlite:///results.sqlite"
-#logger.info("  Queue at {}".format(BROKER_URL))
+# logger.info("  Queue at {}".format(BROKER_URL))
 
-SENTRY_DSN = os.environ.get('SENTRY_DSN', None)  # optional
+SENTRY_DSN = os.environ.get("SENTRY_DSN", None)  # optional
 if SENTRY_DSN:
     from sentry_sdk.integrations.celery import CeleryIntegration
-    init(dsn=SENTRY_DSN, release=VERSION,
-         integrations=[CeleryIntegration()])
-    ignore_logger('trafilatura.utils')
+
+    init(dsn=SENTRY_DSN, release=VERSION, integrations=[CeleryIntegration()])
+    ignore_logger("trafilatura.utils")
     logger.info("  SENTRY_DSN: {}".format(SENTRY_DSN))
-#else:
+# else:
 #    logger.info("  Not logging errors to Sentry")
 
-FEMINICIDE_API_URL = os.environ.get('FEMINICIDE_API_URL', None)
+FEMINICIDE_API_URL = os.environ.get("FEMINICIDE_API_URL", None)
 if FEMINICIDE_API_URL is None:
-    logger.error("  ❌ No FEMINICIDE_API_URL is specified. Bailing because we can't list projects to run!")
+    logger.error(
+        "  ❌ No FEMINICIDE_API_URL is specified. Bailing because we can't list projects to run!"
+    )
     sys.exit(1)
-#else:
+# else:
 #    logger.info("  Config server at at {}".format(FEMINICIDE_API_URL))
 
-FEMINICIDE_API_KEY = os.environ.get('FEMINICIDE_API_KEY', None)
+FEMINICIDE_API_KEY = os.environ.get("FEMINICIDE_API_KEY", None)
 if FEMINICIDE_API_KEY is None:
-    logger.error("  ❌ No FEMINICIDE_API_KEY is specified. Bailing because we can't send things to the main server without one")
+    logger.error(
+        "  ❌ No FEMINICIDE_API_KEY is specified. Bailing because we can't send things to the main server without one"
+    )
     sys.exit(1)
 
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', None)
+SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", None)
 if SQLALCHEMY_DATABASE_URI is None:
-    logger.warning("  ⚠️ ️No SQLALCHEMY_DATABASE_URI is specified. Using sqlite which will perform poorly")
+    logger.warning(
+        "  ⚠️ ️No SQLALCHEMY_DATABASE_URI is specified. Using sqlite which will perform poorly"
+    )
 
 
-ENTITY_SERVER_URL = os.environ['ENTITY_SERVER_URL']
+ENTITY_SERVER_URL = os.environ["ENTITY_SERVER_URL"]
 if ENTITY_SERVER_URL is None:
-    logger.warning("  ⚠️ No ENTITY_SERVER_URL is specified. You won't get entities in the stories sent to the  main server.")
+    logger.warning(
+        "  ⚠️ No ENTITY_SERVER_URL is specified. You won't get entities in the stories sent to the  main server."
+    )
 
 
-NEWSCATCHER_API_KEY = os.environ['NEWSCATCHER_API_KEY']
+NEWSCATCHER_API_KEY = os.environ["NEWSCATCHER_API_KEY"]
 if NEWSCATCHER_API_KEY is None:
-    logger.warning("  ⚠️ No NEWSCATCHER_API_KEY is specified. We won't be fetching from Newscatcher.")
+    logger.warning(
+        "  ⚠️ No NEWSCATCHER_API_KEY is specified. We won't be fetching from Newscatcher."
+    )
 
-SLACK_APP_TOKEN = os.environ.get('SLACK_APP_TOKEN', None)
+SLACK_APP_TOKEN = os.environ.get("SLACK_APP_TOKEN", None)
 if SLACK_APP_TOKEN is None:
-    logger.warning("  ⚠️ No SLACK_APP_TOKEN env var specified. We won't be sending slack updates.")
+    logger.warning(
+        "  ⚠️ No SLACK_APP_TOKEN env var specified. We won't be sending slack updates."
+    )
 
-SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN', None)
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", None)
 if SLACK_BOT_TOKEN is None:
-    logger.warning("  ⚠️ No SLACK_BOT_TOKEN env var specified. We won't be sending slack updates.")
+    logger.warning(
+        "  ⚠️ No SLACK_BOT_TOKEN env var specified. We won't be sending slack updates."
+    )
 
-SLACK_CHANNEL_ID = os.environ.get('SLACK_CHANNEL_ID', None)
+SLACK_CHANNEL_ID = os.environ.get("SLACK_CHANNEL_ID", None)
 if SLACK_CHANNEL_ID is None:
-    logger.warning("  ⚠️ No CHANNEL_ID env var specified. We won't be sending slack updates.")
+    logger.warning(
+        "  ⚠️ No CHANNEL_ID env var specified. We won't be sending slack updates."
+    )
 
 
 def get_mc_directory_client() -> mediacloud.api.DirectoryApi:
@@ -122,22 +158,24 @@ def create_flask_app() -> Flask:
 
 
 def is_email_configured() -> bool:
-    return (os.environ.get('SMTP_USER_NAME', None) is not None) and \
-            (os.environ.get('SMTP_PASSWORD', None) is not None) and \
-            (os.environ.get('SMTP_ADDRESS', None) is not None) and \
-            (os.environ.get('SMTP_PORT', None) is not None) and \
-            (os.environ.get('SMTP_FROM', None) is not None) and \
-            (os.environ.get('NOTIFY_EMAILS', None) is not None)
+    return (
+        (os.environ.get("SMTP_USER_NAME", None) is not None)
+        and (os.environ.get("SMTP_PASSWORD", None) is not None)
+        and (os.environ.get("SMTP_ADDRESS", None) is not None)
+        and (os.environ.get("SMTP_PORT", None) is not None)
+        and (os.environ.get("SMTP_FROM", None) is not None)
+        and (os.environ.get("NOTIFY_EMAILS", None) is not None)
+    )
 
 
 def get_email_config() -> Dict:
     return dict(
-        user_name=os.environ.get('SMTP_USER_NAME', None),
-        password=os.environ.get('SMTP_PASSWORD', None),
-        address=os.environ.get('SMTP_ADDRESS', None),
-        port=os.environ.get('SMTP_PORT', None),
-        from_address=os.environ.get('SMTP_FROM', None),
-        notify_emails=os.environ.get('NOTIFY_EMAILS', "").split(",")
+        user_name=os.environ.get("SMTP_USER_NAME", None),
+        password=os.environ.get("SMTP_PASSWORD", None),
+        address=os.environ.get("SMTP_ADDRESS", None),
+        port=os.environ.get("SMTP_PORT", None),
+        from_address=os.environ.get("SMTP_FROM", None),
+        notify_emails=os.environ.get("NOTIFY_EMAILS", "").split(","),
     )
 
 

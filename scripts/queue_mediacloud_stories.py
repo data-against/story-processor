@@ -1,18 +1,19 @@
 import datetime as dt
-from typing import List, Dict
-import time
 import sys
 import multiprocessing
 import logging
+import time
+from typing import Dict, List
 import processor
 import processor.database as database
-import processor.database.stories_db as stories_db
 import processor.database.projects_db as projects_db
-from processor.classifiers import download_models
-from processor import get_mc_legacy_client
+import processor.database.stories_db as stories_db
 import processor.projects as projects
 import processor.tasks as p_tasks
 import scripts.tasks as tasks
+from processor import get_mc_legacy_client
+from processor.classifiers import download_models
+
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
 # use this to make sure we don't fall behind on recent stories, even if a project query is producing more than
@@ -21,6 +22,7 @@ DEFAULT_DAY_WINDOW = 5
 DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many stories each cron run
 
 logger = logging.getLogger(__name__)
+
 
 def load_projects_task() -> List[Dict]:
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
@@ -32,35 +34,56 @@ def load_projects_task() -> List[Dict]:
 def _process_project_task(args: Dict) -> Dict:
     project, page_size, max_stories = args
     mc = get_mc_legacy_client()
-    project_last_processed_stories_id = project['local_processed_stories_id']
+    project_last_processed_stories_id = project["local_processed_stories_id"]
     project_email_message = ""
-    logger.info("Checking project {}/{} (last processed_stories_id={})".format(project['id'], project['title'],
-                                                                               project_last_processed_stories_id))
+    logger.info(
+        "Checking project {}/{} (last processed_stories_id={})".format(
+            project["id"], project["title"], project_last_processed_stories_id
+        )
+    )
     logger.debug("  {} stories/page up to {}".format(page_size, max_stories))
-    project_email_message += "Project {} - {}:\n".format(project['id'], project['title'])
+    project_email_message += "Project {} - {}:\n".format(
+        project["id"], project["title"]
+    )
     # setup queries to filter by language too so we only get stories the model can process
     q = "({}) AND language:{} AND tags_id_media:({})".format(
-        project['search_terms'],
-        project['language'],
-        " ".join([str(tid) for tid in project['media_collections']]))
+        project["search_terms"],
+        project["language"],
+        " ".join([str(tid) for tid in project["media_collections"]]),
+    )
     now = dt.datetime.now()
-    start_date = now - dt.timedelta(days=DEFAULT_DAY_WINDOW)  # err on the side of recentness over completeness
+    start_date = now - dt.timedelta(
+        days=DEFAULT_DAY_WINDOW
+    )  # err on the side of recentness over completeness
     fq = mc.dates_as_query_clause(start_date, now)
     story_count = 0
     page_count = 0
     more_stories = True
     while more_stories and (story_count < max_stories):
         try:
-            page_of_stories = mc.storyList(q, fq, last_processed_stories_id=project_last_processed_stories_id,
-                                           text=True, rows=page_size)
-            logger.info("    {} - page {}: ({}) stories".format(project['id'], page_count, len(page_of_stories)))
+            page_of_stories = mc.storyList(
+                q,
+                fq,
+                last_processed_stories_id=project_last_processed_stories_id,
+                text=True,
+                rows=page_size,
+            )
+            logger.info(
+                "    {} - page {}: ({}) stories".format(
+                    project["id"], page_count, len(page_of_stories)
+                )
+            )
         except Exception as e:
-            logger.error("  Story list error on project {}. Skipping for now. {}".format(project['id'], e))
+            logger.error(
+                "  Story list error on project {}. Skipping for now. {}".format(
+                    project["id"], e
+                )
+            )
             more_stories = False
             continue  # fail gracefully by going to the next project; maybe next cron run it'll work?
         if len(page_of_stories) > 0:
             for s in page_of_stories:
-                s['source'] = processor.SOURCE_MEDIA_CLOUD
+                s["source"] = processor.SOURCE_MEDIA_CLOUD
             page_count += 1
             story_count += len(page_of_stories)
             # and log that we got and queued them all
@@ -72,17 +95,27 @@ def _process_project_task(args: Dict) -> Dict:
                 project_last_processed_stories_id = stories_to_queue[-1]['processed_stories_id']
                 # important to write this update now, because we have queued up the task to process these stories
                 # the task queue will manage retrying with the stories if it fails with this batch
-                projects_db.update_history(session, project['id'], last_processed_stories_id=project_last_processed_stories_id)
+                projects_db.update_history(
+                    session,
+                    project["id"],
+                    last_processed_stories_id=project_last_processed_stories_id,
+                )
         else:
             more_stories = False
-    logger.info("  queued {} stories for project {}/{} (in {} pages)".format(story_count, project['id'],
-                                                                             project['title'], page_count))
+    logger.info(
+        "  queued {} stories for project {}/{} (in {} pages)".format(
+            story_count, project["id"], project["title"], page_count
+        )
+    )
     #  add a summary to the email we are generating
     warnings = ""
     if story_count > (max_stories * 0.8):  # try to get our attention in the email
         warnings += "(⚠️️️ query might be too broad)"
-    project_email_message += "    found {} new stories past {} (over {} pages) {}\n\n".format(
-        story_count, project_last_processed_stories_id, page_count, warnings)
+    project_email_message += (
+        "    found {} new stories past {} (over {} pages) {}\n\n".format(
+            story_count, project_last_processed_stories_id, page_count, warnings
+        )
+    )
     return dict(
         email_text=project_email_message,
         stories=story_count,
@@ -94,6 +127,7 @@ def process_projects_in_parallel(projects_list: List[Dict], pool_size: int):
     with multiprocessing.Pool(pool_size) as pool:
         results = pool.map(_process_project_task, args_list)
     return results
+
 
 if __name__ == '__main__':
     logger.info("Starting {} story fetch job".format(processor.SOURCE_MEDIA_CLOUD))

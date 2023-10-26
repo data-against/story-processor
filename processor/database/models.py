@@ -1,8 +1,9 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import BigInteger, Integer, DateTime, Float, Boolean, String
-from dateutil.parser import parse
 import datetime as dt
 import logging
+
+from dateutil.parser import parse
+from sqlalchemy import BigInteger, Boolean, DateTime, Float, Integer, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 import processor
 
@@ -14,7 +15,7 @@ class Base(DeclarativeBase):
 
 
 class Story(Base):
-    __tablename__ = 'stories'
+    __tablename__ = "stories"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     stories_id: Mapped[int] = mapped_column(BigInteger)
@@ -32,35 +33,38 @@ class Story(Base):
     url: Mapped[str] = mapped_column(String)
 
     def __repr__(self):
-        return '<Story id={} source={}>'.format(self.id, self.source)
+        return "<Story id={} source={}>".format(self.id, self.source)
 
     @staticmethod
     def from_source(story, source):
         db_story = Story()
         if source == processor.SOURCE_MEDIA_CLOUD:  # backwards compatability
-            db_story.stories_id = story['stories_id']
-        db_story.url = story['url']
+            db_story.stories_id = story["stories_id"]
+        db_story.url = story["url"]
         db_story.source = source
         # carefully parse date, with fallback to today so we at least get something close to right
         use_fallback_date = False
         try:
-            if not isinstance(story['publish_date'], dt.datetime):
-                db_story.published_date = parse(story['publish_date'])
-            elif story['publish_date'] is not None:
-                db_story.published_date = story['publish_date']
+            if not isinstance(story["publish_date"], dt.datetime):
+                db_story.published_date = parse(story["publish_date"])
+            elif story["publish_date"] is not None:
+                db_story.published_date = story["publish_date"]
             else:
                 use_fallback_date = True
-        except Exception as e:
+        except Exception:
             use_fallback_date = True
         if use_fallback_date:
             db_story.published_date = dt.datetime.now()
-            logger.warning("Used today as publish date for story that didn't have date ({}) on it: {}".format(
-                story['publish_date'], db_story['url']))
+            logger.warning(
+                "Used today as publish date for story that didn't have date ({}) on it: {}".format(
+                    story["publish_date"], db_story["url"]
+                )
+            )
         return db_story
 
 
 class ProjectHistory(Base):
-    __tablename__ = 'projects'
+    __tablename__ = "projects"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     last_processed_id: Mapped[int] = mapped_column(BigInteger)
@@ -70,4 +74,4 @@ class ProjectHistory(Base):
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime)
 
     def __repr__(self):
-        return '<ProjectHistory id={}>'.format(self.id)
+        return "<ProjectHistory id={}>".format(self.id)

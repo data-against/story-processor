@@ -4,7 +4,6 @@ import processor.util as util
 
 
 class TestUtil(unittest.TestCase):
-
     def test_chunk(self):
         numbers = range(0, 1001)
         chunks = [c for c in util.chunks(numbers, 10)]
@@ -16,4 +15,3 @@ class TestUtil(unittest.TestCase):
         for chunk in chunks[0:9]:
             assert len(chunk) == 100
         assert len(chunks[10]) == 1
-
