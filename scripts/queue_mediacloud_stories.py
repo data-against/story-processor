@@ -23,15 +23,13 @@ DEFAULT_MAX_STORIES_PER_PROJECT = 10000  # make sure we don't do too many storie
 logger = logging.getLogger(__name__)
 
 def load_projects_task() -> List[Dict]:
-    logger = logging.getLogger(__name__)
     project_list = projects.load_project_list(force_reload=True, overwrite_last_story=False)
     logger.info("  Checking {} projects".format(len(project_list)))
-    #return [p for p in project_list if p['id'] == 166]
+    # return [p for p in project_list if p['id'] == 166]
     return project_list
 
 
 def _process_project_task(args: Dict) -> Dict:
-    logger = logging.getLogger(__name__)
     project, page_size, max_stories = args
     mc = get_mc_legacy_client()
     project_last_processed_stories_id = project['local_processed_stories_id']
@@ -48,11 +46,6 @@ def _process_project_task(args: Dict) -> Dict:
     now = dt.datetime.now()
     start_date = now - dt.timedelta(days=DEFAULT_DAY_WINDOW)  # err on the side of recentness over completeness
     fq = mc.dates_as_query_clause(start_date, now)
-    # debug output total story count, removed because it slows things down
-    # total_stories = mc.storyCount(q, fq)['count']
-    # logger.info("  project {} - total {} stories".format(project['id'], total_stories))
-    # return dict(email_text="", stories=total_stories, pages=0) # helpful for debugging
-    # page through any new stories
     story_count = 0
     page_count = 0
     more_stories = True
@@ -103,9 +96,8 @@ def process_projects_in_parallel(projects_list: List[Dict], pool_size: int):
     return results
 
 if __name__ == '__main__':
-    logger = logging.getLogger(__name__)
     logger.info("Starting {} story fetch job".format(processor.SOURCE_MEDIA_CLOUD))
-        # important to do because there might new models on the server!
+    # important to do because there might new models on the server!
     logger.info("  Checking for any new models we need")
     models_downloaded = download_models()
     logger.info(f"    models downloaded: {models_downloaded}")
@@ -116,12 +108,8 @@ if __name__ == '__main__':
     # 1. list all the project we need to work on
     projects_list = load_projects_task()
     # 2. process all the projects (in parallel)
-    # project_statuses = process_project_task.map(projects_list,
-    #                                             page_size=unmapped(stories_per_page),
-    #                                             max_stories=unmapped(max_stories_per_project))
     pool_size = 4
     project_results = process_projects_in_parallel(projects_list, pool_size)
     # 3. send email/slack_msg with results of operations
-    tasks.send_project_list_slack_message(project_results, processor.SOURCE_MEDIA_CLOUD, start_time)
-    tasks.send_project_list_email(project_results, processor.SOURCE_MEDIA_CLOUD, start_time)
-
+    tasks.send_project_list_slack_message(project_results, processor.SOURCE_MEDIA_CLOUD, start_time, logger)
+    tasks.send_project_list_email(project_results, processor.SOURCE_MEDIA_CLOUD, start_time,logger)
