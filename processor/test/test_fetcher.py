@@ -1,5 +1,6 @@
 import unittest
 from typing import Dict
+
 from processor.fetcher import fetch_all_html
 
 # random samples from our real database
@@ -34,11 +35,11 @@ class TestUrlSpider(unittest.TestCase):
             # called once for each URL in input
             nonlocal handled_count
             handled_count += 1
-            assert 'original_url' in story
-            assert 'story_text' in story
+            assert "original_url" in story
+            assert "story_text" in story
 
         fetch_all_html(sample_urls, handle_parse)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

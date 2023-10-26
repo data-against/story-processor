@@ -128,3 +128,6 @@ logs/*.json
 *.tar.gz
 tmp/*.json
 .scrapy
+
+# Local Development
+docker-conf/

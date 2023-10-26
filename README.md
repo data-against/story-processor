@@ -5,30 +5,35 @@ Grab stories from various archives, run them against bespoke classifiers created
 central server. Part of the larger [Data Against Feminicide / Datos Contra El Feminicidio](http://datoscontrafeminicidio.net) project.
 
 ### Related Academic Papers and Presentations
-
-Bhargava, R., Suresh, H., Dogan, A.L., So, W., Suárez Val, H. Fumega, S., D’Ignazio, C. [_News as Data for Activists: 
+- Bhargava, R., Suresh, H., Dogan, A.L., So, W., Suárez Val, H. Fumega, S., D’Ignazio, C. [_News as Data for Activists: 
 a case study in feminicide counterdata production_](https://github.com/browninstitute/c-plus-j-website/raw/main/proceedings/Session9Group2.pdf). 
 2022 Conference + Journalism Conference (C+J22).
 
-Suresh, H., Dogan, A. L., Movva, R., Bhargava, R., So, W., Martinez Cuba, A., Taurino, G., García-Montes, 
+- Suresh, H., Dogan, A. L., Movva, R., Bhargava, R., So, W., Martinez Cuba, A., Taurino, G., García-Montes, 
 M., Cruxen, I., & D’Ignazio, C. (2022). [_Towards Intersectional Feminist and Participatory ML: A Case Study in 
 Supporting Feminicide Counterdata Collection_](https://dl.acm.org/doi/10.1145/3531146.3533132). 2022 Conference on 
 Fairness, Accountability and Transparency (FAccT22).
 
-D'Ignazio, C., Cruxên, I., Val, H. S., Cuba, A. M., García-Montes, M., Fumega, S., Suresh, H. & So, W. (2022). [_Feminicide 
+- D'Ignazio, C., Cruxên, I., Val, H. S., Cuba, A. M., García-Montes, M., Fumega, S., Suresh, H. & So, W. (2022). [_Feminicide 
 and counterdata production: Activist efforts to monitor and challenge gender-related violence_](https://www.cell.com/patterns/pdf/S2666-3899(22)00127-1.pdf).
  Patterns, 3(7).
 
 Install for Development
 -----------------------
-
-1. Install Python v3.10.0 or higher (we typically use conda or pyenv for this)
-2. Install Python requirements: `pip install -r requirements.txt`
-3. Install rabbitmq: on MacOS do `brew install rabbitmq`
-4. Install postgres: on MacOS do `brew install postgresql`
-5. Create a database called "mc-story-processor" in Postgres, then run `alembic upgrade head`
-6. `cp .env.template .env` and fill in the appropriate info for each setting in that file
-7. Run `pytest` on the command line to run all the automated tests and verify your setup is working
+- Install Python v3.10.0 or higher (we typically use conda or pyenv for this)
+- Install Python package requirements: `pip install -r requirements.txt`
+- Additionally install the dev dependencies through: `pip install -r requirements-dev.txt` or `pip install -r requirements*` to install all python dependencies 
+- Configure pre-commit hooks using `pre-commit install`
+- Create a database called "mc-story-processor" in Postgres, then run `alembic upgrade head`
+- `cp .env.template .env` and fill in the appropriate info for each setting in that file 
+- Run `pytest` on the command line to run all the automated tests and verify your setup is working
+- Required serivces:
+  - Mac 
+    - Install rabbitmq: on MacOS do `brew install rabbitmq`
+    - Install postgres: on MacOS do `brew install postgresql`
+  - Windows: Use `docker-compose.yml` to spin up instances automatically
+    - Create a folder `docker-conf` (first time only) 
+    - To start rabbitmq, postgres: `docker compose up -d` 
 
 Note that some of the models use [tensorflow_text](https://pypi.org/project/tensorflow-text/), which is hard to 
 install on Apple-silicon MacOS machines. For that platform you'll need to download and install the appropriate
@@ -43,6 +48,14 @@ To fill up the queue with new stories based on the monitor config, execute `run-
 To start the workers that process queued up jobs to classify and post story results, execute `run-workers.sh`.
 
 To run the small admin web server, execute `run-server.sh`.
+
+Developer Tools
+---------------
+
+1. Pre-commit hooks have been enabled through the `pre-commit` package and its configuration is at `pyproject.toml`
+2. Configuration for all the developer tools (linter, formatter, pre-commit, etc.) are managed through `pyproject.toml`
+3. `Ruff` linter can be enabled as a plugin on PyCharm for real-time linting experience
+4. `Black` formatter can be configured to run alongside development through: `PyCharm Settings -> Tools -> Black`
 
 ### Tips
 
