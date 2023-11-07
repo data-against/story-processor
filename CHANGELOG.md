@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.6.1
+
+* Redo database indexes to speed up dashboard queries.
+
 ### v3.6.0
 
 * Refactoring newscatcher and wayback-machine processors to use Scrapy for content fetch parallelization instead of prefect. 
