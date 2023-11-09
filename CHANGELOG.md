@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v3.6.2
+
+* Migrate mediacloud fetcher off of Prefect and prep to remove it completely.
+
 ### v3.6.1
 
 * Redo database indexes to speed up dashboard queries.

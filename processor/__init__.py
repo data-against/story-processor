@@ -10,7 +10,7 @@ from flask import Flask
 from sentry_sdk import init
 from sentry_sdk.integrations.logging import ignore_logger
 
-VERSION = "3.6.1"
+VERSION = "3.6.2"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
