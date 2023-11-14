@@ -245,13 +245,11 @@ if __name__ == "__main__":
 
     # 4. post batches of stories for classification
     results_data = tasks.queue_stories_for_classification(
-        projects_list, stories_with_text, processor.SOURCE_NEWSCATCHER, logger
+        projects_list, stories_with_text, processor.SOURCE_NEWSCATCHER
     )
 
     # 5. send email/slack_msg with results of operations
     tasks.send_combined_slack_message(
-        results_data, processor.SOURCE_NEWSCATCHER, start_time, logger
+        results_data, processor.SOURCE_NEWSCATCHER, start_time
     )
-    tasks.send_combined_email(
-        results_data, processor.SOURCE_NEWSCATCHER, start_time, logger
-    )
+    tasks.send_combined_email(results_data, processor.SOURCE_NEWSCATCHER, start_time)

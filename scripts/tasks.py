@@ -6,7 +6,6 @@ from typing import Dict, List, Optional
 
 import dateutil.parser
 import mcmetadata as metadata
-from prefect import task
 
 import processor.database as database
 import processor.notifications as notifications
@@ -24,7 +23,6 @@ def _cached_metadata_extract(url: str) -> dict:
     return metadata.extract(url)
 
 
-@task(name="fetch_text")
 def fetch_text_task(story: Dict) -> Optional[Dict]:
     try:
         parsed = _cached_metadata_extract(story["url"])
@@ -40,21 +38,14 @@ def fetch_text_task(story: Dict) -> Optional[Dict]:
     return None
 
 
-@task(name="send_combined_email")
-def send_combined_email_task(summary: Dict, data_source: str, start_time: float):
-    # param summary: has keys 'project_count', 'email_text', 'stories'
-    send_combined_email(summary, data_source, start_time, logger)
-
-
-def send_combined_email(summary: Dict, data_source: str, start_time: float, logger):
+def send_combined_email(summary: Dict, data_source: str, start_time: float):
     email_message = _get_combined_text(
         summary["project_count"], summary["email_text"], summary["stories"], data_source
     )
-    _send_email(data_source, summary["stories"], start_time, email_message, logger)
+    _send_email(data_source, summary["stories"], start_time, email_message)
 
 
-@task(name="send_project_list_email")
-def send_project_list_email_task(
+def send_project_list_email(
     project_details: List[Dict], data_source: str, start_time: float
 ):
     # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
@@ -66,26 +57,11 @@ def send_project_list_email_task(
     email_message = _get_combined_text(
         len(project_details), combined_email_text, total_new_stories, data_source
     )
-    _send_email(data_source, total_new_stories, start_time, email_message, logger)
-
-
-def send_project_list_email(
-    project_details: List[Dict], data_source: str, start_time: float, logger
-):
-    # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
-    total_new_stories = sum([p["stories"] for p in project_details])
-    # total_pages = sum([p['pages'] for p in project_details])
-    combined_email_text = ""
-    for p in project_details:
-        combined_email_text += p["email_text"]
-    email_message = _get_combined_text(
-        len(project_details), combined_email_text, total_new_stories, data_source
-    )
-    _send_email(data_source, total_new_stories, start_time, email_message, logger)
+    _send_email(data_source, total_new_stories, start_time, email_message)
 
 
 def _send_email(
-    data_source: str, story_count: int, start_time: float, email_message: str, logger
+    data_source: str, story_count: int, start_time: float, email_message: str
 ):
     duration_secs = time.time() - start_time
     duration_mins = str(round(duration_secs / 60, 2))
@@ -117,32 +93,16 @@ def _get_combined_text(
     return email_message
 
 
-@task(name="send_combined_slack_msg")
-def send_combined_slack_message_task(
-    summary: Dict, data_source: str, start_time: float
-):
-    send_combined_slack_message(summary, data_source, start_time, logger)
-
-
-def send_combined_slack_message(
-    summary: Dict, data_source: str, start_time: float, logger
-):
+def send_combined_slack_message(summary: Dict, data_source: str, start_time: float):
     # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
     message = _get_combined_text(
         summary["project_count"], summary["email_text"], summary["stories"], data_source
     )
-    _send_slack_message(data_source, summary["stories"], start_time, message, logger)
-
-
-@task(name="send_project_list_slack_msg")
-def send_project_list_slack_message_task(
-    project_details: List[Dict], data_source: str, start_time: float
-):
-    send_project_list_slack_message(project_details, data_source, start_time)
+    _send_slack_message(data_source, summary["stories"], start_time, message)
 
 
 def send_project_list_slack_message(
-    project_details: List[Dict], data_source: str, start_time: float, logger
+    project_details: List[Dict], data_source: str, start_time: float
 ):
     # :param summary: has keys 'project_count', 'email_text', 'stories'
     total_new_stories = sum([p["stories"] for p in project_details])
@@ -153,11 +113,11 @@ def send_project_list_slack_message(
     message = _get_combined_text(
         len(project_details), combined_text, total_new_stories, data_source
     )
-    _send_slack_message(data_source, total_new_stories, start_time, message, logger)
+    _send_slack_message(data_source, total_new_stories, start_time, message)
 
 
 def _send_slack_message(
-    data_source: str, story_count: int, start_time: float, slack_message: str, logger
+    data_source: str, story_count: int, start_time: float, slack_message: str
 ):
     duration_secs = time.time() - start_time
     duration_mins = str(round(duration_secs / 60, 2))
@@ -176,15 +136,8 @@ def _send_slack_message(
         logger.info("Not sending any slack updates")
 
 
-@task(name="queue_stories_for_classification")
-def queue_stories_for_classification_task(
-    project_list: List[Dict], stories: List[Dict], datasource: str
-) -> Dict:
-    return queue_stories_for_classification(project_list, stories, datasource, logger)
-
-
 def queue_stories_for_classification(
-    project_list: List[Dict], stories: List[Dict], datasource: str, the_logger
+    project_list: List[Dict], stories: List[Dict], datasource: str
 ) -> Dict:
     total_stories = 0
     email_message = ""
@@ -224,7 +177,7 @@ def queue_stories_for_classification(
                         last_publish_date=latest_date,
                         last_url=project_stories[0]["url"],
                     )
-        the_logger.info(
+        logger.info(
             "  queued {} stories for project {}/{}".format(
                 len(project_stories), p["id"], p["title"]
             )
