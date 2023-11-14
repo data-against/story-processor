@@ -1,13 +1,13 @@
 import copy
+import logging
 import time
 from functools import lru_cache
 from typing import Dict, List, Optional
 
 import dateutil.parser
-import logging
 import mcmetadata as metadata
+from prefect import task
 
-from prefect import get_run_logger, task
 import processor.database as database
 import processor.notifications as notifications
 import processor.tasks as celery_tasks
@@ -16,6 +16,7 @@ from processor.database import projects_db as projects_db
 from processor.database import stories_db as stories_db
 
 logger = logging.getLogger(__name__)
+
 
 @lru_cache(maxsize=50000)
 def _cached_metadata_extract(url: str) -> dict:
@@ -52,19 +53,25 @@ def send_combined_email(summary: Dict, data_source: str, start_time: float, logg
     _send_email(data_source, summary["stories"], start_time, email_message, logger)
 
 
-@task(name='send_project_list_email')
-def send_project_list_email_task(project_details: List[Dict], data_source: str, start_time: float):
+@task(name="send_project_list_email")
+def send_project_list_email_task(
+    project_details: List[Dict], data_source: str, start_time: float
+):
     # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
-    total_new_stories = sum([p['stories'] for p in project_details])
+    total_new_stories = sum([p["stories"] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
     combined_email_text = ""
     for p in project_details:
-        combined_email_text += p['email_text']
-    email_message = _get_combined_text(len(project_details), combined_email_text, total_new_stories, data_source)
+        combined_email_text += p["email_text"]
+    email_message = _get_combined_text(
+        len(project_details), combined_email_text, total_new_stories, data_source
+    )
     _send_email(data_source, total_new_stories, start_time, email_message, logger)
 
-    
-def send_project_list_email(project_details: List[Dict], data_source: str, start_time: float, logger):
+
+def send_project_list_email(
+    project_details: List[Dict], data_source: str, start_time: float, logger
+):
     # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
     total_new_stories = sum([p["stories"] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
@@ -110,9 +117,10 @@ def _get_combined_text(
     return email_message
 
 
-  
-@task(name='send_combined_slack_msg')
-def send_combined_slack_message_task(summary: Dict, data_source: str, start_time: float):
+@task(name="send_combined_slack_msg")
+def send_combined_slack_message_task(
+    summary: Dict, data_source: str, start_time: float
+):
     send_combined_slack_message(summary, data_source, start_time, logger)
 
 
@@ -130,22 +138,24 @@ def send_combined_slack_message(
 def send_project_list_slack_message_task(
     project_details: List[Dict], data_source: str, start_time: float
 ):
-    send_project_list_slack_message(project_details, data_source, start_time)
+    send_project_list_slack_message(project_details, data_source, start_time, logger)
 
 
-
-def send_project_list_slack_message(project_details: List[Dict], data_source: str, start_time: float, logger):
+def send_project_list_slack_message(
+    project_details: List[Dict], data_source: str, start_time: float, logger
+):
     # :param summary: has keys 'project_count', 'email_text', 'stories'
     total_new_stories = sum([p["stories"] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
     combined_text = ""
     for p in project_details:
-        combined_text += p['email_text']
-    message = _get_combined_text(len(project_details), combined_text, total_new_stories, data_source)
+        combined_text += p["email_text"]
+    message = _get_combined_text(
+        len(project_details), combined_text, total_new_stories, data_source
+    )
     _send_slack_message(data_source, total_new_stories, start_time, message, logger)
 
 
-    
 def _send_slack_message(
     data_source: str, story_count: int, start_time: float, slack_message: str, logger
 ):
@@ -166,11 +176,11 @@ def _send_slack_message(
         logger.info("Not sending any slack updates")
 
 
-
-@task(name='queue_stories_for_classification')
-def queue_stories_for_classification_task(project_list: List[Dict], stories: List[Dict], datasource: str) -> Dict:
+@task(name="queue_stories_for_classification")
+def queue_stories_for_classification_task(
+    project_list: List[Dict], stories: List[Dict], datasource: str
+) -> Dict:
     return queue_stories_for_classification(project_list, stories, datasource, logger)
-
 
 
 def queue_stories_for_classification(
