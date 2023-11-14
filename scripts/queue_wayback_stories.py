@@ -9,9 +9,12 @@ import time
 from multiprocessing import Pool
 from typing import Dict, List
 
+# Disable loggers prior to package imports
+import processor
+processor.disable_package_loggers()
+
 from mc_providers.onlinenews import OnlineNewsWaybackMachineProvider
 
-import processor
 import processor.database as database
 import processor.database.projects_db as projects_db
 import processor.fetcher as fetcher

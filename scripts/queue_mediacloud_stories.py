@@ -1,10 +1,14 @@
 import datetime as dt
-import sys
-import multiprocessing
 import logging
+import multiprocessing
+import sys
 import time
 from typing import Dict, List
+
+# Disable loggers prior to package imports
 import processor
+processor.disable_package_loggers()
+
 import processor.database as database
 import processor.database.projects_db as projects_db
 import processor.database.stories_db as stories_db
@@ -13,7 +17,6 @@ import processor.tasks as p_tasks
 import scripts.tasks as tasks
 from processor import get_mc_legacy_client
 from processor.classifiers import download_models
-
 
 DEFAULT_STORIES_PER_PAGE = 150  # I found this performs poorly if set too high
 # use this to make sure we don't fall behind on recent stories, even if a project query is producing more than

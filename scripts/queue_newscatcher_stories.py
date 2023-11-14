@@ -7,13 +7,16 @@ import time
 from multiprocessing import Pool
 from typing import Dict, List
 
+# Disable loggers prior to package imports
+import processor
+processor.disable_package_loggers()
+
 import mcmetadata as metadata
 import mcmetadata.urls as urls
 import newscatcherapi
 import newscatcherapi.newscatcherapi_exception
 import requests.exceptions
 
-import processor
 import processor.database as database
 import processor.database.projects_db as projects_db
 import processor.fetcher as fetcher
@@ -25,7 +28,7 @@ POOL_SIZE = 16  # parellel fetch for story URL lists (by project)
 PAGE_SIZE = 100
 DEFAULT_DAY_WINDOW = 3  # don't look for stories that are too lod
 MAX_STORIES_PER_PROJECT = (
-    2000  # can't process all the stories for queries that are too big
+    20  # can't process all the stories for queries that are too big
 )
 MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
@@ -54,9 +57,9 @@ def load_projects() -> List[Dict]:
             len(project_list), len(projects_with_countries)
         )
     )
-    # return [p for p in projects_with_countries if p['id'] == 166]
+    return [p for p in projects_with_countries if p['id'] == 166]
     # return projects_with_countries[16:18]
-    return projects_with_countries
+    # return projects_with_countries
 
 
 def _fetch_results(
