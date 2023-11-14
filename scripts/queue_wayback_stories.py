@@ -1,3 +1,5 @@
+# ruff: noqa: E402
+
 import copy
 import datetime as dt
 import itertools
@@ -11,6 +13,7 @@ from typing import Dict, List
 
 # Disable loggers prior to package imports
 import processor
+
 processor.disable_package_loggers()
 
 from mc_providers.onlinenews import OnlineNewsWaybackMachineProvider

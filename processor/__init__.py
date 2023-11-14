@@ -195,7 +195,7 @@ def disable_package_loggers() -> None:
         "trafilatura.readability_lxml",
         "trafilatura.htmlprocessing",
         "trafilatura.xml",
-        "mcmetadata.languages"
+        "mcmetadata.languages",
     ]
     for pkg_logger in pkg_loggers:
         logging.getLogger(pkg_logger).setLevel(logging.WARNING)
