@@ -1,3 +1,5 @@
+# ruff: noqa: E402
+
 import datetime as dt
 import itertools
 import logging
@@ -7,13 +9,17 @@ import time
 from multiprocessing import Pool
 from typing import Dict, List
 
+# Disable loggers prior to package imports
+import processor
+
+processor.disable_package_loggers()
+
 import mcmetadata as metadata
 import mcmetadata.urls as urls
 import newscatcherapi
 import newscatcherapi.newscatcherapi_exception
 import requests.exceptions
 
-import processor
 import processor.database as database
 import processor.database.projects_db as projects_db
 import processor.fetcher as fetcher
@@ -246,6 +252,4 @@ if __name__ == "__main__":
     tasks.send_combined_slack_message(
         results_data, processor.SOURCE_NEWSCATCHER, start_time
     )
-    tasks.send_combined_email(
-        results_data, processor.SOURCE_NEWSCATCHER, start_time
-    )
+    tasks.send_combined_email(results_data, processor.SOURCE_NEWSCATCHER, start_time)

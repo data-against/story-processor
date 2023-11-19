@@ -185,3 +185,20 @@ def get_slack_config() -> Dict:
         bot_token=SLACK_BOT_TOKEN,
         channel_id=SLACK_CHANNEL_ID,
     )
+
+
+def disable_package_loggers() -> None:
+    pkg_loggers = [
+        "trafilatura.core",
+        "trafilatura.metadata",
+        "readability.readability",
+        "trafilatura.readability_lxml",
+        "trafilatura.htmlprocessing",
+        "trafilatura.xml",
+        "mcmetadata.languages",
+    ]
+    for pkg_logger in pkg_loggers:
+        logging.getLogger(pkg_logger).setLevel(logging.WARNING)
+
+    # Ignore Tensorflow logging
+    os.environ["TF_CPP_MIN_LOG_LEVEL "] = "2"

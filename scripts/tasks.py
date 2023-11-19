@@ -1,10 +1,10 @@
 import copy
+import logging
 import time
 from functools import lru_cache
 from typing import Dict, List, Optional
 
 import dateutil.parser
-import logging
 import mcmetadata as metadata
 
 import processor.database as database
@@ -15,6 +15,7 @@ from processor.database import projects_db as projects_db
 from processor.database import stories_db as stories_db
 
 logger = logging.getLogger(__name__)
+
 
 @lru_cache(maxsize=50000)
 def _cached_metadata_extract(url: str) -> dict:
@@ -43,8 +44,10 @@ def send_combined_email(summary: Dict, data_source: str, start_time: float):
     )
     _send_email(data_source, summary["stories"], start_time, email_message)
 
-    
-def send_project_list_email(project_details: List[Dict], data_source: str, start_time: float):
+
+def send_project_list_email(
+    project_details: List[Dict], data_source: str, start_time: float
+):
     # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
     total_new_stories = sum([p["stories"] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
@@ -90,9 +93,7 @@ def _get_combined_text(
     return email_message
 
 
-def send_combined_slack_message(
-    summary: Dict, data_source: str, start_time: float
-):
+def send_combined_slack_message(summary: Dict, data_source: str, start_time: float):
     # :param project_details: array of dicts per project, each with 'email_text', 'stories', and 'pages' keys
     message = _get_combined_text(
         summary["project_count"], summary["email_text"], summary["stories"], data_source
@@ -100,18 +101,21 @@ def send_combined_slack_message(
     _send_slack_message(data_source, summary["stories"], start_time, message)
 
 
-def send_project_list_slack_message(project_details: List[Dict], data_source: str, start_time: float):
+def send_project_list_slack_message(
+    project_details: List[Dict], data_source: str, start_time: float
+):
     # :param summary: has keys 'project_count', 'email_text', 'stories'
     total_new_stories = sum([p["stories"] for p in project_details])
     # total_pages = sum([p['pages'] for p in project_details])
     combined_text = ""
     for p in project_details:
-        combined_text += p['email_text']
-    message = _get_combined_text(len(project_details), combined_text, total_new_stories, data_source)
+        combined_text += p["email_text"]
+    message = _get_combined_text(
+        len(project_details), combined_text, total_new_stories, data_source
+    )
     _send_slack_message(data_source, total_new_stories, start_time, message)
 
 
-    
 def _send_slack_message(
     data_source: str, story_count: int, start_time: float, slack_message: str
 ):
