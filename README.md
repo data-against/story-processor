@@ -43,11 +43,9 @@ from the helpful repo of [prebuilt tensorflow wheels for Apple Silicon](https://
 Running
 -------
 
-To fill up the queue with new stories based on the monitor config, execute `run-fetch-PROVIDER.sh`.
-
 To start the workers that process queued up jobs to classify and post story results, execute `run-workers.sh`.
 
-To run the small admin web server, execute `run-server.sh`.
+To delete old files specifically files older than 62 days ago, execute `run-delete-files.sh`.
 
 Developer Tools
 ---------------
