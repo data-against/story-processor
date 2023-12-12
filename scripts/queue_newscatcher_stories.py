@@ -89,12 +89,12 @@ def _fetch_results(
                 project["id"], ncae
             )
         )
-        logger.exception(ncae)
+        # logger.exception(ncae) #Ignore Sentry Logging
     except requests.exceptions.RequestException as re:
         logger.error(
             "Fetch-related response on project {} - {}".format(project["id"], re)
         )
-        logger.exception(re)
+        # logger.exception(re) #Ignore Sentry Logging
     return results
 
 

@@ -24,6 +24,36 @@ PLATFORMS = [
 
 load_dotenv()  # load config from .env file (local) or env vars (production)
 
+def before_send(event, hint):
+    # logger_name = event.get('logger')
+    # if logger_name in ['scrapy.core.scraper', 'trafilatura.core', 'htmldate.utils']:
+    #     return None
+    if 'logentry' in event:
+        message = event['logentry'].get('message', '')
+    elif 'message' in event:
+        message = event['message']
+    else:
+        message = ''
+
+    ignored_messages = ['ConnectionRefusedError', 'BadContentError']
+    if any(ignored_msg in message for ignored_msg in ignored_messages):
+        return None
+    
+    if 'exc_info' in hint:
+        exc_type, exc_value, _ = hint['exc_info']
+
+        ignored_exceptions = (TimeoutError, ConnectionError, AttributeError)
+        if isinstance(exc_value, ignored_exceptions):
+            return None
+
+        error_strings = ['ResponseNeverReceived', 'BadContentError', 
+                         'TimeoutError', 'ParseError', 'DNSLookupError', 'AttributeError']
+        if any(err_str in str(exc_value) for err_str in error_strings):
+            return None
+
+    return event
+
+
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 path_to_log_dir = os.path.join(base_dir, "logs")
 
@@ -72,8 +102,11 @@ SENTRY_DSN = os.environ.get("SENTRY_DSN", None)  # optional
 if SENTRY_DSN:
     from sentry_sdk.integrations.celery import CeleryIntegration
 
-    init(dsn=SENTRY_DSN, release=VERSION, integrations=[CeleryIntegration()])
-    ignore_logger("trafilatura.utils")
+    init(dsn=SENTRY_DSN, release=VERSION, before_send=before_send, integrations=[CeleryIntegration()])
+    ignore_logger("scrapy.core.scraper")
+    ignore_logger("scrapy.downloadermiddlewares.retry")
+    ignore_logger("trafilatura.core")
+    ignore_logger("htmldate.utils")    
     logger.info("  SENTRY_DSN: {}".format(SENTRY_DSN))
 # else:
 #    logger.info("  Not logging errors to Sentry")
