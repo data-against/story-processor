@@ -161,7 +161,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                 project_stories.append(info)
             if keep_going:  # check after page is processed
                 keep_going = (page_number < page_count) and (
-                    len(project_stories) <= MAX_STORIES_PER_PROJECT
+                    len(project_stories) < MAX_STORIES_PER_PROJECT
                 )
                 if keep_going:
                     page_number += 1

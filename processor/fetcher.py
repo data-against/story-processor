@@ -4,6 +4,8 @@ from typing import Any, Callable, Dict, List, Optional
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
+import processor
+
 
 class UrlSpider(scrapy.Spider):
     name: str = "urlspider"
@@ -18,6 +20,13 @@ class UrlSpider(scrapy.Spider):
         "AUTOTHROTTLE_TARGET_CONCURRENCY": 32,
         "DOWNLOAD_TIMEOUT": 30,
         "USER_AGENT": "Data Against Feminicides bot for open academic research (+http://datoscontrafeminicidio.net/)",
+        "REQUEST_FINGERPRINTER_IMPLEMENTATION": "2.7",
+        "DOWNLOADER_MIDDLEWARES": {"processor.redis_delta_fetch.RedisDeltaFetch": 543},
+        "REDIS_CONFIG": {
+            "host": processor.REDIS_URL[0],
+            "port": processor.REDIS_URL[1],
+        },
+        "CACHE_TTL": 4 * 24 * 60 * 60,
     }
 
     def __init__(

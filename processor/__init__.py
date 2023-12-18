@@ -132,6 +132,12 @@ if SLACK_CHANNEL_ID is None:
         "  ⚠️ No CHANNEL_ID env var specified. We won't be sending slack updates."
     )
 
+REDIS_URL = os.environ.get("REDIS_URL", None).split(":")
+if REDIS_URL is None:
+    logger.warning(
+        "  ⚠️ No REDIS_URL env var specified. We won't be able to cache HTTP responses."
+    )
+
 
 def get_mc_directory_client() -> mediacloud.api.DirectoryApi:
     """

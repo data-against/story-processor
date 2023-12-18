@@ -1,15 +1,21 @@
 services:
-  rabbitmq:
-      image: rabbitmq:3.12.6
-      container_name: 'rabbitmq'
-      ports:
+    rabbitmq:
+        image: rabbitmq:3.12.6
+        container_name: 'rabbitmq'
+        ports:
           - "5672:5672"
           - "15672:15672"
-      volumes:
+        volumes:
           - ./docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
           - ./docker-conf/rabbitmq/log/:/var/log/rabbitmq
-#      networks:
-#          - mc_story_processor
-#
-#networks:
-#
+
+    redis:
+        image: redis:6.2-alpine
+        container_name: 'redis'
+        restart: always
+        ports:
+            - "6379:6379"
+        command:
+            redis-server --save 20 1 --loglevel warning
+        volumes:
+            - ./docker-conf/redis/:/data
