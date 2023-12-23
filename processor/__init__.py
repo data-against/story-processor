@@ -149,12 +149,28 @@ def get_mc_legacy_client() -> mediacloud_legacy.api.AdminMediaCloud:
     return mediacloud_legacy.api.AdminMediaCloud(MC_LEGACY_API_KEY)
 
 
+def get_mc_client() -> mediacloud.api.SearchApi:
+    """
+    A central place to get the Media Cloud legacy client
+    :return: an admin media cloud client with the API key from the environment variable
+    """
+    return mediacloud.api.SearchApi(MC_API_TOKEN)
+
+
 def create_flask_app() -> Flask:
     """
     Create and configure the Flask app. Standard practice is to do this in a factory method like this.
     :return: a fully configured Flask web app
     """
     return Flask(__name__)
+
+
+def is_slack_configured() -> bool:
+    return (
+        (os.environ.get("SLACK_APP_TOKEN", None) is not None)
+        and (os.environ.get("SLACK_BOT_TOKEN", None) is not None)
+        and (os.environ.get("SLACK_CHANNEL_ID", None) is not None)
+    )
 
 
 def is_email_configured() -> bool:
