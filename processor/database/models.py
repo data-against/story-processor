@@ -67,9 +67,9 @@ class ProjectHistory(Base):
     __tablename__ = "projects"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    last_processed_id: Mapped[int] = mapped_column(BigInteger)
-    last_publish_date: Mapped[dt.datetime] = mapped_column(DateTime)
-    last_url: Mapped[str] = mapped_column(String)
+    latest_date_mc: Mapped[dt.datetime] = mapped_column(DateTime)
+    latest_date_nc: Mapped[dt.datetime] = mapped_column(DateTime)
+    latest_date_wm: Mapped[dt.datetime] = mapped_column(DateTime)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime)
 

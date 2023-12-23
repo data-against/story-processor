@@ -1,3 +1,4 @@
+import datetime as dt
 import json
 import logging
 import os
@@ -11,7 +12,14 @@ import processor.apiclient as apiclient
 import processor.classifiers as classifiers
 import processor.database as database
 import processor.database.projects_db as projects_db
-from processor import FEMINICIDE_API_KEY, VERSION, path_to_log_dir
+from processor import (
+    FEMINICIDE_API_KEY,
+    SOURCE_MEDIA_CLOUD,
+    SOURCE_NEWSCATCHER,
+    SOURCE_WAYBACK_MACHINE,
+    VERSION,
+    path_to_log_dir,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -73,21 +81,15 @@ def load_project_list(
                 _all_projects = json.load(f)
         else:
             _all_projects = []
-        # update the local history file, which tracks the latest processed_stories_id we've run for each project
         Session = database.get_session_maker()
         with Session() as session:
             for project in _all_projects:
                 project_history = projects_db.get_history(session, project["id"])
                 if (project_history is None) or overwrite_last_story:
-                    projects_db.add_history(
-                        session, project["id"], project["latest_processed_stories_id"]
-                    )
+                    projects_db.add_history(session, project["id"])
                     logger.info(
                         "    added/overwrote {} to local history".format(project["id"])
                     )
-                project["local_processed_stories_id"] = projects_db.get_history(
-                    session, project["id"]
-                ).last_processed_id
         return _all_projects
     except Exception as e:
         # bail completely if we can't load the config file
@@ -167,9 +169,6 @@ def prep_stories_for_posting(project: Dict, stories: List[Dict]) -> List[Dict]:
         story = dict(
             stories_id=s["stories_id"],
             source=s["source"],
-            processed_stories_id=s["processed_stories_id"]
-            if "processed_stories_id" in s
-            else None,
             language=s["language"],
             media_id=s["media_id"] if "media_id" in s else None,
             media_url=s["media_url"],
@@ -202,3 +201,35 @@ def classify_stories(project: Dict, stories: List[Dict]) -> Dict[str, List[float
     """
     classifier = classifiers.for_project(project)
     return classifier.classify(stories)
+
+
+def query_start_end_dates(
+    project: Dict, session_maker, day_offset: int, day_window: int, source: str
+) -> (dt.datetime, dt.datetime, projects_db.ProjectHistory):
+    history = None
+    try:
+        with session_maker() as session:
+            history = projects_db.get_history(session, project["id"])
+    except Exception as e:
+        logger.error(
+            "Couldn't get history for project {} - {}".format(project["id"], e)
+        )
+        logger.exception(e)
+    # only search stories since the last search (if we've done one before)
+    end_date = dt.datetime.now() - dt.timedelta(days=day_offset)
+    start_date = end_date - dt.timedelta(days=day_window)
+    last_date = None
+    if source == SOURCE_MEDIA_CLOUD:
+        last_date = history.latest_date_mc
+    elif source == SOURCE_NEWSCATCHER:
+        last_date = history.latest_date_nc
+    elif source == SOURCE_WAYBACK_MACHINE:
+        last_date = history.latest_date_wm
+
+    if history and (last_date is not None):
+        # make sure we don't accidentally cut off a half day we haven't queried against yet
+        # this is OK because duplicates will get screened out later in the pipeline
+        local_start_date = last_date - dt.timedelta(days=1)
+        start_date = max(local_start_date, start_date)
+
+    return start_date, end_date, history
