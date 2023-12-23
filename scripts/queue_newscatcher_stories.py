@@ -9,6 +9,8 @@ import time
 from multiprocessing import Pool
 from typing import Dict, List
 
+import dateparser
+
 # Disable loggers prior to package imports
 import processor
 
@@ -29,6 +31,7 @@ from processor.classifiers import download_models
 
 POOL_SIZE = 16  # parellel fetch for story URL lists (by project)
 PAGE_SIZE = 100
+DEFAULT_DAY_OFFSET = 0
 DEFAULT_DAY_WINDOW = 3  # don't look for stories that are too lod
 MAX_STORIES_PER_PROJECT = (
     2000  # can't process all the stories for queries that are too big
@@ -81,6 +84,7 @@ def _fetch_results(
             from_=start_date.strftime("%Y-%m-%d"),
             to_=end_date.strftime("%Y-%m-%d"),
             page=page,
+            # sort only supports date DESC, so better to do this by default relevancy perhaps
         )
     # try to ignore project-level exceptions so we can keep going and process other projects
     except newscatcherapi.newscatcherapi_exception.NewsCatcherApiException as ncae:
@@ -99,24 +103,12 @@ def _fetch_results(
 
 
 def _project_story_worker(p: Dict) -> List[Dict]:
-    end_date = dt.datetime.now()
-    project_stories = []
-    try:  # be careful here so database errors don't mess us up
-        Session = database.get_session_maker()
-        with Session() as session:
-            history = projects_db.get_history(session, p["id"])
-    except Exception as e:
-        logger.error("Couldn't get history for project {} - {}".format(p["id"], e))
-        logger.exception(e)
-        history = None
+    Session = database.get_session_maker()
+    start_date, end_date, history = projects.query_start_end_dates(
+        p, Session, DEFAULT_DAY_OFFSET, DEFAULT_DAY_WINDOW, processor.SOURCE_NEWSCATCHER
+    )
     page_number = 1
-    # only search stories since the last search (if we've done one before)
-    start_date = end_date - dt.timedelta(days=DEFAULT_DAY_WINDOW)
-    if history and (history.last_publish_date is not None):
-        # make sure we don't accidentally cut off a half day we haven't queried against yet
-        # this is OK because duplicates will get screened out later in the pipeline
-        local_start_date = history.last_publish_date - dt.timedelta(days=1)
-        start_date = max(local_start_date, start_date)
+    # fetch first page to get total hits, and use results
     current_page = _fetch_results(p, start_date, end_date, page_number)
     total_hits = current_page["total_hits"]
     logger.info(
@@ -124,7 +116,11 @@ def _project_story_worker(p: Dict) -> List[Dict]:
             p["id"], p["title"], total_hits, start_date
         )
     )
+    project_stories = []
     if total_hits > 0:
+        latest_pub_date = dt.datetime.now() - dt.timedelta(
+            weeks=50
+        )  # a long, long time ago
         page_count = math.ceil(total_hits / PAGE_SIZE)
         keep_going = True
         while keep_going:
@@ -133,19 +129,17 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     p["id"], page_number, len(current_page["articles"])
                 )
             )
+            # track the latest date so we can use it tomorrow
+            page_latest_pub_date = [
+                dateparser.parse(s["published_date"]) for s in current_page["articles"]
+            ]
+            latest_pub_date = max(latest_pub_date, max(page_latest_pub_date))
+            # prep all the articles
             for item in current_page["articles"]:
                 if len(project_stories) > MAX_STORIES_PER_PROJECT:
                     break
                 real_url = item["link"]
                 # removing this check for now, because I'm not sure if stories are ordered consistently
-                """
-                # stop when we've hit a url we've processed already
-                if history.last_url == real_url:
-                    logger.info("  Found last_url on {}, skipping the rest".format(p['id']))
-                    keep_going = False
-                    break  # out of the for loop of all articles on page, back to while "more pages"
-                # story was published more recently than latest one we saw, so process it
-                """
                 info = dict(
                     url=real_url,
                     source_publish_date=item["published_date"],
@@ -173,6 +167,10 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                 p["id"], len(project_stories), start_date
             )
         )
+        with Session() as session:
+            projects_db.update_history(
+                session, p["id"], latest_pub_date, processor.SOURCE_NEWSCATCHER
+            )
     return project_stories
 
 
