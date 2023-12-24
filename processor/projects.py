@@ -1,3 +1,4 @@
+import datetime as dt
 import json
 import logging
 import os
@@ -5,20 +6,30 @@ import sys
 import time
 from typing import Dict, List
 
+import dateparser
 import requests
 
 import processor.apiclient as apiclient
 import processor.classifiers as classifiers
 import processor.database as database
 import processor.database.projects_db as projects_db
-from processor import FEMINICIDE_API_KEY, VERSION, path_to_log_dir
+from processor import (
+    FEMINICIDE_API_KEY,
+    SOURCE_MEDIA_CLOUD,
+    SOURCE_NEWSCATCHER,
+    SOURCE_WAYBACK_MACHINE,
+    VERSION,
+    path_to_log_dir,
+)
 
 logger = logging.getLogger(__name__)
 
 _all_projects = None  # acts as a singleton because we only load it once (after we update it from central server)
 
 REALLY_POST = True  # helpful debug flag - set to False and we don't post results to central server TMP
-LOG_LAST_POST_TO_FILE = True
+LOG_LAST_POST_TO_FILE = (
+    False  # helpful for storing traces of JSON sent to mail server locally
+)
 
 
 def _path_to_config_file() -> str:
@@ -73,21 +84,15 @@ def load_project_list(
                 _all_projects = json.load(f)
         else:
             _all_projects = []
-        # update the local history file, which tracks the latest processed_stories_id we've run for each project
         Session = database.get_session_maker()
         with Session() as session:
             for project in _all_projects:
                 project_history = projects_db.get_history(session, project["id"])
                 if (project_history is None) or overwrite_last_story:
-                    projects_db.add_history(
-                        session, project["id"], project["latest_processed_stories_id"]
-                    )
+                    projects_db.add_history(session, project["id"])
                     logger.info(
                         "    added/overwrote {} to local history".format(project["id"])
                     )
-                project["local_processed_stories_id"] = projects_db.get_history(
-                    session, project["id"]
-                ).last_processed_id
         return _all_projects
     except Exception as e:
         # bail completely if we can't load the config file
@@ -122,10 +127,16 @@ def post_results(project: Dict, stories: List[Dict]) -> None:
                 "w",
                 encoding="utf-8",
             ) as f:
-                json.dump(data_to_send, f, ensure_ascii=False, indent=4)
+                json.dump(data_to_send, f, ensure_ascii=False, indent=4, default=str)
         # now post to server (if not in debug mode)
         if REALLY_POST:
-            response = requests.post(project["update_post_url"], json=data_to_send)
+            data_as_json_str = json.dumps(
+                data_to_send, ensure_ascii=False, default=str
+            )  # in case there is date
+            data_as_sanitized_obj = json.loads(data_as_json_str)
+            response = requests.post(
+                project["update_post_url"], json=data_as_sanitized_obj
+            )
             if not response.ok:
                 raise RuntimeError(
                     "Tried to post to project {} but got an error code {}".format(
@@ -165,11 +176,7 @@ def prep_stories_for_posting(project: Dict, stories: List[Dict]) -> List[Dict]:
     prepped_stories = []
     for s in stories:
         story = dict(
-            stories_id=s["stories_id"],
             source=s["source"],
-            processed_stories_id=s["processed_stories_id"]
-            if "processed_stories_id" in s
-            else None,
             language=s["language"],
             media_id=s["media_id"] if "media_id" in s else None,
             media_url=s["media_url"],
@@ -202,3 +209,49 @@ def classify_stories(project: Dict, stories: List[Dict]) -> Dict[str, List[float
     """
     classifier = classifiers.for_project(project)
     return classifier.classify(stories)
+
+
+def query_start_end_dates(
+    project: Dict,
+    session_maker,
+    day_offset: int,
+    day_window: int,
+    source: str,
+    use_last_date: bool = True,
+) -> (dt.datetime, dt.datetime, projects_db.ProjectHistory):
+    history = None
+    try:
+        with session_maker() as session:
+            history = projects_db.get_history(session, project["id"])
+    except Exception as e:
+        logger.error(
+            "Couldn't get history for project {} - {}".format(project["id"], e)
+        )
+        logger.exception(e)
+    # only search stories since the last search (if we've done one before)
+    end_date = dt.datetime.now() - dt.timedelta(days=day_offset)
+    try:
+        project_start_date = dateparser.parse(project["start_date"]).replace(
+            tzinfo=None
+        )
+        start_date = max(end_date - dt.timedelta(days=day_window), project_start_date)
+    except Exception:  # maybe project doesn't have start date? or not in date format?
+        start_date = end_date - dt.timedelta(days=day_window)
+    last_date = None
+    # Some sources don't return results in order of date indexed, so you might want NOT use the date of the latest
+    # story we fetched from them. In these cases we could see more duplicates, but are less likely to miss things.
+    if use_last_date:
+        if source == SOURCE_MEDIA_CLOUD:
+            last_date = history.latest_date_mc
+        elif source == SOURCE_NEWSCATCHER:
+            last_date = history.latest_date_nc
+        elif source == SOURCE_WAYBACK_MACHINE:
+            last_date = history.latest_date_wm
+
+    if history and (last_date is not None):
+        # make sure we don't accidentally cut off a half day we haven't queried against yet
+        # this is OK because duplicates will get screened out later in the pipeline
+        local_start_date = last_date - dt.timedelta(days=1)
+        start_date = max(local_start_date, start_date)
+
+    return start_date, end_date, history

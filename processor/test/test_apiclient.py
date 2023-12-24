@@ -16,7 +16,6 @@ class TestApiClient(unittest.TestCase):
             assert "media_collections" in p
             assert "min_confidence" in p
             assert "language_model_id" in p
-            assert "last_processed_stories_id" in p
             assert "update_post_url" in p
 
     def test_get_language_models_list(self):

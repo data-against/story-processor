@@ -170,12 +170,12 @@ def queue_stories_for_classification(
                         dateutil.parser.parse(s["source_publish_date"])
                         for s in project_stories
                     ]
-                    latest_date = max(publish_dates)
+                    # TODO: for MC need to get indexed date, not published_date
+                    latest_date = max(
+                        publish_dates
+                    )  # we use latest pub_date to filter in our queries tomorrow
                     projects_db.update_history(
-                        session,
-                        p["id"],
-                        last_publish_date=latest_date,
-                        last_url=project_stories[0]["url"],
+                        session, p["id"], latest_date, datasource
                     )
         logger.info(
             "  queued {} stories for project {}/{}".format(

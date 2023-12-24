@@ -3,6 +3,26 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.0.3
+
+* Fix date bugs on MC paging query
+* Protection around projects without start_date
+* Tweak story query windows to account for catchup for last few weeks
+
+### v4.0.2
+
+* Remove debug limit used for testing new MC client
+
+### v4.0.1
+
+* Fix bug related to sending new MC stories to main server
+
+### v4.0.0
+
+* First pass at new Media Cloud Online News Archive support
+* Support tracking latest-fetched story separately based on source
+* Update dependencies
+
 ### v3.6.2
 
 * Migrate mediacloud fetcher off of Prefect and prep to remove it completely.

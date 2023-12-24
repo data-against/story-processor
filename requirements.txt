@@ -1,27 +1,24 @@
 python-dotenv==1.0.*
 celery==5.3.*
 pytest==7.4.*
-Flask==2.3.*
-mediacloud==4.0.*
-mediacloud-api-legacy==3.*
+mediacloud==4.1.*
 gunicorn==21.*
-dateparser==1.1.*
+dateparser==1.2.*
 scikit-learn==1.0.2  # freeze this here for model serialization compatability
-sentry-sdk[flask]==1.31.*
+sentry-sdk[flask]==1.39.*
 tensorflow-hub==0.*
 tensorflow-text==2.*
 tensorflow==2.10.*  # freeze here due to cross-platform install challenges
 psycopg2==2.9.*
 SQLAlchemy==2.0.*
-alembic==1.12.*
+alembic==1.13.*
 python-dateutil==2.8.*
-amqp==5.1.*
+amqp==5.2.*
 gevent==23.9.*
 feedparser==6.0.*
-mediacloud-metadata>=0.9.2
+mediacloud-metadata>=0.11.*
 newscatcherapi==0.7.*
-wayback-news-search==1.0.*
-slack_sdk==3.22.*
+slack_sdk==3.26.*
 slack-bolt==1.18.*
 scrapy==2.11.*
-mc-providers==0.2.*
+mc-providers==0.5.*

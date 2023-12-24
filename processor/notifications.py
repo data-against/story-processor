@@ -9,7 +9,7 @@ from typing import List
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from processor import get_email_config, is_email_configured
+from processor import get_email_config, is_email_configured, is_slack_configured
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +49,9 @@ def send_email(recipients: List[str], subject: str, message: str) -> bool:
 def upload_to_slack(
     channel_id: str, bot_key: str, source: str, subject: str, file_path
 ) -> bool:
+    if not is_slack_configured():
+        logger.warning("Ignoring cowardly attempt post slack without tokens")
+        return False
     client = WebClient(token=bot_key)
     try:
         filename = source + "-" + time.strftime("%Y%m%d-%H%M%S")
@@ -68,6 +71,10 @@ def upload_to_slack(
 
 
 def send_slack_msg(channel_id, bot_key, data_source: str, subject: str, message: str):
+    if not is_slack_configured():
+        logger.warning("Ignoring cowardly attempt post slack without tokens")
+        return False
+
     header = f"{subject.upper()}"
     formatted_message = f"{header}\n\n{message}"
     channel = channel_id

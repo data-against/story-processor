@@ -6,11 +6,10 @@ from typing import Dict
 import mediacloud.api
 import mediacloud_legacy.api
 from dotenv import load_dotenv
-from flask import Flask
 from sentry_sdk import init
 from sentry_sdk.integrations.logging import ignore_logger
 
-VERSION = "3.6.2"
+VERSION = "4.0.3"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
@@ -163,12 +162,20 @@ def get_mc_legacy_client() -> mediacloud_legacy.api.AdminMediaCloud:
     return mediacloud_legacy.api.AdminMediaCloud(MC_LEGACY_API_KEY)
 
 
-def create_flask_app() -> Flask:
+def get_mc_client() -> mediacloud.api.SearchApi:
     """
-    Create and configure the Flask app. Standard practice is to do this in a factory method like this.
-    :return: a fully configured Flask web app
+    A central place to get the Media Cloud legacy client
+    :return: an admin media cloud client with the API key from the environment variable
     """
-    return Flask(__name__)
+    return mediacloud.api.SearchApi(MC_API_TOKEN)
+
+
+def is_slack_configured() -> bool:
+    return (
+        (os.environ.get("SLACK_APP_TOKEN", None) is not None)
+        and (os.environ.get("SLACK_BOT_TOKEN", None) is not None)
+        and (os.environ.get("SLACK_CHANNEL_ID", None) is not None)
+    )
 
 
 def is_email_configured() -> bool:
