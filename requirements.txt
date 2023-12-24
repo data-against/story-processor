@@ -3,7 +3,6 @@ celery==5.3.*
 pytest==7.4.*
 Flask==3.0.*
 mediacloud==4.1.*
-mediacloud-api-legacy==3.*
 gunicorn==21.*
 dateparser==1.2.*
 scikit-learn==1.0.2  # freeze this here for model serialization compatability
