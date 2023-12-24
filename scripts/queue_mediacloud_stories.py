@@ -27,7 +27,7 @@ from processor.classifiers import download_models
 
 POOL_SIZE = 4
 DEFAULT_DAY_OFFSET = 1  # stories don't get processed for a few days
-DEFAULT_DAY_WINDOW = 14  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
+DEFAULT_DAY_WINDOW = 7  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 DEFAULT_STORIES_PER_PAGE = 1000  # I found this performs poorly if set too high
 DEFAULT_MAX_STORIES_PER_PROJECT = (
     10000  # make sure we don't do too many stories each cron run
@@ -45,7 +45,7 @@ def load_projects_task() -> List[Dict]:
         force_reload=True, overwrite_last_story=False
     )
     logger.info("  Checking {} projects".format(len(project_list)))
-    # return [p for p in project_list if p['id'] == 88]
+    # return [p for p in project_list if p['id'] == 154]
     return project_list
 
 
@@ -108,8 +108,8 @@ def _process_project_task(args: Dict) -> Dict:
         try:
             page_of_stories, page_token = mc.story_list(
                 q,
-                start_date.date(),
-                end_date.date(),
+                pub_start_date,
+                pub_end_date,
                 collection_ids=project["media_collections"],
                 pagination_token=page_token,
                 page_size=DEFAULT_STORIES_PER_PAGE,
