@@ -185,7 +185,7 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
         logger.warning(
             "{}: Failed to post {} results".format(project["id"], len(stories))
         )
-        logger.exception(err)
+        # logger.exception(err) #Sentry logging ignored
         raise self.retry(exc=err)
     except Exception as exc:
         # only failure here is the classifier not loading? probably we should try again... feminicide server holds state
@@ -193,5 +193,5 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
         logger.warning(
             "{}: Failed to label {} stories".format(project["id"], len(stories))
         )
-        logger.exception(exc)
+        # logger.exception(exc) #Sentry logging ignored
         raise self.retry(exc=exc)

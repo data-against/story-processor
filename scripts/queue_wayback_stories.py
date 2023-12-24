@@ -207,7 +207,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
         logger.error(
             f"  project {p['id']} - failed to fetch stories (likely a query syntax or connection error)"
         )
-        logger.exception(e)
+        # logger.exception(e) #Ignore Sentry Logging
     return project_stories
 
 
