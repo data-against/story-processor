@@ -3,6 +3,12 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.0.3
+
+* Fix date bugs on MC paging query
+* Protection around projects without start_date
+* Tweak story query windows to account for catchup for last few weeks
+
 ### v4.0.2
 
 * Remove debug limit used for testing new MC client
