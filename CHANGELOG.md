@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.0.4
+
+* handle RabbitMQ message too big failure
+
 ### v4.0.3
 
 * Fix date bugs on MC paging query
