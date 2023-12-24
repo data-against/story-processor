@@ -156,32 +156,35 @@ def queue_stories_for_classification(
                     s["publish_date"] = s["source_publish_date"]
             # and log that we got and queued them all (this might happen a loooooong time after we last used the DB,
             # so lets be careful here and reset the engine before using the session)
-            Session = database.get_session_maker(reset_pool=True)
-            with Session() as session:
-                project_stories = stories_db.add_stories(
-                    session, project_stories, p, datasource
-                )
-                if len(project_stories) > 0:  # don't queue up unnecessary tasks
-                    # important to do this *after* we add the stories_id here
-                    celery_tasks.classify_and_post_worker.delay(p, project_stories)
-                    # important to write this update now, because we have queued up the task to process these stories
-                    # the task queue will manage retrying with the stories if it fails with this batch
-                    publish_dates = [
-                        dateutil.parser.parse(s["source_publish_date"])
-                        for s in project_stories
-                    ]
-                    # TODO: for MC need to get indexed date, not published_date
-                    latest_date = max(
-                        publish_dates
-                    )  # we use latest pub_date to filter in our queries tomorrow
-                    projects_db.update_history(
-                        session, p["id"], latest_date, datasource
+            try:
+                Session = database.get_session_maker(reset_pool=True)
+                with Session() as session:
+                    project_stories = stories_db.add_stories(
+                        session, project_stories, p, datasource
                     )
-        logger.info(
-            "  queued {} stories for project {}/{}".format(
-                len(project_stories), p["id"], p["title"]
-            )
-        )
+                    if len(project_stories) > 0:  # don't queue up unnecessary tasks
+                        # important to do this *after* we add the stories_id here
+                        celery_tasks.classify_and_post_worker.delay(p, project_stories)
+                        # important to write this update now, because we have queued up the task to process these
+                        # stories the task queue will manage retrying with the stories if it fails with this batch
+                        publish_dates = [
+                            dateutil.parser.parse(s["source_publish_date"])
+                            for s in project_stories
+                        ]
+                        latest_date = max(
+                            publish_dates
+                        )  # we use latest pub_date to filter in our queries tomorrow
+                        projects_db.update_history(
+                            session, p["id"], latest_date, datasource
+                        )
+                logger.info(
+                    "  queued {} stories for project {}/{}".format(
+                        len(project_stories), p["id"], p["title"]
+                    )
+                )
+            except Exception as e:
+                # could be amqp.exceptions.PreconditionFailed if message it too big, just skip it
+                logger.warning("Too big for celery, skipping: {}".format(e))
     return dict(
         email_text=email_message, project_count=len(project_list), stories=total_stories
     )
