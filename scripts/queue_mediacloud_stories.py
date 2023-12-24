@@ -25,7 +25,7 @@ import scripts.tasks as tasks
 from processor import get_mc_client
 from processor.classifiers import download_models
 
-POOL_SIZE = 4
+POOL_SIZE = 6
 DEFAULT_DAY_OFFSET = 1  # stories don't get processed for a few days
 DEFAULT_DAY_WINDOW = 7  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 DEFAULT_STORIES_PER_PAGE = 1000  # I found this performs poorly if set too high
@@ -60,9 +60,14 @@ def _process_project_task(args: Dict) -> Dict:
         processor.SOURCE_MEDIA_CLOUD,
     )
     # we will filter by indexed_date, so just make a wide window for pub_date values
-    pub_start_date = dateparser.parse(project["start_date"]).date() - dt.timedelta(
-        weeks=3
-    )
+    try:
+        pub_start_date = dateparser.parse(project["start_date"]).date() - dt.timedelta(
+            weeks=3
+        )
+    except (
+        Exception
+    ):  # might not have start_date set, so just use something that was a while ago
+        pub_start_date = dt.date.today() - dt.timedelta(weeks=12)
     pub_end_date = dt.date.today() + dt.timedelta(weeks=3)
     project_email_message = ""
     logger.info("Checking project {}/{}".format(project["id"], project["title"]))
