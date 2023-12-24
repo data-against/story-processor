@@ -46,7 +46,7 @@ def load_projects_task() -> List[Dict]:
     )
     logger.info("  Checking {} projects".format(len(project_list)))
     # return [p for p in project_list if p['id'] == 88]
-    return project_list[:10]
+    return project_list
 
 
 def _process_project_task(args: Dict) -> Dict:
