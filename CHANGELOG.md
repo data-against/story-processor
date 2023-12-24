@@ -3,6 +3,12 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.0.0
+
+* First pass at new Media Cloud Online News Archive support
+* Support tracking latest-fetched story separately based on source
+* Update dependencies
+
 ### v3.6.2
 
 * Migrate mediacloud fetcher off of Prefect and prep to remove it completely.
