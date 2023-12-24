@@ -127,10 +127,16 @@ def post_results(project: Dict, stories: List[Dict]) -> None:
                 "w",
                 encoding="utf-8",
             ) as f:
-                json.dump(data_to_send, f, ensure_ascii=False, indent=4)
+                json.dump(data_to_send, f, ensure_ascii=False, indent=4, default=str)
         # now post to server (if not in debug mode)
         if REALLY_POST:
-            response = requests.post(project["update_post_url"], json=data_to_send)
+            data_as_json_str = json.dumps(
+                data_to_send, ensure_ascii=False, default=str
+            )  # in case there is date
+            data_as_sanitized_obj = json.loads(data_as_json_str)
+            response = requests.post(
+                project["update_post_url"], json=data_as_sanitized_obj
+            )
             if not response.ok:
                 raise RuntimeError(
                     "Tried to post to project {} but got an error code {}".format(
