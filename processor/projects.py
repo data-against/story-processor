@@ -6,6 +6,7 @@ import sys
 import time
 from typing import Dict, List
 
+import dateparser
 import requests
 
 import processor.apiclient as apiclient
@@ -26,7 +27,9 @@ logger = logging.getLogger(__name__)
 _all_projects = None  # acts as a singleton because we only load it once (after we update it from central server)
 
 REALLY_POST = True  # helpful debug flag - set to False and we don't post results to central server TMP
-LOG_LAST_POST_TO_FILE = True
+LOG_LAST_POST_TO_FILE = (
+    False  # helpful for storing traces of JSON sent to mail server locally
+)
 
 
 def _path_to_config_file() -> str:
@@ -167,7 +170,6 @@ def prep_stories_for_posting(project: Dict, stories: List[Dict]) -> List[Dict]:
     prepped_stories = []
     for s in stories:
         story = dict(
-            stories_id=s["stories_id"],
             source=s["source"],
             language=s["language"],
             media_id=s["media_id"] if "media_id" in s else None,
@@ -204,7 +206,12 @@ def classify_stories(project: Dict, stories: List[Dict]) -> Dict[str, List[float
 
 
 def query_start_end_dates(
-    project: Dict, session_maker, day_offset: int, day_window: int, source: str
+    project: Dict,
+    session_maker,
+    day_offset: int,
+    day_window: int,
+    source: str,
+    use_last_date: bool = True,
 ) -> (dt.datetime, dt.datetime, projects_db.ProjectHistory):
     history = None
     try:
@@ -217,14 +224,19 @@ def query_start_end_dates(
         logger.exception(e)
     # only search stories since the last search (if we've done one before)
     end_date = dt.datetime.now() - dt.timedelta(days=day_offset)
-    start_date = end_date - dt.timedelta(days=day_window)
+    project_start_date = dateparser.parse(project["start_date"]).replace(tzinfo=None)
+
+    start_date = max(end_date - dt.timedelta(days=day_window), project_start_date)
     last_date = None
-    if source == SOURCE_MEDIA_CLOUD:
-        last_date = history.latest_date_mc
-    elif source == SOURCE_NEWSCATCHER:
-        last_date = history.latest_date_nc
-    elif source == SOURCE_WAYBACK_MACHINE:
-        last_date = history.latest_date_wm
+    # Some sources don't return results in order of date indexed, so you might want NOT use the date of the latest
+    # story we fetched from them. In these cases we could see more duplicates, but are less likely to miss things.
+    if use_last_date:
+        if source == SOURCE_MEDIA_CLOUD:
+            last_date = history.latest_date_mc
+        elif source == SOURCE_NEWSCATCHER:
+            last_date = history.latest_date_nc
+        elif source == SOURCE_WAYBACK_MACHINE:
+            last_date = history.latest_date_wm
 
     if history and (last_date is not None):
         # make sure we don't accidentally cut off a half day we haven't queried against yet

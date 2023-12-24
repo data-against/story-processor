@@ -1,11 +1,10 @@
 import datetime as dt
 import logging
+from typing import Dict
 
 from dateutil.parser import parse
 from sqlalchemy import BigInteger, Boolean, DateTime, Float, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-import processor
 
 logger = logging.getLogger(__name__)
 
@@ -36,16 +35,16 @@ class Story(Base):
         return "<Story id={} source={}>".format(self.id, self.source)
 
     @staticmethod
-    def from_source(story, source):
+    def from_source(story: Dict, source: str):
         db_story = Story()
-        if source == processor.SOURCE_MEDIA_CLOUD:  # backwards compatability
-            db_story.stories_id = story["stories_id"]
         db_story.url = story["url"]
         db_story.source = source
         # carefully parse date, with fallback to today so we at least get something close to right
         use_fallback_date = False
         try:
-            if not isinstance(story["publish_date"], dt.datetime):
+            if not isinstance(story["publish_date"], dt.datetime) and not isinstance(
+                story["publish_date"], dt.date
+            ):
                 db_story.published_date = parse(story["publish_date"])
             elif story["publish_date"] is not None:
                 db_story.published_date = story["publish_date"]
@@ -57,7 +56,7 @@ class Story(Base):
             db_story.published_date = dt.datetime.now()
             logger.warning(
                 "Used today as publish date for story that didn't have date ({}) on it: {}".format(
-                    story["publish_date"], db_story["url"]
+                    story["publish_date"], db_story.url
                 )
             )
         return db_story

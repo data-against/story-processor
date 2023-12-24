@@ -105,7 +105,12 @@ def _fetch_results(
 def _project_story_worker(p: Dict) -> List[Dict]:
     Session = database.get_session_maker()
     start_date, end_date, history = projects.query_start_end_dates(
-        p, Session, DEFAULT_DAY_OFFSET, DEFAULT_DAY_WINDOW, processor.SOURCE_NEWSCATCHER
+        p,
+        Session,
+        DEFAULT_DAY_OFFSET,
+        DEFAULT_DAY_WINDOW,
+        processor.SOURCE_NEWSCATCHER,
+        False,
     )
     page_number = 1
     # fetch first page to get total hits, and use results

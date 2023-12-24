@@ -126,10 +126,9 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
             )
             for s in stories_with_confidence:
                 logger.debug(
-                    "  classify: {}/{} - {} - {}".format(
+                    "  classify: {}/{} - {}".format(
                         project["id"],
                         project["language_model_id"],
-                        s["stories_id"],
                         s["confidence"],
                     )
                 )
@@ -171,10 +170,9 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
                     page_to_send
                 ):  # for auditing, keep a log in the container of the results posted to main server
                     logger.debug(
-                        "  post: {}/{} - {} - {}".format(
+                        "  post: {}/{} - {}".format(
                             s["project_id"],
                             s["language_model_id"],
-                            s["stories_id"],
                             s["confidence"],
                         )
                     )
