@@ -6,7 +6,6 @@ from typing import Dict
 import mediacloud.api
 import mediacloud_legacy.api
 from dotenv import load_dotenv
-from flask import Flask
 from sentry_sdk import init
 from sentry_sdk.integrations.logging import ignore_logger
 
@@ -155,14 +154,6 @@ def get_mc_client() -> mediacloud.api.SearchApi:
     :return: an admin media cloud client with the API key from the environment variable
     """
     return mediacloud.api.SearchApi(MC_API_TOKEN)
-
-
-def create_flask_app() -> Flask:
-    """
-    Create and configure the Flask app. Standard practice is to do this in a factory method like this.
-    :return: a fully configured Flask web app
-    """
-    return Flask(__name__)
 
 
 def is_slack_configured() -> bool:
