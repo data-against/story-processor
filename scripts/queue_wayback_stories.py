@@ -93,8 +93,11 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     "  {} - page {}: {} stories".format(p["id"], page_number, len(page))
                 )
                 # track most recent story across all pages (seems to be sorted default by surt_url asc)
-                page_latest_pub_date = max([s["publish_date"] for s in page])
-                latest_pub_date = max(latest_pub_date, page_latest_pub_date)
+                try:
+                    page_latest_pub_date = max([s["publish_date"] for s in page])
+                    latest_pub_date = max(latest_pub_date, page_latest_pub_date)
+                except Exception:  # maybe no stories on this page?
+                    pass
                 # prep all stories
                 for item in page:
                     if len(project_stories) > MAX_STORIES_PER_PROJECT:

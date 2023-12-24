@@ -230,9 +230,13 @@ def query_start_end_dates(
         logger.exception(e)
     # only search stories since the last search (if we've done one before)
     end_date = dt.datetime.now() - dt.timedelta(days=day_offset)
-    project_start_date = dateparser.parse(project["start_date"]).replace(tzinfo=None)
-
-    start_date = max(end_date - dt.timedelta(days=day_window), project_start_date)
+    try:
+        project_start_date = dateparser.parse(project["start_date"]).replace(
+            tzinfo=None
+        )
+        start_date = max(end_date - dt.timedelta(days=day_window), project_start_date)
+    except Exception:  # maybe project doesn't have start date? or not in date format?
+        start_date = end_date - dt.timedelta(days=day_window)
     last_date = None
     # Some sources don't return results in order of date indexed, so you might want NOT use the date of the latest
     # story we fetched from them. In these cases we could see more duplicates, but are less likely to miss things.
