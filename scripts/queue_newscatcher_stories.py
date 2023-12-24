@@ -32,7 +32,7 @@ from processor.classifiers import download_models
 POOL_SIZE = 16  # parellel fetch for story URL lists (by project)
 PAGE_SIZE = 100
 DEFAULT_DAY_OFFSET = 0
-DEFAULT_DAY_WINDOW = 3  # don't look for stories that are too lod
+DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
 MAX_STORIES_PER_PROJECT = (
     2000  # can't process all the stories for queries that are too big
 )
