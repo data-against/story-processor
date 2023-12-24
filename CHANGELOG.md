@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.0.2
+
+* Remove debug limit used for testing new MC client
+
 ### v4.0.1
 
 * Fix bug related to sending new MC stories to main server
