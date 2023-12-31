@@ -3,7 +3,7 @@ import logging
 from typing import Dict
 
 from dateutil.parser import parse
-from sqlalchemy import BigInteger, Boolean, DateTime, Float, Integer, String
+from sqlalchemy import Boolean, DateTime, Float, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,6 @@ class Story(Base):
     __tablename__ = "stories"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    stories_id: Mapped[int] = mapped_column(BigInteger)
     project_id: Mapped[int] = mapped_column(Integer)
     model_id: Mapped[int] = mapped_column(Integer)
     model_score: Mapped[float] = mapped_column(Float)

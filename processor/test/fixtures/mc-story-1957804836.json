@@ -8,262 +8,262 @@
     "media_id": 360993,
     "normalized_title_hash": "aded903d-1d37-60ec-5e33-a283d1a28804",
     "publish_date": "2021-06-10 16:05:25",
-    "stories_id": 1957804836,
+    "id": 1957804836,
     "story_tags": [
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "geonames_5332921",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878533
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "geonames_5368361",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878543
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "television",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360879
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Sony",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362533
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "AP",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362920
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "NBC",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9363117
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Netflix",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9363592
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "NFL",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9364687
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Jimmy Kimmel",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9364780
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Sanjay Gupta",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9365050
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Lucy",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9368405
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Sony Pictures",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9369139
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Alex Trebek",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9369513
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Ken Jennings",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9369519
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Anderson Cooper",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9379872
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Aaron Rodgers",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9382794
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Katie Couric",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9384732
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Western Reserve University",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9396551
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Robin Roberts",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9397427
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Steve Harvey",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9410167
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Mike Richards",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9438306
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Merv Griffin",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9452853
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Meredith Vieira",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9456614
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Betty White",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9457997
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Lucille Ball",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9488532
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Louis Virtel",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9515471
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Mayim Bialik",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9632394
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Wayne Brady",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9814471
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "LeVar Burton",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9814948
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Adam Wade",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 14319082
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Buzzy Cohen",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 32811488
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "Deepak Sarma",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 47279569
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,
             "tags_id": 228516911
         },
         {
-            "stories_id": 1957804836,
+            "id": 1957804836,
             "tag": "producer-entertainer Griffin",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,

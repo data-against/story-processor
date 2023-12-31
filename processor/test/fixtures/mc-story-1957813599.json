@@ -8,87 +8,87 @@
     "media_id": 658824,
     "normalized_title_hash": "1f5fa357-e12a-0f54-92bc-1eb286f74090",
     "publish_date": "2021-06-11 03:20:44",
-    "stories_id": 1957813599,
+    "id": 1957813599,
     "story_tags": [
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "geonames_6254926",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878682
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "geonames_4950395",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8885370
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "accidents and safety",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360977
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "animals",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360994
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "CBS",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9363631
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "Lawrence",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9365789
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "Scituate Police Department",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 10174042
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "DJ Henry",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 47990937
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957813599,
+            "id": 1957813599,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,

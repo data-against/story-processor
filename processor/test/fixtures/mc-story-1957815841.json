@@ -8,150 +8,150 @@
     "media_id": 19,
     "normalized_title_hash": "bc18cb39-9b5e-6d13-a0ed-a619cc96e7d3",
     "publish_date": "2021-06-10 22:44:48",
-    "stories_id": 1957815841,
+    "id": 1957815841,
     "story_tags": [
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "geonames_4597040",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878556
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "golf",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361130
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "RBC",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9381457
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Dustin Johnson",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9388967
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Phil Mickelson",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9388990
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "PGA",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9395895
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Hilton",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9397071
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Brooks Koepka",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9403304
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Chesson Hadley",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9429580
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Tom Fazio",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9460210
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Henry McMaster",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9496418
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "RBC Heritage",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 11647520
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Doc Redman",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 14933864
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "geonames_4597044",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 18944504
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Erik van Rooyen",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 29824296
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Wes Roach",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 32365825
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,
             "tags_id": 228516911
         },
         {
-            "stories_id": 1957815841,
+            "id": 1957815841,
             "tag": "Korn Ferry tours",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,

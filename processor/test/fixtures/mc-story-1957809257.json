@@ -8,73 +8,73 @@
     "media_id": 24842,
     "normalized_title_hash": "320ee259-39f1-ec1e-1a31-59680f3eaee0",
     "publish_date": "2021-06-11 04:11:00",
-    "stories_id": 1957809257,
+    "id": 1957809257,
     "story_tags": [
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "geonames_5332921",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878533
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "accidents and safety",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360977
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "children and youth",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360981
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "murders and attempted murders",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360982
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "WESH",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9759524
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,
             "tags_id": 228516911
         },
         {
-            "stories_id": 1957809257,
+            "id": 1957809257,
             "tag": "Orange County Sheriff's Office updates information",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,

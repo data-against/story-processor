@@ -8,325 +8,325 @@
     "media_id": 14,
     "normalized_title_hash": "0010e304-7431-c735-5bed-0a29389beb27",
     "publish_date": "2021-06-11 04:04:16",
-    "stories_id": 1957804926,
+    "id": 1957804926,
     "story_tags": [
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5128638",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878463
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5096281",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878509
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5037649",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878537
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5690694",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878690
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5506956",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878898
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_4671654",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878993
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_4140963",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8880349
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_4951305",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8881256
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5322053",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8881901
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_4276873",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8882126
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_4164167",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8883021
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5174095",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8884126
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5103396",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8884161
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_2335204",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8884600
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_4938157",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8884970
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_3682426",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8885170
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_10227175",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 9058455
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "medicine and health",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360852
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Senate",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362741
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Associated Press",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362784
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "AP",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362920
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Susan Walsh/AP",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9364741
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Chuck Schumer",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9364810
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "John Locher/AP",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9375731
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Vincent Van Gogh",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9382282
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "John Minchillo/AP",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9403859
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Floyd Mayweather",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9414198
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Zuri",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9541658
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Eric Gay/AP",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9585490
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Lynne Sladky/AP",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9667108
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Frank Gunn/The",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10692179
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Michael Dwyer/AP",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11218696
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Monument Mountain Regional High School",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 19660144
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Justin Wallace",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 31432026
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Stephanie Zollshan/The",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 35949021
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Courtney Dittmar",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 38059450
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Jovan Young",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 39965593
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Stephanie Zollshan/AP",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 46862068
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Eugene Garcia/AP",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 58130303
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Glenda Valdez",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 175056772
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "geonames_5109797",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 187516780
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,
             "tags_id": 228516911
         },
         {
-            "stories_id": 1957804926,
+            "id": 1957804926,
             "tag": "Winston Boogie Smith Jr.",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,

@@ -7,7 +7,6 @@ from sqlalchemy import delete, select, text, update
 from sqlalchemy.orm.session import Session
 from sqlalchemy.sql import func
 
-import processor
 from processor.database.models import Story
 
 logger = logging.getLogger(__name__)
@@ -44,18 +43,6 @@ def add_stories(
         s["log_db_id"] = s[
             "db_story"
         ].id  # keep track of the db id, so we can use it later to update this story
-    if source != processor.SOURCE_MEDIA_CLOUD:
-        # these stories don't have a stories_id, which we use later, so set it to the local-database id and save
-        for s in new_source_story_list:
-            s["stories_id"] = s[
-                "db_story"
-            ].id  # since these don't have a stories_id, set it to the database PK id
-            session.execute(
-                update(Story)
-                .where(Story.id == s["log_db_id"])
-                .values(stories_id=s["log_db_id"])
-            )
-        session.commit()
     for s in new_source_story_list:  # free the DB objects back for GC
         if "db_story" in s:  # a little extra safety
             del s["db_story"]

@@ -8,248 +8,248 @@
     "media_id": 1751,
     "normalized_title_hash": "2200e1ec-471b-b38b-2b11-2482035194c7",
     "publish_date": "2021-06-11 01:00:09",
-    "stories_id": 1957805187,
+    "id": 1957805187,
     "story_tags": [
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "geonames_5332921",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878533
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "geonames_1850144",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878673
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "geonames_1850147",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878679
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "geonames_5367815",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8984968
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "motion pictures",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360845
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Helen Mirren",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9364104
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Gal Gadot",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9385072
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Michelle Rodriguez",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9399240
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Ramsey",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9407062
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Rita Ora",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9413943
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Gisele",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9507548
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Tyrese Gibson",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9512081
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Paul Walker",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9524133
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Jordana Brewster",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9531210
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Vin Diesel",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9594129
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Andrea Dworkin",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9599386
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Jason Statham",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9721822
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Matt Hancock",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9769917
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Nathalie Emmanuel",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10116233
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Dominic Toretto",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10333268
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Deckard Shaw",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10333272
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Letty",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10397529
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Tim Jonze",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10590427
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Lucas Black",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10700754
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Brian O\u2019Conner",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10789198
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Sean Boswell",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11232594
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Dom Torretto",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 57215235
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Graeme Robertson/The",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 64619773
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Sung-Ho Kang",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 171811777
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,
             "tags_id": 228516911
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Universal Pictures/Allstar Boswell",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 236911846
         },
         {
-            "stories_id": 1957805187,
+            "id": 1957805187,
             "tag": "Brian abandon Mia",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,

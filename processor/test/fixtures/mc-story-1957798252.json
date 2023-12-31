@@ -8,479 +8,479 @@
     "media_id": 508436,
     "normalized_title_hash": "546f9bec-f876-bd20-5912-cfa28a6dbaa9",
     "publish_date": "2021-06-10 09:53:10",
-    "stories_id": 1957798252,
+    "id": 1957798252,
     "story_tags": [
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "geonames_4699066",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878528
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "geonames_4736286",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878538
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "geonames_4684888",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878901
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "biographical information",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360968
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Angela",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9364068
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Jeremy",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9370580
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Christ",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9374218
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Gregory",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9379904
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Gibson",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9381976
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Clara",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9381998
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Kayla",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9419210
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Woodrow",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9532555
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Bessie",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9567346
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Breanna",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9582324
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Kennedi",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9671392
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Katina",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9673263
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Brayden",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9737346
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Terrance",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9874639
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Shirley Johnson",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10642349
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Brian Jr.",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11272508
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Lenora Williams",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11373595
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Keith Jr.",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 17228578
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Michael Maddox",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 18137204
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Jerry Maddox",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 32150588
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Keanna",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 32918975
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Patricia Myles",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 34118116
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Louis Edwards",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 35267823
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Green Missionary Baptist Church",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 37311648
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Robert Edwards Jr.",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 37889728
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Bernice Bailey",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 37908011
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Alcorn Braves",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 39057750
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Edwards Sr.",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 39658522
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Donald Maddox",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 40532117
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Glenda Washington",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 42728378
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Hazel Dixon",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 43327584
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Cassandra Little",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 49952639
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Gloria Faye Edwards",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 50568874
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Larry Maddox",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 55363958
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "geonames_4357833",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 55959680
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "St. Elmo Christian Church",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 64507274
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Robert Lee Edwards",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 67617400
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Leon Little",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 72539160
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Joyce Maddox",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 73268988
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Southern Lumber Company",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 81138059
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Alice Odom",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 116370898
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Ronnie Maddox",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 135124657
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Brenda Faye Edwards",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 139528283
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Dorothy Jean Barnes",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 142883902
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Percy Terrell",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 214517938
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,
             "tags_id": 228516911
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Tootnanny",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919075
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Johnny B. Sayles",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919076
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Louis Sayles",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919077
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Annie Mae Mcinnis",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919078
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Latashie Curtis",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919079
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Elsie Ruth Sayles",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919080
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "W. L Edwards",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919081
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Willie Clyde Maddox",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919082
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Odell Maddox",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919083
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Suzette Becvar",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919084
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Lesate McGee",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919085
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Brenissa Marbra",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919086
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Kejaylen",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919087
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Kejarvis",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 236919088
         },
         {
-            "stories_id": 1957798252,
+            "id": 1957798252,
             "tag": "Jurayiah",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,

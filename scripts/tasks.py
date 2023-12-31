@@ -163,7 +163,6 @@ def queue_stories_for_classification(
                         session, project_stories, p, datasource
                     )
                     if len(project_stories) > 0:  # don't queue up unnecessary tasks
-                        # important to do this *after* we add the stories_id here
                         celery_tasks.classify_and_post_worker.delay(p, project_stories)
                         # important to write this update now, because we have queued up the task to process these
                         # stories the task queue will manage retrying with the stories if it fails with this batch

@@ -16,7 +16,7 @@ class TestTasks(unittest.TestCase):
             os.path.join(test_fixture_dir, "aapf_samples.json"), encoding="utf-8"
         ) as f:
             sample_stories = json.load(f)
-        story_ids = [s["stories_id"] for s in sample_stories]
+        story_ids = [s["id"] for s in sample_stories]
         return story_ids
 
     def _classify_story_ids(self, project, story_ids):
@@ -43,9 +43,7 @@ class TestTasks(unittest.TestCase):
         project["language_model_id"] = 3
         story_ids = self._sample_story_ids()
         classified_stories = self._classify_story_ids(project, story_ids)
-        matching_stories = [
-            s for s in classified_stories if s["stories_id"] == 1957814773
-        ]
+        matching_stories = [s for s in classified_stories if s["id"] == 1957814773]
         assert len(matching_stories) == 1
         assert round(matching_stories[0]["confidence"], 5) == 0.35770
 

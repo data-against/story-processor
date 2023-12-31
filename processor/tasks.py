@@ -99,9 +99,7 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
     :param self:
     :param project: a dict with the project info from the main server
     :param stories: a list of stories, each with the following properties (see `projects.prep_stories_for_posting`):
-                    * `stories_id`: a unique id for the story
                     * `story_text`: raw text content for classification
-                    * `processed_stories_id`: another id on the story
                     * `language`: two letter language story is in
                     * `media_id`: a unique id for the publisher
                     * `media_url`: the url of the publisher
@@ -187,7 +185,6 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
         raise self.retry(exc=err)
     except Exception as exc:
         # only failure here is the classifier not loading? probably we should try again... feminicide server holds state
-        # and can handle any duplicate results based on stories_id+model_id synthetic unique key
         logger.warning(
             "{}: Failed to label {} stories".format(project["id"], len(stories))
         )
