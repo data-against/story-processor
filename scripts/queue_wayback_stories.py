@@ -14,10 +14,12 @@ import processor
 
 processor.disable_package_loggers()
 
+import mcmetadata.urls as urls
 from mc_providers.onlinenews import OnlineNewsWaybackMachineProvider
 
 import processor.database as database
 import processor.database.projects_db as projects_db
+import processor.database.stories_db as stories_db
 import processor.fetcher as fetcher
 import processor.mcdirectory as mcdirectory
 import processor.projects as projects
@@ -41,7 +43,7 @@ def load_projects() -> List[Dict]:
         force_reload=True, overwrite_last_story=False
     )
     logger.info("  Found {} projects".format(len(project_list)))
-    # return project_list[20:25]
+    # return project_list[20:22]
     # return [p for p in project_list if p['id'] == 166]
     return project_list
 
@@ -62,6 +64,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
         False,
     )
     project_stories = []
+    skipped_dupes = 0  # how many URLs do we filter out because they're already in the DB for this project recently
     page_number = 1
     full_project_query = _query_builder(p["search_terms"], p["language"])
     try:
@@ -76,6 +79,10 @@ def _project_story_worker(p: Dict) -> List[Dict]:
             )
         )
         if total_hits > 0:  # don't bother querying if no results to page through
+            # list recent urls to filter so we don't fetch text extra if we've recently proceses already (and will be filtered
+            # out by add_stories call in later post-text-fetch step)
+            with Session() as session:
+                already_processed_urls = stories_db.project_story_urls(session, p, 14)
             # using the provider wrapper so this does the chunking into smaller queries for us
             latest_pub_date = dt.datetime.now() - dt.timedelta(
                 weeks=50
@@ -102,6 +109,10 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                 for item in page:
                     if len(project_stories) > MAX_STORIES_PER_PROJECT:
                         break
+                    # skip URLs we've processed recently
+                    if urls.normalize_url(item["url"]) in already_processed_urls:
+                        skipped_dupes += 1
+                        continue
                     info = dict(
                         id=item[
                             "id"
@@ -125,8 +136,8 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     project_stories.append(info)
                 time.sleep(0.1)  # don't hammer the API
             logger.info(
-                "  project {} - {} stories (after {})".format(
-                    p["id"], len(project_stories), start_date
+                "  project {} - {} stories (skipped {}) (after {})".format(
+                    p["id"], len(project_stories), skipped_dupes, start_date
                 )
             )
             # after all pages done, update latest pub date so we start at that next time
@@ -134,13 +145,13 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                 projects_db.update_history(
                     session, p["id"], latest_pub_date, processor.SOURCE_WAYBACK_MACHINE
                 )
-    except Exception as e:
+    except Exception:
         # perhaps a query syntax error? log it, but keep going so other projects succeed
         logger.error(
             f"  project {p['id']} - failed to fetch stories (likely a query syntax or connection error)"
         )
         # logger.exception(e) #Ignore Sentry Logging
-    return project_stories
+    return project_stories[:MAX_STORIES_PER_PROJECT]
 
 
 def fetch_project_stories(project_list: List[Dict]) -> List[Dict]:

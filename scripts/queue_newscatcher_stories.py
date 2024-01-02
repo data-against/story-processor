@@ -24,12 +24,13 @@ import requests.exceptions
 
 import processor.database as database
 import processor.database.projects_db as projects_db
+import processor.database.stories_db as stories_db
 import processor.fetcher as fetcher
 import processor.projects as projects
 import scripts.tasks as tasks
 from processor.classifiers import download_models
 
-POOL_SIZE = 16  # parellel fetch for story URL lists (by project)
+POOL_SIZE = 16  # parallel fetch for story URL lists (by project)
 PAGE_SIZE = 100
 DEFAULT_DAY_OFFSET = 0
 DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
@@ -122,10 +123,14 @@ def _project_story_worker(p: Dict) -> List[Dict]:
         )
     )
     project_stories = []
+    skipped_dupes = 0  # how many URLs do we filter out because they're already in the DB for this project recently
     if total_hits > 0:
-        latest_pub_date = dt.datetime.now() - dt.timedelta(
-            weeks=50
-        )  # a long, long time ago
+        # list recent urls to filter so we don't fetch text extra if we've recently proceses already (and will be filtered
+        # out by add_stories call in later post-text-fetch step)
+        with Session() as session:
+            already_processed_urls = stories_db.project_story_urls(session, p, 14)
+        # query page by page
+        latest_pub_date = dt.datetime.now() - dt.timedelta(weeks=50)
         page_count = math.ceil(total_hits / PAGE_SIZE)
         keep_going = True
         while keep_going:
@@ -144,6 +149,10 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                 if len(project_stories) > MAX_STORIES_PER_PROJECT:
                     break
                 real_url = item["link"]
+                # skip URLs we've processed recently
+                if urls.normalize_url(real_url) in already_processed_urls:
+                    skipped_dupes += 1
+                    continue
                 # removing this check for now, because I'm not sure if stories are ordered consistently
                 info = dict(
                     url=real_url,
@@ -168,15 +177,15 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     current_page = _fetch_results(p, start_date, end_date, page_number)
                     # stay below rate limiting
         logger.info(
-            "  project {} - {} valid stories (after {})".format(
-                p["id"], len(project_stories), start_date
+            "  project {} - {} valid stories (skipped {}) (after {})".format(
+                p["id"], len(project_stories), skipped_dupes, start_date
             )
         )
         with Session() as session:
             projects_db.update_history(
                 session, p["id"], latest_pub_date, processor.SOURCE_NEWSCATCHER
             )
-    return project_stories
+    return project_stories[:MAX_STORIES_PER_PROJECT]
 
 
 def fetch_project_stories(project_list: List[Dict]) -> List[Dict]:

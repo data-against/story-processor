@@ -3,6 +3,7 @@ import datetime as dt
 import logging
 from typing import Dict, List
 
+import mcmetadata.urls as urls
 from sqlalchemy import delete, select, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
@@ -11,6 +12,17 @@ from sqlalchemy.sql import func
 from processor.database.models import Story
 
 logger = logging.getLogger(__name__)
+
+
+def project_story_urls(session: Session, project: Dict, last_n_days: int) -> List[str]:
+    last_n_days_filter = Story.queued_date > (
+        dt.datetime.now() - dt.timedelta(days=last_n_days)
+    )
+    project_id_filter = Story.project_id == project["id"]
+    matching = (
+        session.query(Story).filter(project_id_filter).filter(last_n_days_filter).all()
+    )
+    return [s.url for s in matching]
 
 
 def add_stories(
@@ -28,6 +40,9 @@ def add_stories(
     new_source_story_list = copy.copy(source_story_list)
     now = dt.datetime.now()
     for discovered_story in new_source_story_list:
+        discovered_story["url"] = urls.normalize_url(
+            discovered_story["url"]
+        )  # this will help in de-duplication
         db_story = Story.from_source(discovered_story, source)
         db_story.project_id = project["id"]
         db_story.model_id = project["language_model_id"]
