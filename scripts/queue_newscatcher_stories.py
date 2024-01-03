@@ -31,11 +31,11 @@ import scripts.tasks as tasks
 from processor.classifiers import download_models
 
 POOL_SIZE = 16  # parallel fetch for story URL lists (by project)
-PAGE_SIZE = 100
+PAGE_SIZE = 200
 DEFAULT_DAY_OFFSET = 0
 DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
 MAX_STORIES_PER_PROJECT = (
-    500  # can't process all the stories for queries that are too big
+    3000  # can't process all the stories for queries that are too big
 )
 MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
