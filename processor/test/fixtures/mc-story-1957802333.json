@@ -8,206 +8,206 @@
     "media_id": 1098,
     "normalized_title_hash": "963eb427-6aab-653b-b353-544b3bfd6464",
     "publish_date": "2021-06-11 04:09:15",
-    "stories_id": 1957802333,
+    "id": 1957802333,
     "story_tags": [
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "geonames_6254926",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878682
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "geonames_4930956",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878689
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "politics and government",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360836
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "television",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360879
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "news and news media",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360885
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "media",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360911
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Donald Trump",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9362284
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "White House",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362736
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Sean Spicer",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9362759
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "CNN",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362932
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Harvey Weinstein",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9363017
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "NBC",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9363117
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Fox News",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9364167
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Eric Holder",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9364285
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Jeffrey Toobin",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9382968
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Megyn Kelly",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9384623
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "New Yorker",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9386691
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Jay Leno",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9396976
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Alisyn Camerota",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9397414
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Washington Times",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9456724
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Hunter Biden",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9479867
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Lisa Boothe",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9588194
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Fox News radio",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9612557
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Tim Young",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9627164
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "Paul Marotta/Getty",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9869903
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957802333,
+            "id": 1957802333,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,

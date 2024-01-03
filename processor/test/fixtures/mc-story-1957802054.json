@@ -8,80 +8,80 @@
     "media_id": 649900,
     "normalized_title_hash": "8017770c-7bfd-874d-a28e-24443396fdbe",
     "publish_date": "2021-06-11 04:07:00",
-    "stories_id": 1957802054,
+    "id": 1957802054,
     "story_tags": [
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "geonames_4099753",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878762
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "geonames_4116834",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8884894
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "computers and the internet",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360839
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "Donald Trump",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9362284
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "Facebook",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362725
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "Dana D. Kelley",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 12135191
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "Eswatini",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 59560771
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957802054,
+            "id": 1957802054,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,

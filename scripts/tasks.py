@@ -1,8 +1,7 @@
-import copy
 import logging
 import time
 from functools import lru_cache
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import dateutil.parser
 import mcmetadata as metadata
@@ -21,21 +20,6 @@ logger = logging.getLogger(__name__)
 def _cached_metadata_extract(url: str) -> dict:
     # Smart to cache here, because this URL might be in multiple projects!
     return metadata.extract(url)
-
-
-def fetch_text_task(story: Dict) -> Optional[Dict]:
-    try:
-        parsed = _cached_metadata_extract(story["url"])
-        updated_story = copy.copy(story)
-        updated_story["story_text"] = parsed["text_content"]
-        updated_story["publish_date"] = parsed[
-            "publication_date"
-        ]  # this is a date object
-        return updated_story
-    except Exception as _:
-        # this is probably an HTTP, or content parsing error
-        pass
-    return None
 
 
 def send_combined_email(summary: Dict, data_source: str, start_time: float):
@@ -163,7 +147,6 @@ def queue_stories_for_classification(
                         session, project_stories, p, datasource
                     )
                     if len(project_stories) > 0:  # don't queue up unnecessary tasks
-                        # important to do this *after* we add the stories_id here
                         celery_tasks.classify_and_post_worker.delay(p, project_stories)
                         # important to write this update now, because we have queued up the task to process these
                         # stories the task queue will manage retrying with the stories if it fails with this batch

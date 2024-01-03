@@ -3,14 +3,26 @@ import datetime as dt
 import logging
 from typing import Dict, List
 
+import mcmetadata.urls as urls
 from sqlalchemy import delete, select, text, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 from sqlalchemy.sql import func
 
-import processor
 from processor.database.models import Story
 
 logger = logging.getLogger(__name__)
+
+
+def project_story_urls(session: Session, project: Dict, last_n_days: int) -> List[str]:
+    last_n_days_filter = Story.queued_date > (
+        dt.datetime.now() - dt.timedelta(days=last_n_days)
+    )
+    project_id_filter = Story.project_id == project["id"]
+    matching = (
+        session.query(Story).filter(project_id_filter).filter(last_n_days_filter).all()
+    )
+    return [s.url for s in matching]
 
 
 def add_stories(
@@ -24,9 +36,13 @@ def add_stories(
     :param source:
     :return: list of ids of objects inserted
     """
+    ignored_count = 0
     new_source_story_list = copy.copy(source_story_list)
     now = dt.datetime.now()
     for discovered_story in new_source_story_list:
+        discovered_story["url"] = urls.normalize_url(
+            discovered_story["url"]
+        )  # this will help in de-duplication
         db_story = Story.from_source(discovered_story, source)
         db_story.project_id = project["id"]
         db_story.model_id = project["language_model_id"]
@@ -34,8 +50,18 @@ def add_stories(
         db_story.above_threshold = False
         discovered_story["db_story"] = db_story
     # now insert in batch to the database
-    session.add_all([s["db_story"] for s in new_source_story_list])
-    session.commit()
+    for s in new_source_story_list:
+        try:
+            session.add(s["db_story"])
+            session.commit()
+        except IntegrityError:
+            # duplicate story, so just ignore it
+            session.rollback()
+            logger.debug(
+                f"Duplicate story found for project {project['id']}: {s['url']}"
+            )
+            del s["db_story"]
+            ignored_count += 1
     # only keep ones that inserted correctly
     new_source_story_list = [
         s for s in new_source_story_list if ("db_story" in s) and s["db_story"].id
@@ -44,21 +70,10 @@ def add_stories(
         s["log_db_id"] = s[
             "db_story"
         ].id  # keep track of the db id, so we can use it later to update this story
-    if source != processor.SOURCE_MEDIA_CLOUD:
-        # these stories don't have a stories_id, which we use later, so set it to the local-database id and save
-        for s in new_source_story_list:
-            s["stories_id"] = s[
-                "db_story"
-            ].id  # since these don't have a stories_id, set it to the database PK id
-            session.execute(
-                update(Story)
-                .where(Story.id == s["log_db_id"])
-                .values(stories_id=s["log_db_id"])
-            )
-        session.commit()
     for s in new_source_story_list:  # free the DB objects back for GC
         if "db_story" in s:  # a little extra safety
             del s["db_story"]
+    logger.info(f"  ignored {ignored_count} stories as duplicates")
     return new_source_story_list
 
 

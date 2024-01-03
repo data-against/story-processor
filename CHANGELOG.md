@@ -3,6 +3,11 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.1.0
+
+* add unique index on project-url
+* normalize URL and use that for multiple layers of project-url deduplication
+
 ### v4.0.4
 
 * handle RabbitMQ message too big failure

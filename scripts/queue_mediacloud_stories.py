@@ -26,12 +26,10 @@ from processor import get_mc_client
 from processor.classifiers import download_models
 
 POOL_SIZE = 6
-DEFAULT_DAY_OFFSET = 1  # stories don't get processed for a few days
-DEFAULT_DAY_WINDOW = 7  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
-DEFAULT_STORIES_PER_PAGE = 1000  # I found this performs poorly if set too high
-DEFAULT_MAX_STORIES_PER_PROJECT = (
-    10000  # make sure we don't do too many stories each cron run
-)
+DAY_OFFSET = 1  # stories are ingested within a day of discovery
+DAY_WINDOW = 7  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
+STORIES_PER_PAGE = 1000
+MAX_STORIES_PER_PROJECT = 5000
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +53,8 @@ def _process_project_task(args: Dict) -> Dict:
     start_date, end_date, history = projects.query_start_end_dates(
         project,
         Session,
-        DEFAULT_DAY_OFFSET,
-        DEFAULT_DAY_WINDOW,
+        DAY_OFFSET,
+        DAY_WINDOW,
         processor.SOURCE_MEDIA_CLOUD,
     )
     # we will filter by indexed_date, so just make a wide window for pub_date values
@@ -117,7 +115,7 @@ def _process_project_task(args: Dict) -> Dict:
                 pub_end_date,
                 collection_ids=project["media_collections"],
                 pagination_token=page_token,
-                page_size=DEFAULT_STORIES_PER_PAGE,
+                page_size=STORIES_PER_PAGE,
                 sort_order="desc",
                 sort_field="indexed_date",
                 platform=MC_PLATFORM_NAME,
@@ -185,13 +183,10 @@ def _process_project_task(args: Dict) -> Dict:
 
 
 def process_projects_in_parallel(projects_list: List[Dict], pool_size: int):
-    args_list = [
-        (p, DEFAULT_STORIES_PER_PAGE, DEFAULT_MAX_STORIES_PER_PROJECT)
-        for p in projects_list
-    ]
+    args_list = [(p, STORIES_PER_PAGE, MAX_STORIES_PER_PROJECT) for p in projects_list]
     with multiprocessing.Pool(pool_size) as pool:
         results = pool.map(_process_project_task, args_list)
-    return results
+    return results[:MAX_STORIES_PER_PROJECT]
 
 
 if __name__ == "__main__":

@@ -8,374 +8,374 @@
     "media_id": 1751,
     "normalized_title_hash": "a627adac-c6e5-673f-947c-e3e6bc0c100c",
     "publish_date": "2021-06-11 04:00:12",
-    "stories_id": 1957805224,
+    "id": 1957805224,
     "story_tags": [
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "geonames_6269131",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878467
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "geonames_4155751",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878477
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "geonames_3435910",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8879023
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "geonames_4165565",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8880386
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "geonames_3433955",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8880547
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "motion pictures",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360845
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "reviews",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360921
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Leeds",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9363651
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Iran",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9364237
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Manchester United",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9370670
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Real Madrid",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9373837
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Alex Ferguson",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9379160
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Kaiser",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9382171
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Michael Caine",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9384587
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Michael Sheen",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9384728
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Jules",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9391920
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Leeds United",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9399366
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Diego Maradona",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9403469
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Ken Loach",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9404345
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Keira Knightley",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9416373
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "John Huston",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9432829
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Sylvester Stallone",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9444182
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Jess",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9480711
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Brian Glover",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9483669
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Pele",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9520800
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Bobby Moore",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9538484
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Jafar Panahi",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9621020
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Villarreal",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9623444
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Brian Clough",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9664361
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Beckham",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9664366
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Zidane",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9708811
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Gurinder Chadha",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9711111
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Scorsese",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9766550
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Asif Kapadia",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9770075
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Steve Barron",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9790066
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Eric Cantona",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9841693
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Tom Hooper",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9890581
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Graham Taylor",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10086889
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Osvaldo Ardiles",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10144035
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Parminder Nagra",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10199198
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Philippe Parreno",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10436706
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Lorimar",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 10613635
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Raposo",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10913043
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Douglas Gordon",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11039096
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Mike Bassett",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11257307
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Carlos Alberto",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11258616
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "David Peace",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11694849
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Ricky Tomlinson",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11973162
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "Thorold Dickinson",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 27959423
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957805224,
+            "id": 1957805224,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,

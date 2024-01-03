@@ -8,143 +8,143 @@
     "media_id": 659003,
     "normalized_title_hash": "bbc232cf-d0eb-aa47-e3b6-9ee5656a73d8",
     "publish_date": "2021-06-11 03:15:10",
-    "stories_id": 1957806921,
+    "id": 1957806921,
     "story_tags": [
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "geonames_5128638",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878463
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "finances",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360840
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "medicine and health",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360852
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "diseases and conditions",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360942
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "hospitals",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361139
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "doctors",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361148
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "nursing and nurses",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361149
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "shortages",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361164
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "Senate",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362741
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "Congress",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362962
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "Association of American Medical",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9465286
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "Association of American Medical Colleges",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9475290
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "David J. Skorton",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9510569
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "AAMC",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9554361
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "Janis M. Orlowski",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 27768125
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "Lorna Breen",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 63586170
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957806921,
+            "id": 1957806921,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,

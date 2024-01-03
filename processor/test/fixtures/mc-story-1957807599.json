@@ -8,150 +8,150 @@
     "media_id": 28036,
     "normalized_title_hash": "1205d5f7-1025-c241-1865-ac9f56e3f939",
     "publish_date": "2021-06-11 01:05:57",
-    "stories_id": 1957807599,
+    "id": 1957807599,
     "story_tags": [
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "geonames_4736286",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878538
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "politics and government",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360836
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "law and legislation",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360837
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "finances",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360840
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "budgets and budgeting",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360850
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "immigration and refugees",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360897
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "illegal aliens",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360910
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "Donald Trump",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9362284
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "ACLU",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9363638
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "Biden",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9365736
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "Doug Ducey",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9394204
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "The New York Times",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9456350
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "Texas Legislature",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9512644
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "U.S. Customs",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9563125
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "Kate Huddleston",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 39590737
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "Doug Huffines",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 74261970
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,
             "tags_id": 228516911
         },
         {
-            "stories_id": 1957807599,
+            "id": 1957807599,
             "tag": "Greg Abbott Montinique",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,

@@ -8,136 +8,136 @@
     "media_id": 20546,
     "normalized_title_hash": "02687b7f-6e1c-0fc9-23c7-86d55220599b",
     "publish_date": "2021-06-10 21:19:25",
-    "stories_id": 1957809660,
+    "id": 1957809660,
     "story_tags": [
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "geonames_6254927",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878566
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "geonames_4560349",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878571
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "motion pictures",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360845
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "documentary films and programs",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361068
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "festivals",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361096
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Amnesty International",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9363388
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Mumia Abu-Jamal",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9445823
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Nicole Salazar",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9724185
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Yoni Brook",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9842211
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Larry Krasner",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9989262
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Johanna Fern\u00e1ndez",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10559636
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Michael Schiffmann",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10916497
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Philly D.A.",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 11009071
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Baruch University",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 28933282
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "Ted Passon",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 52688104
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957809660,
+            "id": 1957809660,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,

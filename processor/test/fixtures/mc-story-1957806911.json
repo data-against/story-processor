@@ -8,178 +8,178 @@
     "media_id": 659003,
     "normalized_title_hash": "08348405-5736-61d1-e7b4-8b625b12e1d4",
     "publish_date": "2021-06-11 03:56:58",
-    "stories_id": 1957806911,
+    "id": 1957806911,
     "story_tags": [
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "geonames_6269131",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878467
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "geonames_4887398",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878485
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "police",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360881
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "taxation",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360882
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "economic conditions and trends",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360989
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "ABC",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362473
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Cristiano Ronaldo",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9363102
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Joe Biden",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9363134
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Hamilton",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9363382
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "ESPN",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9369219
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Lin-Manuel Miranda",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9369428
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "UEFA",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9373215
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Univision",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9384606
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "G-7",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9399067
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Russell Taylor",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9921613
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Anthony Ramos",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10221248
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Brian Truitt",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 10708773
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Jon M. Chu",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11806070
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Anthony Alvarez",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 22168397
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "Adam Toledo",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 68119498
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "HBO Max",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 143734752
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957806911,
+            "id": 1957806911,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,

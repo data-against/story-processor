@@ -8,101 +8,101 @@
     "media_id": 366692,
     "normalized_title_hash": "549ec8b1-4ff8-7140-bd3c-0d4227c137ba",
     "publish_date": "2021-08-02 20:55:51",
-    "stories_id": 2008554915,
+    "id": 2008554915,
     "story_tags": [
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "geonames_5037779",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878534
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "geonames_8938915",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8883579
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "murders and attempted murders",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9360982
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "violence",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361116
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "domestic violence",
             "tag_set": "nyt_labels",
             "tag_sets_id": 1963,
             "tags_id": 9361199
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "St. Paul",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9364499
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "WCCO-TV",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9713303
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "Ramsey County Sheriff\u2019s Office",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 10075958
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "Joe Shannon",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11536538
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "Kou Yang",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 32825556
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 2008554915,
+            "id": 2008554915,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,

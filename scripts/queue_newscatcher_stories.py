@@ -24,17 +24,18 @@ import requests.exceptions
 
 import processor.database as database
 import processor.database.projects_db as projects_db
+import processor.database.stories_db as stories_db
 import processor.fetcher as fetcher
 import processor.projects as projects
 import scripts.tasks as tasks
 from processor.classifiers import download_models
 
-POOL_SIZE = 16  # parellel fetch for story URL lists (by project)
+POOL_SIZE = 16  # parallel fetch for story URL lists (by project)
 PAGE_SIZE = 100
 DEFAULT_DAY_OFFSET = 0
 DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
 MAX_STORIES_PER_PROJECT = (
-    2000  # can't process all the stories for queries that are too big
+    500  # can't process all the stories for queries that are too big
 )
 MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
@@ -122,10 +123,14 @@ def _project_story_worker(p: Dict) -> List[Dict]:
         )
     )
     project_stories = []
+    skipped_dupes = 0  # how many URLs do we filter out because they're already in the DB for this project recently
     if total_hits > 0:
-        latest_pub_date = dt.datetime.now() - dt.timedelta(
-            weeks=50
-        )  # a long, long time ago
+        # list recent urls to filter so we don't fetch text extra if we've recently proceses already (and will be filtered
+        # out by add_stories call in later post-text-fetch step)
+        with Session() as session:
+            already_processed_urls = stories_db.project_story_urls(session, p, 14)
+        # query page by page
+        latest_pub_date = dt.datetime.now() - dt.timedelta(weeks=50)
         page_count = math.ceil(total_hits / PAGE_SIZE)
         keep_going = True
         while keep_going:
@@ -144,6 +149,10 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                 if len(project_stories) > MAX_STORIES_PER_PROJECT:
                     break
                 real_url = item["link"]
+                # skip URLs we've processed recently
+                if urls.normalize_url(real_url) in already_processed_urls:
+                    skipped_dupes += 1
+                    continue
                 # removing this check for now, because I'm not sure if stories are ordered consistently
                 info = dict(
                     url=real_url,
@@ -168,15 +177,15 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     current_page = _fetch_results(p, start_date, end_date, page_number)
                     # stay below rate limiting
         logger.info(
-            "  project {} - {} valid stories (after {})".format(
-                p["id"], len(project_stories), start_date
+            "  project {} - {} valid stories (skipped {}) (after {})".format(
+                p["id"], len(project_stories), skipped_dupes, start_date
             )
         )
         with Session() as session:
             projects_db.update_history(
                 session, p["id"], latest_pub_date, processor.SOURCE_NEWSCATCHER
             )
-    return project_stories
+    return project_stories[:MAX_STORIES_PER_PROJECT]
 
 
 def fetch_project_stories(project_list: List[Dict]) -> List[Dict]:
@@ -207,7 +216,11 @@ def fetch_text(stories: List[Dict]) -> List[Dict]:
         matching_input_stories = [
             s for s in stories if s["url"] == response_data["original_url"]
         ]
-        for s in matching_input_stories:
+        for (
+            s
+        ) in (
+            matching_input_stories
+        ):  # find all matches, which could be from different projects
             story_metadata = metadata.extract(s["url"], response_data["content"])
             s["story_text"] = story_metadata["text_content"]
             s["publish_date"] = story_metadata[
@@ -215,8 +228,8 @@ def fetch_text(stories: List[Dict]) -> List[Dict]:
             ]  # this is a date object
             stories_to_return.append(s)
 
-    # download them all in parallel... will take a while
-    fetcher.fetch_all_html([s["url"] for s in stories], handle_parse)
+    # download them all in parallel... will take a while (make it only unique URLs first)
+    fetcher.fetch_all_html(list(set([s["url"] for s in stories])), handle_parse)
     logger.info(
         "Fetched text for {} stories (failed on {})".format(
             len(stories_to_return), len(stories) - len(stories_to_return)
@@ -242,9 +255,20 @@ if __name__ == "__main__":
 
     # 2. fetch all the urls from for each project from newscatcher (in parallel)
     all_stories = fetch_project_stories(projects_list)
+    unique_url_count = len(set([s["url"] for s in all_stories]))
+    logger.info(
+        "Discovered {} total stories, {} unique URLs".format(
+            len(all_stories), unique_url_count
+        )
+    )
 
     # 3. fetch webpage text and parse all the stories (use scrapy to do this in parallel, dropping stories that fail)
     stories_with_text = fetch_text(all_stories)
+    logger.info(
+        "Fetched {} stories with text, from {} attempted URLs".format(
+            len(stories_with_text), unique_url_count
+        )
+    )
 
     # 4. post batches of stories for classification
     results_data = tasks.queue_stories_for_classification(

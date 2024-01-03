@@ -8,87 +8,87 @@
     "media_id": 56,
     "normalized_title_hash": "59bc744a-ffdb-bca2-145a-d7c3fd748885",
     "publish_date": "2021-06-11 04:12:00",
-    "stories_id": 1957802092,
+    "id": 1957802092,
     "story_tags": [
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "geonames_6252001",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878461
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "geonames_5332921",
             "tag_set": "mc-geocoder@media.mit.edu",
             "tag_sets_id": 1011,
             "tags_id": 8878533
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "nyt_labeller_v1.0.0",
             "tag_set": "nyt_labels_version",
             "tag_sets_id": 1964,
             "tags_id": 9360669
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "FBI",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362961
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "Pentagon",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9362965
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "George Orwell",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 9365869
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "Stanford University",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9367230
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "Hoover Institution",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9368213
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "Liberation Army",
             "tag_set": "cliff_organizations",
             "tag_sets_id": 2388,
             "tags_id": 9381045
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "VICTOR DAVIS HANSON",
             "tag_set": "cliff_people",
             "tag_sets_id": 2389,
             "tags_id": 11454633
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "readability-lxml-0.8.1",
             "tag_set": "extractor_version",
             "tag_sets_id": 1354,
             "tags_id": 228516910
         },
         {
-            "stories_id": 1957802092,
+            "id": 1957802092,
             "tag": "cliff_clavin_v2.6.1",
             "tag_set": "geocoder_version",
             "tag_sets_id": 1937,
