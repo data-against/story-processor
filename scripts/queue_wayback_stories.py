@@ -232,11 +232,20 @@ if __name__ == "__main__":
 
     # 3. fetch all the urls from for each project from wayback machine (serially so we don't have to flatten 😖)
     all_stories = fetch_project_stories(projects_with_domains)
-    logger.info("Discovered {} total story URLs".format(len(all_stories)))
+    unique_url_count = len(set([s["extracted_content_url"] for s in all_stories]))
+    logger.info(
+        "Discovered {} total stories, {} unique URLs".format(
+            len(all_stories), unique_url_count
+        )
+    )
 
     # 4. fetch pre-parsed content (will happen in parallel by story)
     stories_with_text = fetch_text(all_stories)
-    logger.info("Fetched {} stories with text".format(len(stories_with_text)))
+    logger.info(
+        "Fetched {} stories with text, from {} attempted URLs".format(
+            len(stories_with_text), unique_url_count
+        )
+    )
 
     # 5. post batches of stories for classification
     results_data = tasks.queue_stories_for_classification(

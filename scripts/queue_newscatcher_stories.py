@@ -255,9 +255,20 @@ if __name__ == "__main__":
 
     # 2. fetch all the urls from for each project from newscatcher (in parallel)
     all_stories = fetch_project_stories(projects_list)
+    unique_url_count = len(set([s["url"] for s in all_stories]))
+    logger.info(
+        "Discovered {} total stories, {} unique URLs".format(
+            len(all_stories), unique_url_count
+        )
+    )
 
     # 3. fetch webpage text and parse all the stories (use scrapy to do this in parallel, dropping stories that fail)
     stories_with_text = fetch_text(all_stories)
+    logger.info(
+        "Fetched {} stories with text, from {} attempted URLs".format(
+            len(stories_with_text), unique_url_count
+        )
+    )
 
     # 4. post batches of stories for classification
     results_data = tasks.queue_stories_for_classification(
