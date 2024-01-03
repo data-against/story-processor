@@ -1,8 +1,7 @@
-import copy
 import logging
 import time
 from functools import lru_cache
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import dateutil.parser
 import mcmetadata as metadata
@@ -21,21 +20,6 @@ logger = logging.getLogger(__name__)
 def _cached_metadata_extract(url: str) -> dict:
     # Smart to cache here, because this URL might be in multiple projects!
     return metadata.extract(url)
-
-
-def fetch_text_task(story: Dict) -> Optional[Dict]:
-    try:
-        parsed = _cached_metadata_extract(story["url"])
-        updated_story = copy.copy(story)
-        updated_story["story_text"] = parsed["text_content"]
-        updated_story["publish_date"] = parsed[
-            "publication_date"
-        ]  # this is a date object
-        return updated_story
-    except Exception as _:
-        # this is probably an HTTP, or content parsing error
-        pass
-    return None
 
 
 def send_combined_email(summary: Dict, data_source: str, start_time: float):
