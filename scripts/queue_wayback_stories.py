@@ -31,7 +31,7 @@ DEFAULT_DAY_OFFSET = 4  # stories don't get processed for a few days
 DEFAULT_DAY_WINDOW = 3  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 PAGE_SIZE = 200
 MAX_STORIES_PER_PROJECT = (
-    400  # we can't process all the stories for queries that are too big
+    500  # we can't process all the stories for queries that are too big
 )
 
 
@@ -199,8 +199,8 @@ def fetch_text(stories: List[Dict]) -> List[Dict]:
 
     # download them all in parallel... will take a while (note that we're fetching the extracted content JSON here,
     # NOT the archived or original HTML because that saves us the parsing and extraction step)
-    urls = [s["extracted_content_url"] for s in stories]
-    fetcher.fetch_all_html(urls, handle_parse)
+    unique_urls = list(set([s["extracted_content_url"] for s in stories]))
+    fetcher.fetch_all_html(unique_urls, handle_parse)
     logger.info(
         "Fetched text for {} stories (failed on {})".format(
             len(stories_to_return), len(stories) - len(stories_to_return)

@@ -35,7 +35,7 @@ PAGE_SIZE = 100
 DEFAULT_DAY_OFFSET = 0
 DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
 MAX_STORIES_PER_PROJECT = (
-    200  # can't process all the stories for queries that are too big
+    500  # can't process all the stories for queries that are too big
 )
 MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
@@ -216,7 +216,11 @@ def fetch_text(stories: List[Dict]) -> List[Dict]:
         matching_input_stories = [
             s for s in stories if s["url"] == response_data["original_url"]
         ]
-        for s in matching_input_stories:
+        for (
+            s
+        ) in (
+            matching_input_stories
+        ):  # find all matches, which could be from different projects
             story_metadata = metadata.extract(s["url"], response_data["content"])
             s["story_text"] = story_metadata["text_content"]
             s["publish_date"] = story_metadata[
@@ -224,8 +228,8 @@ def fetch_text(stories: List[Dict]) -> List[Dict]:
             ]  # this is a date object
             stories_to_return.append(s)
 
-    # download them all in parallel... will take a while
-    fetcher.fetch_all_html([s["url"] for s in stories], handle_parse)
+    # download them all in parallel... will take a while (make it only unique URLs first)
+    fetcher.fetch_all_html(list(set([s["url"] for s in stories])), handle_parse)
     logger.info(
         "Fetched text for {} stories (failed on {})".format(
             len(stories_to_return), len(stories) - len(stories_to_return)
