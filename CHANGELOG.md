@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.1.1
+
+* fix bugs related to duplicate fetching of URLs and mis-reported story counts in notifications
+
 ### v4.1.0
 
 * add unique index on project-url
