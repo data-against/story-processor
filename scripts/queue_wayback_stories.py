@@ -29,9 +29,9 @@ from processor.classifiers import download_models
 POOL_SIZE = 8  # used for fetching project domains and listing stories in parallel
 DEFAULT_DAY_OFFSET = 4  # stories don't get processed for a few days
 DEFAULT_DAY_WINDOW = 3  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
-PAGE_SIZE = 1000
+PAGE_SIZE = 200
 MAX_STORIES_PER_PROJECT = (
-    5000  # we can't process all the stories for queries that are too big
+    400  # we can't process all the stories for queries that are too big
 )
 
 

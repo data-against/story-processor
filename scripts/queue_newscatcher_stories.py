@@ -35,7 +35,7 @@ PAGE_SIZE = 100
 DEFAULT_DAY_OFFSET = 0
 DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
 MAX_STORIES_PER_PROJECT = (
-    2000  # can't process all the stories for queries that are too big
+    200  # can't process all the stories for queries that are too big
 )
 MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
