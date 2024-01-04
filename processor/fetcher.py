@@ -12,11 +12,11 @@ class UrlSpider(scrapy.Spider):
         "COOKIES_ENABLED": False,
         # "HTTPCACHE_ENABLED": True,  # useful to have set True locally for repetative runs while debugging code changes
         "LOG_LEVEL": "INFO",
-        "CONCURRENT_REQUESTS": 32,
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
+        "CONCURRENT_REQUESTS": 64,
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 5,
         "AUTOTHROTTLE_ENABLED": True,
-        "AUTOTHROTTLE_TARGET_CONCURRENCY": 32,
-        "DOWNLOAD_TIMEOUT": 30,
+        "AUTOTHROTTLE_TARGET_CONCURRENCY": 64,
+        "DOWNLOAD_TIMEOUT": 20,
         "USER_AGENT": "Data Against Feminicides bot for open academic research (+http://datoscontrafeminicidio.net/)",
     }
 
