@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.1.2
+
+* tweak run configuration to do more often but smaller batches
+
 ### v4.1.1
 
 * fix bugs related to duplicate fetching of URLs and mis-reported story counts in notifications
