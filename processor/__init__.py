@@ -173,7 +173,9 @@ def get_mc_client() -> mediacloud.api.SearchApi:
     A central place to get the Media Cloud legacy client
     :return: an admin media cloud client with the API key from the environment variable
     """
-    return mediacloud.api.SearchApi(MC_API_TOKEN)
+    mc = mediacloud.api.SearchApi(MC_API_TOKEN)
+    mc.TIMEOUT_SECS = 120  # some of the queries run against giant collections
+    return mc
 
 
 def is_slack_configured() -> bool:

@@ -27,7 +27,7 @@ from processor.classifiers import download_models
 
 POOL_SIZE = 6
 DAY_OFFSET = 1  # stories are ingested within a day of discovery
-DAY_WINDOW = 7  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
+DAY_WINDOW = 4  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 STORIES_PER_PAGE = 1000
 MAX_STORIES_PER_PROJECT = 5000
 
@@ -44,7 +44,10 @@ def load_projects_task() -> List[Dict]:
     )
     logger.info("  Checking {} projects".format(len(project_list)))
     # return [p for p in project_list if p['id'] == 154]
-    return project_list
+    return [
+        p for p in project_list if p["id"] in [147, 23, 21]
+    ]  # selected list of close collaborators from Patti
+    # return project_list
 
 
 def _process_project_task(args: Dict) -> Dict:
