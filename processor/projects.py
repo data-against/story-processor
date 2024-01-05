@@ -240,7 +240,7 @@ def query_start_end_dates(
     last_date = None
     # Some sources don't return results in order of date indexed, so you might want NOT use the date of the latest
     # story we fetched from them. In these cases we could see more duplicates, but are less likely to miss things.
-    if use_last_date:
+    if history and use_last_date:
         if source == SOURCE_MEDIA_CLOUD:
             last_date = history.latest_date_mc
         elif source == SOURCE_NEWSCATCHER:
