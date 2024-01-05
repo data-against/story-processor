@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.2.0
+
+* enable media cloud for selected groups to pilot
+
 ### v4.1.2
 
 * tweak run configuration to do more often but smaller batches
