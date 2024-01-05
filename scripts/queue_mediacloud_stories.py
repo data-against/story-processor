@@ -147,13 +147,13 @@ def _process_project_task(args: Dict) -> Dict:
                 s["project_id"] = project["id"]
                 s["story_text"] = s["text"]
             page_count += 1
-            story_count += len(page_of_stories)
             # and log that we got and queued them all
             Session = database.get_session_maker()
             with Session() as session:
                 stories_to_queue = stories_db.add_stories(
                     session, page_of_stories, project, processor.SOURCE_MEDIA_CLOUD
                 )
+                story_count += len(stories_to_queue)
                 p_tasks.classify_and_post_worker.delay(project, stories_to_queue)
                 # important to write this update now, because we have queued up the task to process these stories
                 # the task queue will manage retrying with the stories if it fails with this batch
