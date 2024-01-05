@@ -1,10 +1,8 @@
 import logging
 import time
-from functools import lru_cache
 from typing import Dict, List
 
 import dateutil.parser
-import mcmetadata as metadata
 
 import processor.database as database
 import processor.notifications as notifications
@@ -14,12 +12,6 @@ from processor.database import projects_db as projects_db
 from processor.database import stories_db as stories_db
 
 logger = logging.getLogger(__name__)
-
-
-@lru_cache(maxsize=50000)
-def _cached_metadata_extract(url: str) -> dict:
-    # Smart to cache here, because this URL might be in multiple projects!
-    return metadata.extract(url)
 
 
 def send_combined_email(summary: Dict, data_source: str, start_time: float):
