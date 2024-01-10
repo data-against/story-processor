@@ -2,6 +2,7 @@ import datetime as dt
 import logging
 from typing import Dict
 
+import mcmetadata.urls as urls
 from dateutil.parser import parse
 from sqlalchemy import Boolean, DateTime, Float, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -29,6 +30,7 @@ class Story(Base):
     above_threshold: Mapped[bool] = mapped_column(Boolean)
     source: Mapped[str] = mapped_column(String)
     url: Mapped[str] = mapped_column(String)
+    normalized_url: Mapped[str] = mapped_column(String)
 
     def __repr__(self):
         return "<Story id={} source={}>".format(self.id, self.source)
@@ -37,6 +39,9 @@ class Story(Base):
     def from_source(story: Dict, source: str):
         db_story = Story()
         db_story.url = story["url"]
+        db_story.normalized_url = urls.normalize_url(
+            story["url"]
+        )  # this will help in de-duplication
         db_story.source = source
         # carefully parse date, with fallback to today so we at least get something close to right
         use_fallback_date = False

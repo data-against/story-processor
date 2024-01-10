@@ -125,10 +125,12 @@ def _project_story_worker(p: Dict) -> List[Dict]:
     project_stories = []
     skipped_dupes = 0  # how many URLs do we filter out because they're already in the DB for this project recently
     if total_hits > 0:
-        # list recent urls to filter so we don't fetch text extra if we've recently proceses already (and will be filtered
-        # out by add_stories call in later post-text-fetch step)
+        # list recent urls to filter so we don't fetch text extra if we've recently proceses already
+        # (and will be filtered out by add_stories call in later post-text-fetch step)
         with Session() as session:
-            already_processed_urls = stories_db.project_story_urls(session, p, 14)
+            already_processed_normalized_urls = (
+                stories_db.project_story_normalized_urls(session, p, 14)
+            )
         # query page by page
         latest_pub_date = dt.datetime.now() - dt.timedelta(weeks=50)
         page_count = math.ceil(total_hits / PAGE_SIZE)
@@ -150,7 +152,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     break
                 real_url = item["link"]
                 # skip URLs we've processed recently
-                if urls.normalize_url(real_url) in already_processed_urls:
+                if urls.normalize_url(real_url) in already_processed_normalized_urls:
                     skipped_dupes += 1
                     continue
                 # removing this check for now, because I'm not sure if stories are ordered consistently

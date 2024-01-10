@@ -82,7 +82,9 @@ def _project_story_worker(p: Dict) -> List[Dict]:
             # list recent urls to filter so we don't fetch text extra if we've recently proceses already (and will be filtered
             # out by add_stories call in later post-text-fetch step)
             with Session() as session:
-                already_processed_urls = stories_db.project_story_urls(session, p, 14)
+                already_processed_urls = stories_db.project_story_normalized_urls(
+                    session, p, 14
+                )
             # using the provider wrapper so this does the chunking into smaller queries for us
             latest_pub_date = dt.datetime.now() - dt.timedelta(
                 weeks=50
