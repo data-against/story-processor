@@ -35,7 +35,12 @@ Install for Development
     - Create a folder `docker-conf` (first time only) 
     - To start rabbitmq, postgres: `docker compose up -d` 
 
-Note that some of the models use [tensorflow_text](https://pypi.org/project/tensorflow-text/), which is hard to 
+## Notes for MacOS on Apple Silicon
+
+Installing older versions of tensorflow is tricky. Try `python -m pip install tensorflow-macos`
+(from [Apple's docs](https://developer.apple.com/metal/tensorflow-plugin/)). 
+
+Note that some of the models use [tensorflow_text](https://pypi.org/project/tensorflow-text/), which is also hard to 
 install on Apple-silicon MacOS machines. For that platform you'll need to download and install the appropriate
 [`tensorflow_text-2.10.0-cp310-cp310-macosx_11_0_arm64.whl`](https://github.com/sun1638650145/Libraries-and-Extensions-for-TensorFlow-for-Apple-Silicon/releases/download/v2.10/tensorflow_text-2.10.0-cp310-cp310-macosx_11_0_arm64.whl)
 from the helpful repo of [prebuilt tensorflow wheels for Apple Silicon](https://github.com/sun1638650145/Libraries-and-Extensions-for-TensorFlow-for-Apple-Silicon/releases/). 
