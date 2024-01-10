@@ -3,6 +3,11 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.2.2
+
+* add normalized_url to story table to support deduplication, fixing a bug where normalized (ie. unclickable) URLs were 
+  being stored in URL field for Media Cloud fetcher 
+
 ### v4.2.1
 
 * minor bug and log msg fixes
