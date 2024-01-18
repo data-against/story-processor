@@ -44,10 +44,7 @@ def load_projects_task() -> List[Dict]:
     )
     logger.info("  Checking {} projects".format(len(project_list)))
     # return [p for p in project_list if p['id'] == 154]
-    return [
-        p for p in project_list if p["id"] in [147, 23, 21, 170]
-    ]  # selected list of close collaborators from Patti
-    # return project_list
+    return project_list
 
 
 def _process_project_task(args: Dict) -> Dict:
