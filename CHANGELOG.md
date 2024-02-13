@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.2.4
+
+* Tweak to catch up on Media Cloud stories after re-indexing 
+
 ### v4.2.3
 
 * Enable Media Cloud on all projects 
