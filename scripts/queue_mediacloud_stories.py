@@ -27,9 +27,9 @@ from processor.classifiers import download_models
 
 POOL_SIZE = 6
 DAY_OFFSET = 1  # stories are ingested within a day of discovery
-DAY_WINDOW = 4  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
+DAY_WINDOW = 7  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 STORIES_PER_PAGE = 1000
-MAX_STORIES_PER_PROJECT = 5000
+MAX_STORIES_PER_PROJECT = 8000
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def load_projects_task() -> List[Dict]:
         force_reload=True, overwrite_last_story=False
     )
     logger.info("  Checking {} projects".format(len(project_list)))
-    # return [p for p in project_list if p['id'] == 154]
+    # return [p for p in project_list if p['id'] == 177]
     return project_list
 
 
@@ -192,7 +192,7 @@ def process_projects_in_parallel(projects_list: List[Dict], pool_size: int):
 if __name__ == "__main__":
     logger.info("Starting {} story fetch job".format(processor.SOURCE_MEDIA_CLOUD))
 
-    # important to do because there might new models on the server!
+    # important to do because there might be new models on the server!
     logger.info("  Checking for any new models we need")
     models_downloaded = download_models()
     logger.info(f"    models downloaded: {models_downloaded}")
