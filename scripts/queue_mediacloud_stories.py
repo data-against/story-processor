@@ -117,7 +117,6 @@ def _process_project_task(args: Dict) -> Dict:
                 pagination_token=page_token,
                 page_size=STORIES_PER_PAGE,
                 sort_order="desc",
-                sort_field="indexed_date",
                 platform=MC_PLATFORM_NAME,
                 expanded=True,
             )

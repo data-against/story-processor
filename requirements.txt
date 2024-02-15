@@ -7,7 +7,7 @@ sentry-sdk[flask]==1.40.*
 tensorflow-hub==0.*
 tensorflow-text==2.*
 tensorflow==2.10.*  # freeze here due to cross-platform install challenges
-psycopg2==3.1.*
+psycopg2==2.9.*
 SQLAlchemy==2.0.*
 alembic==1.13.*
 python-dateutil==2.8.*
