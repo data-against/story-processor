@@ -17,7 +17,7 @@ class UrlSpider(scrapy.Spider):
         "AUTOTHROTTLE_ENABLED": True,
         "AUTOTHROTTLE_TARGET_CONCURRENCY": 64,
         "DOWNLOAD_TIMEOUT": 20,
-        "USER_AGENT": "Data Against Feminicides bot for open academic research (+http://datoscontrafeminicidio.net/)",
+        "USER_AGENT": "Mozilla/5.0 (compatible; Data Against Feminicide academic research; datoscontrafeminicidio.net)",
     }
 
     def __init__(
