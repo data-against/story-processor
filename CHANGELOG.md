@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.2.6
+
+* Tweak User-Agent to match industry norms and fetch slightly more articles successfully 
+
 ### v4.2.5
 
 * Remove extra Media Cloud parameter that has been deprecated 
