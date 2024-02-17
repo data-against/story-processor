@@ -27,9 +27,9 @@ from processor.classifiers import download_models
 
 POOL_SIZE = 6
 DAY_OFFSET = 1  # stories are ingested within a day of discovery
-DAY_WINDOW = 7  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
+DAY_WINDOW = 4  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 STORIES_PER_PAGE = 1000
-MAX_STORIES_PER_PROJECT = 8000
+MAX_STORIES_PER_PROJECT = 5000
 
 logger = logging.getLogger(__name__)
 
