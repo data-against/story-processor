@@ -7,6 +7,7 @@ import time
 from typing import Dict, List
 
 import dateparser
+import pytz
 import requests
 
 import processor.apiclient as apiclient
@@ -16,8 +17,6 @@ import processor.database.projects_db as projects_db
 from processor import (
     FEMINICIDE_API_KEY,
     SOURCE_MEDIA_CLOUD,
-    SOURCE_NEWSCATCHER,
-    SOURCE_WAYBACK_MACHINE,
     VERSION,
     path_to_log_dir,
 )
@@ -186,9 +185,9 @@ def prep_stories_for_posting(project: Dict, stories: List[Dict]) -> List[Dict]:
             title=s["title"],
             url=s["url"],
             # add in the entities we parsed out via news-entity-server
-            entities=s["entities"]
-            if "entities" in s
-            else None,  # backwards compatible, in case some in queue are old
+            entities=(
+                s["entities"] if "entities" in s else None
+            ),  # backwards compatible, in case some in queue are old
             # add in the probability from the model
             confidence=s["confidence"],
             # throw in some metadata for good measure
@@ -217,8 +216,35 @@ def query_start_end_dates(
     day_offset: int,
     day_window: int,
     source: str,
-    use_last_date: bool = True,
-) -> (dt.datetime, dt.datetime, projects_db.ProjectHistory):
+) -> (dt.datetime, dt.datetime):
+    """
+    Do this all in UTC(!)
+    :param project:
+    :param session_maker:
+    :param day_offset:
+    :param day_window:
+    :param source:
+    :return:
+    """
+    utc = pytz.UTC
+    # start with default window specified by user
+    try:
+        start_date = utc.localize(
+            dt.datetime.now() - dt.timedelta(days=(day_offset + day_window))
+        )
+        project_start_date = dateparser.parse(
+            project["start_date"]
+        )  # in UTC, but marked as military 'Z' from RoR JSON
+        start_date = max(
+            project_start_date, start_date
+        )  # make sure we look for stories after the project's start_date
+    except Exception:
+        logger.warning(
+            f"Project {project['id']} has no start date, defaulting to recent one"
+        )
+    end_date = utc.localize(dt.datetime.now() - dt.timedelta(days=(day_offset)))
+    # grab any history first about how we've queried this project before on each platform, so we can optimize queries
+    # to reduce total volume and duplicate results
     history = None
     try:
         with session_maker() as session:
@@ -228,30 +254,24 @@ def query_start_end_dates(
             "Couldn't get history for project {} - {}".format(project["id"], e)
         )
         logger.exception(e)
-    # only search stories since the last search (if we've done one before)
-    end_date = dt.datetime.now() - dt.timedelta(days=day_offset)
-    try:
-        project_start_date = dateparser.parse(project["start_date"]).replace(
-            tzinfo=None
-        )
-        start_date = max(end_date - dt.timedelta(days=day_window), project_start_date)
-    except Exception:  # maybe project doesn't have start date? or not in date format?
-        start_date = end_date - dt.timedelta(days=day_window)
-    last_date = None
-    # Some sources don't return results in order of date indexed, so you might want NOT use the date of the latest
-    # story we fetched from them. In these cases we could see more duplicates, but are less likely to miss things.
-    if history and use_last_date:
-        if source == SOURCE_MEDIA_CLOUD:
-            last_date = history.latest_date_mc
-        elif source == SOURCE_NEWSCATCHER:
-            last_date = history.latest_date_nc
-        elif source == SOURCE_WAYBACK_MACHINE:
-            last_date = history.latest_date_wm
-
-    if history and (last_date is not None):
-        # make sure we don't accidentally cut off a half day we haven't queried against yet
-        # this is OK because duplicates will get screened out later in the pipeline
-        local_start_date = last_date - dt.timedelta(days=1)
-        start_date = max(local_start_date, start_date)
-
-    return start_date, end_date, history
+    # use history if we have any
+    if history:
+        # start date for MC is indexed_date, for NC/IA is default
+        if history and (source == SOURCE_MEDIA_CLOUD):
+            if (
+                history.latest_date_mc
+            ):  # if fetched from MC before then use that as filter
+                start_date = utc.localize(history.latest_date_mc)  # PG stores in UTC
+            else:
+                start_date = utc.localize(
+                    dt.datetime.now() - dt.timedelta(days=(day_offset + day_window))
+                )
+        else:
+            # Some sources don't return results in order of date indexed, so you might want NOT use the date of the
+            # latest story we fetched from them. In these cases we could see more duplicates, but are less likely to
+            # miss things.
+            start_date = utc.localize(
+                dt.datetime.now() - dt.timedelta(days=(day_offset + day_window + 1))
+            )
+        end_date = utc.localize(dt.datetime.now() - dt.timedelta(days=day_offset))
+    return start_date, end_date

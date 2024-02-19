@@ -55,13 +55,13 @@ def _query_builder(terms: str, language: str) -> str:
 
 def _project_story_worker(p: Dict) -> List[Dict]:
     Session = database.get_session_maker()
-    start_date, end_date, history = projects.query_start_end_dates(
+    # can't use start_date as `capture_time` filter; ignore last request (results sorted by most recent captures first)
+    start_date, end_date = projects.query_start_end_dates(
         p,
         Session,
         DEFAULT_DAY_OFFSET,
         DEFAULT_DAY_WINDOW,
         processor.SOURCE_WAYBACK_MACHINE,
-        False,
     )
     project_stories = []
     skipped_dupes = 0  # how many URLs do we filter out because they're already in the DB for this project recently
@@ -79,16 +79,14 @@ def _project_story_worker(p: Dict) -> List[Dict]:
             )
         )
         if total_hits > 0:  # don't bother querying if no results to page through
-            # list recent urls to filter so we don't fetch text extra if we've recently proceses already (and will be filtered
-            # out by add_stories call in later post-text-fetch step)
+            # list recent urls to filter so we don't fetch text extra if we've recently proceses already (and will be
+            # filtered out by add_stories call in later post-text-fetch step)
             with Session() as session:
                 already_processed_urls = stories_db.project_story_normalized_urls(
                     session, p, 14
                 )
             # using the provider wrapper so this does the chunking into smaller queries for us
-            latest_pub_date = dt.datetime.now() - dt.timedelta(
-                weeks=50
-            )  # a long, long time ago
+            latest_pub_date = dt.datetime.now() - dt.timedelta(weeks=50)
             for page in wm_provider.all_items(
                 full_project_query,
                 start_date,
@@ -96,6 +94,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                 domains=p["domains"],
                 page_size=PAGE_SIZE,
             ):
+                # results are sorted by surt_url ASC, which is exactly helpful for us from a daily fetch perspective
                 if len(project_stories) > MAX_STORIES_PER_PROJECT:
                     break
                 logger.debug(
@@ -105,6 +104,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                 try:
                     page_latest_pub_date = max([s["publish_date"] for s in page])
                     latest_pub_date = max(latest_pub_date, page_latest_pub_date)
+                    # can't track `capture_time` here because it isn't returned in results
                 except Exception:  # maybe no stories on this page?
                     pass
                 # prep all stories

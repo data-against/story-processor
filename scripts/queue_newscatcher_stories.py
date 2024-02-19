@@ -35,7 +35,7 @@ PAGE_SIZE = 200
 DEFAULT_DAY_OFFSET = 0
 DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
 MAX_STORIES_PER_PROJECT = (
-    3000  # can't process all the stories for queries that are too big
+    3000  # can't process all the stories for queries that are too big (keep this low)
 )
 MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
@@ -82,10 +82,12 @@ def _fetch_results(
             lang=project["language"],
             countries=[p.strip() for p in project["newscatcher_country"].split(",")],
             page_size=PAGE_SIZE,
-            from_=start_date.strftime("%Y-%m-%d"),
-            to_=end_date.strftime("%Y-%m-%d"),
+            from_=start_date.strftime("%Y-%m-%d"),  # UTC
+            to_=end_date.strftime("%Y-%m-%d"),  # UTC
             page=page,
-            # sort only supports date DESC, so better to do this by default relevancy perhaps
+            # sort by date only supports date DESC (latest first), so current gues is to do this by relevancy
+            # to produce stronger results (not validated)
+            # sort_by='date',
         )
     # try to ignore project-level exceptions so we can keep going and process other projects
     except newscatcherapi.newscatcherapi_exception.NewsCatcherApiException as ncae:
@@ -105,13 +107,14 @@ def _fetch_results(
 
 def _project_story_worker(p: Dict) -> List[Dict]:
     Session = database.get_session_maker()
-    start_date, end_date, history = projects.query_start_end_dates(
+    # here start_date ignores last query history, since sort is by relevancy; we're relying on robust URL de-duping
+    # to make sure we don't double up on stories (and keeping MAX_STORIES_PER_PROJECT low)
+    start_date, end_date = projects.query_start_end_dates(
         p,
         Session,
         DEFAULT_DAY_OFFSET,
         DEFAULT_DAY_WINDOW,
         processor.SOURCE_NEWSCATCHER,
-        False,
     )
     page_number = 1
     # fetch first page to get total hits, and use results
@@ -165,7 +168,7 @@ def _project_story_worker(p: Dict) -> List[Dict]:
                     language=p["language"],
                     authors=item["authors"],
                     media_url=urls.canonical_domain(real_url),
-                    media_name=urls.canonical_domain(real_url)
+                    media_name=urls.canonical_domain(real_url),
                     # too bad there isn't somewhere we can store the `id` (string)
                 )
                 project_stories.append(info)
@@ -184,6 +187,8 @@ def _project_story_worker(p: Dict) -> List[Dict]:
             )
         )
         with Session() as session:
+            # note - right now this latest pub date isn't used, because the sort is by relevancy within the
+            # default time window
             projects_db.update_history(
                 session, p["id"], latest_pub_date, processor.SOURCE_NEWSCATCHER
             )

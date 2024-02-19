@@ -7,7 +7,7 @@ import sys
 import time
 from typing import Dict, List
 
-import dateparser
+import pytz
 
 # Disable loggers prior to package imports
 import processor
@@ -31,6 +31,9 @@ DAY_WINDOW = 4  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_D
 STORIES_PER_PAGE = 1000
 MAX_STORIES_PER_PROJECT = 5000
 
+INCLUSIVE_RANGE_START = "{"
+EXCLUSIVE_RANGE_END = "]"
+
 logger = logging.getLogger(__name__)
 
 MC_PLATFORM_NAME = mc_providers.provider_name(
@@ -50,31 +53,29 @@ def load_projects_task() -> List[Dict]:
 def _process_project_task(args: Dict) -> Dict:
     project, page_size, max_stories = args
     Session = database.get_session_maker()
-    start_date, end_date, history = projects.query_start_end_dates(
+    # here confusingly start_date is a useful indexed_date, but end_date is a useful publication_date
+    start_date, end_date = projects.query_start_end_dates(
         project,
         Session,
         DAY_OFFSET,
         DAY_WINDOW,
         processor.SOURCE_MEDIA_CLOUD,
     )
-    # we will filter by indexed_date, so just make a wide window for pub_date values
-    try:
-        pub_start_date = dateparser.parse(project["start_date"]).date() - dt.timedelta(
-            weeks=3
-        )
-    except (
-        Exception
-    ):  # might not have start_date set, so just use something that was a while ago
-        pub_start_date = dt.date.today() - dt.timedelta(weeks=12)
-    pub_end_date = dt.date.today() + dt.timedelta(weeks=3)
+    utc = pytz.UTC
+    # indexed_date filter should be from last search until now
+    indexed_start = start_date
+    indexed_end = utc.localize(dt.datetime.now())
+    # published_date filter should be the day window for recency (this is stored in MC as date, not datetime)
+    pub_start_date = dt.date.today() - dt.timedelta(days=(DAY_OFFSET + DAY_WINDOW))
+    pub_end_date = end_date.date()
     project_email_message = ""
     logger.info("Checking project {}/{}".format(project["id"], project["title"]))
     logger.debug("  {} stories/page up to {}".format(page_size, max_stories))
     project_email_message += "Project {} - {}:\n".format(
         project["id"], project["title"]
     )
-    # setup queries to filter by language too so we only get stories the model can process
-    indexed_date_query_clause = f"indexed_date:[{start_date.date().isoformat()} TO {end_date.date().isoformat()}]"
+    # setup queries to filter by language too, so we only get stories the model can process
+    indexed_date_query_clause = f"indexed_date:{INCLUSIVE_RANGE_START}{indexed_start.isoformat()} TO {indexed_end.isoformat()}{EXCLUSIVE_RANGE_END}"
     q = f"({project['search_terms']}) AND language:{project['language']} AND {indexed_date_query_clause}"
     # see how many stories
     mc = get_mc_client()
@@ -104,9 +105,7 @@ def _process_project_task(args: Dict) -> Dict:
     page_count = 0
     more_stories = True
     page_token = None
-    latest_indexed_date = dt.datetime.today() - dt.timedelta(
-        weeks=50
-    )  # a long, long time ago
+    latest_indexed_date = dt.datetime.today() - dt.timedelta(weeks=2)  # a while ago
     while more_stories and (story_count < max_stories):
         try:
             page_of_stories, page_token = mc.story_list(
@@ -156,7 +155,7 @@ def _process_project_task(args: Dict) -> Dict:
                 projects_db.update_history(
                     session,
                     project["id"],
-                    latest_indexed_date,
+                    latest_indexed_date,  # this will be interpreted next time as GMT, so make sure it is(!)
                     processor.SOURCE_MEDIA_CLOUD,
                 )
                 more_stories = page_token is not None
@@ -207,6 +206,7 @@ if __name__ == "__main__":
     project_results = process_projects_in_parallel(projects_list, POOL_SIZE)
 
     # 3. send email/slack_msg with results of operations
+    logger.info(f"Total stories queued: {sum([p['stories'] for p in project_results])}")
     tasks.send_project_list_slack_message(
         project_results,
         processor.SOURCE_MEDIA_CLOUD,
