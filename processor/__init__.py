@@ -4,7 +4,6 @@ import sys
 from typing import Dict
 
 import mediacloud.api
-import mediacloud_legacy.api
 from dotenv import load_dotenv
 from sentry_sdk import init
 from sentry_sdk.integrations.logging import ignore_logger
@@ -64,12 +63,6 @@ if MC_API_TOKEN is None:
         "  ❌ No MC_API_TOKEN env var specified. Pathetically refusing to start!"
     )
     sys.exit(1)
-
-MC_LEGACY_API_KEY = os.environ.get("MC_LEGACY_API_KEY", None)
-if MC_LEGACY_API_KEY is None:
-    logger.warning(
-        "  ⚠️ No MC_LEGACY_API_KEY env var specified. Will continue without support for that."
-    )
 
 BROKER_URL = os.environ.get("BROKER_URL", None)
 if BROKER_URL is None:
@@ -160,17 +153,9 @@ def get_mc_directory_client() -> mediacloud.api.DirectoryApi:
     return mediacloud.api.DirectoryApi(MC_API_TOKEN)
 
 
-def get_mc_legacy_client() -> mediacloud_legacy.api.AdminMediaCloud:
-    """
-    A central place to get the Media Cloud legacy client
-    :return: an admin media cloud client with the API key from the environment variable
-    """
-    return mediacloud_legacy.api.AdminMediaCloud(MC_LEGACY_API_KEY)
-
-
 def get_mc_client() -> mediacloud.api.SearchApi:
     """
-    A central place to get the Media Cloud legacy client
+    A central place to get the Media Cloud search client
     :return: an admin media cloud client with the API key from the environment variable
     """
     mc = mediacloud.api.SearchApi(MC_API_TOKEN)
