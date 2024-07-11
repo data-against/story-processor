@@ -9,7 +9,7 @@ repos:
         files: ^(processor/|scripts/)
 
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: 13e962f
+    rev: 3.10.0
     hooks:
       - id: commitizen
       - id: commitizen-branch
@@ -25,3 +25,4 @@ repos:
         types: [python]
         language: system
         files: ^(processor/|scripts/)
+       
