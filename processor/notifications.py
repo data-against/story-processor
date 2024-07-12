@@ -70,7 +70,9 @@ def upload_to_slack(
         return False
 
 
-def send_slack_msg(channel_id, bot_key, data_source: str, subject: str, message: str):
+def send_slack_msg(
+    channel_id, bot_key, data_source: str, subject: str, message: str
+) -> bool:
     if not is_slack_configured():
         logger.warning("Ignoring cowardly attempt post slack without tokens")
         return False
@@ -85,10 +87,13 @@ def send_slack_msg(channel_id, bot_key, data_source: str, subject: str, message:
         temp_file.write(formatted_message)
         temp_file.flush()
         temp_file_name = temp_file.name
-        if upload_to_slack(channel, bot_key, data_source, header, temp_file_name):
+        success = upload_to_slack(channel, bot_key, data_source, header, temp_file_name)
+        if success:
             logger.info("Slack message sent successfully")
         else:
             logger.error("Failed to send Slack message")
 
     if temp_file_name is not None:
         os.remove(temp_file_name)
+
+    return success
