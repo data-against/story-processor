@@ -3,6 +3,12 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.4.0
+
+* Send us an alert when overall story volume is lower than expected
+* Update dependencies to latest
+* Code refactoring
+
 ### v4.3.0
 
 * Refactor use of last query timestamp to match results more closely on each platform 
