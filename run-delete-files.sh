@@ -1,1 +1,0 @@
-python -m scripts.delete_old_data

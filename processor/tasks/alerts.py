@@ -84,11 +84,13 @@ def check_story_count():
 
 
 # Configuration to schedule the check_story_count task
-app.conf.beat_schedule = {
-    "check_story_count": {
-        "task": "processor.tasks.alerts.check_story_count",
-        "schedule": crontab(hour="2", minute="0", day_of_month="*"),
-    },
-}
+app.conf.beat_schedule.update(
+    {
+        "check_story_count": {
+            "task": "processor.tasks.alerts.check_story_count",
+            "schedule": crontab(hour="2", minute="0", day_of_month="*"),
+        },
+    }
+)
 
 app.conf.timezone = "UTC"
