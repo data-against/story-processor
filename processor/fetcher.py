@@ -36,7 +36,7 @@ class UrlSpider(scrapy.Spider):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self.handle_parse = handle_parse
+        self.on_parse = handle_parse
         self.start_urls = start_urls
         logging.getLogger("scrapy").setLevel(logging.INFO)
         logging.getLogger("scrapy.core.engine").setLevel(logging.INFO)
@@ -64,7 +64,7 @@ def run_spider(handle_parse: Callable, urls: List[str]) -> defer.Deferred:
 
 
 def fetch_all_html(
-    urls: List[str], handle_parse: Callable, batch_size: int = 100
+    urls: List[str], handle_parse: Callable, batch_size: int = 1000
 ) -> None:
     """Splits URLs into batches and manages the concurrent execution of multiple spiders"""
     if not urls:
