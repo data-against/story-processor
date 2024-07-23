@@ -2,6 +2,7 @@ import logging
 from typing import Any, Callable, Dict, List, Optional
 
 import scrapy
+import scrapy.crawler as crawler
 from twisted.internet import defer, reactor
 
 
@@ -57,7 +58,7 @@ class UrlSpider(scrapy.Spider):
 
 def run_spider(handle_parse: Callable, urls: List[str]) -> defer.Deferred:
     """Runs a spider for a batch of URLs and returns a deferred object:"""
-    runner = scrapy.crawler.CrawlerRunner()
+    runner = crawler.CrawlerRunner()
     deferred = runner.crawl(UrlSpider, handle_parse=handle_parse, start_urls=urls)
     return deferred
 
