@@ -9,7 +9,7 @@ repos:
         files: ^(processor/|scripts/)
 
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: 3.11.0
+    rev: v3.28.0
     hooks:
       - id: commitizen
       - id: commitizen-branch
