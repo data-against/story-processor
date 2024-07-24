@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.4.2
+
+* Fix problems with celery imports
+
 ### v4.4.1
 
 * Fix problems prevening processing of stories by models
