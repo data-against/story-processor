@@ -16,12 +16,28 @@ logger = logging.getLogger(__name__)
 def project_story_normalized_urls(
     session: Session, project: Dict, last_n_days: int
 ) -> List[str]:
+    """
+    This is helpful for de-duplication. We want to find out which stories were fetched and processed for this
+    project in the last N days so that we can ignore them if we fetch those URLs again.
+    :param session:
+    :param project:
+    :param last_n_days:
+    :return: a list of normalized URLs, ready to be compared against other URLs
+    """
+    # use a time window to look for recent stories
     last_n_days_filter = Story.queued_date > (
         dt.datetime.now() - dt.timedelta(days=last_n_days)
     )
+    # limit stories to just ones we fetched for this project
     project_id_filter = Story.project_id == project["id"]
+    # make sure they weren't processed already
+    not_processed_filter = Story.processed_date.is_not(None)
     matching = (
-        session.query(Story).filter(project_id_filter).filter(last_n_days_filter).all()
+        session.query(Story)
+        .filter(project_id_filter)
+        .filter(last_n_days_filter)
+        .filter(not_processed_filter)
+        .all()
     )
     return [s.normalized_url for s in matching]
 
