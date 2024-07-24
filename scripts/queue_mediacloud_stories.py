@@ -20,7 +20,7 @@ import processor.database as database
 import processor.database.projects_db as projects_db
 import processor.database.stories_db as stories_db
 import processor.projects as projects
-import processor.tasks as p_tasks
+import processor.tasks.classification as classification_tasks
 import scripts.tasks as tasks
 from processor import get_mc_client
 from processor.classifiers import download_models
@@ -149,7 +149,9 @@ def _process_project_task(args: Dict) -> Dict:
                     session, page_of_stories, project, processor.SOURCE_MEDIA_CLOUD
                 )
                 story_count += len(stories_to_queue)
-                p_tasks.classify_and_post_worker.delay(project, stories_to_queue)
+                classification_tasks.classify_and_post_worker.delay(
+                    project, stories_to_queue
+                )
                 # important to write this update now, because we have queued up the task to process these stories
                 # the task queue will manage retrying with the stories if it fails with this batch
                 projects_db.update_history(
