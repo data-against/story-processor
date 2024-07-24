@@ -64,13 +64,15 @@ def run_spider(handle_parse: Callable, urls: List[str]) -> defer.Deferred:
 
 
 def fetch_all_html(
-    urls: List[str], handle_parse: Callable, batch_size: int = 1000
+    urls: List[str], handle_parse: Callable, num_spiders: int = 4
 ) -> None:
     """Splits URLs into batches and manages the concurrent execution of multiple spiders"""
     if not urls:
         return
 
+    batch_size = len(urls) // num_spiders + (len(urls) % num_spiders > 0)
     batches = [urls[i : i + batch_size] for i in range(0, len(urls), batch_size)]
+
     deferreds = [run_spider(handle_parse, batch) for batch in batches]
 
     dl = defer.DeferredList(deferreds)
