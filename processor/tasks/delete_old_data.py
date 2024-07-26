@@ -14,8 +14,8 @@ def delete_old_stories_task(age: int = 62):
 
 app.conf.beat_schedule.update(
     {
-        "delete-old-stories-every-week": {
-            "delete_old_stories": "processor.tasks.delete_old_stories_task",
+        "delete-old-stories": {
+            "task": "processor.tasks.delete_old_stories_task",
             "schedule": crontab(
                 day_of_week="*", hour="0", minute="0"
             ),  # Every night at midnight do some cleaning
