@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.4.3
+
+* Update cron schedule to make monitoring easier.
+
 ### v4.4.2
 
 * Fix problems with celery imports
