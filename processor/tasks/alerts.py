@@ -88,7 +88,7 @@ app.conf.beat_schedule.update(
     {
         "check_story_count": {
             "task": "processor.tasks.alerts.check_story_count",
-            "schedule": crontab(hour="11", minute="30", day_of_month="*"),
+            "schedule": crontab(hour="7", minute="30", day_of_month="*"),
         },
     }
 )
