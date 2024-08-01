@@ -151,7 +151,7 @@ class Classifier:
             return dict(
                 model_1_scores=None,
                 model_2_scores=None,
-                model_scores=None,
+                model_scores=[],
             )
 
         story_texts = [s["story_text"] for s in stories]
