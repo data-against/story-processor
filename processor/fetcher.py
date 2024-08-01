@@ -1,9 +1,13 @@
+import collections
 import logging
 from typing import Any, Callable, Dict, List, Optional
+from urllib.parse import urlparse
 
 import scrapy
 import scrapy.crawler as crawler
 from twisted.internet import defer, reactor
+
+logger = logging.getLogger(__name__)
 
 
 class UrlSpider(scrapy.Spider):
@@ -70,10 +74,28 @@ def fetch_all_html(
     if not urls:
         return
 
-    batch_size = len(urls) // num_spiders + (len(urls) % num_spiders > 0)
-    batches = [urls[i : i + batch_size] for i in range(0, len(urls), batch_size)]
+    # group urls by domain, if you can't fetch the domain put it a miscellaneous bucket
+    domain_groups = collections.defaultdict(list)
+    default_group = []
+    for url in urls:
+        domain = urlparse(url).netloc
+        if domain:
+            domain_groups[domain].append(url)
+        else:
+            default_group.append(url)
 
-    deferreds = [run_spider(handle_parse, batch) for batch in batches]
+    # distribute domain groups across spiders
+    domain_list = list(domain_groups.values())
+    if default_group:
+        domain_list.append(default_group)
+
+    batches = [[] for _ in range(num_spiders)]
+
+    for i, domain_urls in enumerate(domain_list):
+        batches[i % num_spiders].extend(domain_urls)
+
+    # run spiders on the batches
+    deferreds = [run_spider(handle_parse, batch) for batch in batches if batch]
 
     dl = defer.DeferredList(deferreds)
     dl.addBoth(lambda _: reactor.stop())

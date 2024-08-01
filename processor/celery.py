@@ -13,5 +13,10 @@ app = Celery(
     "feminicide-story-processor",
     broker=BROKER_URL,
     backend="db+sqlite:///celery-backend.db",
-    include=["processor.tasks"],
+    include=[
+        "processor.tasks",
+        "processor.tasks.classification",
+        "processor.tasks.alerts",
+        "processor.tasks.delete_old_data",
+    ],
 )
