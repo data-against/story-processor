@@ -7,8 +7,6 @@ import scrapy
 import scrapy.crawler as crawler
 from twisted.internet import defer, reactor
 
-logger = logging.getLogger(__name__)
-
 
 class UrlSpider(scrapy.Spider):
     name: str = "urlspider"
