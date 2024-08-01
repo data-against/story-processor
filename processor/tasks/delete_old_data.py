@@ -17,7 +17,7 @@ app.conf.beat_schedule.update(
         "delete-old-stories": {
             "task": "processor.tasks.delete_old_stories_task",
             "schedule": crontab(
-                day_of_week="*", hour="11", minute="31"
+                day_of_week="*", hour="7", minute="31"
             ),  # Every night at midnight do some cleaning
             "args": (30,),
         },
