@@ -20,3 +20,5 @@ app = Celery(
         "processor.tasks.delete_old_data",
     ],
 )
+
+app.conf.timezone = "UTC"

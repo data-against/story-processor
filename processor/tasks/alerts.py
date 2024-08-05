@@ -66,7 +66,7 @@ def send_alert(total_stories: int, days: int, threshold: float):
         )
 
 
-@app.task
+@app.task(name="processor.tasks.alerts.check_story_count")
 def check_story_count():
     """
     Task to check the average number of stories processed over the last 4 days and send alerts if below threshold.
@@ -83,14 +83,9 @@ def check_story_count():
         )
 
 
-# Configuration to schedule the check_story_count task
-app.conf.beat_schedule.update(
-    {
-        "check_story_count": {
-            "task": "processor.tasks.alerts.check_story_count",
-            "schedule": crontab(hour="2", minute="0", day_of_month="*"),
-        },
-    }
-)
-
-app.conf.timezone = "UTC"
+app.conf.beat_schedule = {
+    "check_story_count": {
+        "task": "processor.tasks.alerts.check_story_count",
+        "schedule": crontab(hour="2", minute="0", day_of_month="*"),
+    },
+}
