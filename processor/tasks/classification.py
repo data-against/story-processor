@@ -48,9 +48,9 @@ ACCEPTED_ENTITY_TYPES = [
 def _add_confidence_to_stories(
     session: Session, project: Dict, stories: List[Dict]
 ) -> List[Dict]:
-    probs = projects.classify_stories(project, stories)
     if not stories:
         return stories
+    probs = projects.classify_stories(project, stories)
     for idx, s in enumerate(stories):
         s["confidence"] = probs["model_scores"][idx]
         # adding in some extra stuff for logging only (they get removed in `prep_stories_for_posting`)
@@ -120,7 +120,12 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
         )
         # now classify the stories again the model specified for the project (this cleans up the story dicts too)
         if not stories:
-            return stories
+            logger.debug(
+                "{}: skipping cowardly attempt to classify empty stories".format(
+                    project["id"]
+                )
+            )
+            return
 
         Session = database.get_session_maker()
         with Session() as session:
