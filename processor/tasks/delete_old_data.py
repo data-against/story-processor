@@ -5,7 +5,7 @@ from processor.celery import app
 from processor.database.stories_db import delete_old_stories
 
 
-@app.task
+@app.task(name="processor.tasks.delete_old_data.delete_old_stories_task")
 def delete_old_stories_task(age: int = 62):
     Session = database.get_session_maker()
     with Session() as session:
@@ -14,11 +14,9 @@ def delete_old_stories_task(age: int = 62):
 
 app.conf.beat_schedule.update(
     {
-        "delete-old-stories": {
-            "task": "processor.tasks.delete_old_stories_task",
-            "schedule": crontab(
-                day_of_week="*", hour="16", minute="40"
-            ),  # Every night at midnight do some cleaning
+        "delete_old_stories_task": {
+            "task": "processor.tasks.delete_old_data.delete_old_stories_task",
+            "schedule": crontab(day_of_week="*", hour="0", minute="0"),
             "args": (30,),
         },
     }
