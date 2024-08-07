@@ -65,6 +65,20 @@ def run_spider(handle_parse: Callable, urls: List[str]) -> defer.Deferred:
     return deferred
 
 
+def group_urls_by_domain(urls: List[str]) -> List[List[str]]:
+    """
+    Groups URLs by their domain. Skips URLs that do not have extractable domains.
+    """
+    domain_groups = collections.defaultdict(list)
+
+    for url in urls:
+        domain = urlparse(url).netloc
+        if domain:
+            domain_groups[domain].append(url)
+
+    return list(domain_groups.values())
+
+
 def fetch_all_html(
     urls: List[str], handle_parse: Callable, num_spiders: int = 4
 ) -> None:
@@ -72,23 +86,11 @@ def fetch_all_html(
     if not urls:
         return
 
-    # group urls by domain, if you can't fetch the domain put it a miscellaneous bucket
-    domain_groups = collections.defaultdict(list)
-    default_group = []
-    for url in urls:
-        domain = urlparse(url).netloc
-        if domain:
-            domain_groups[domain].append(url)
-        else:
-            default_group.append(url)
+    # group URLs by domain
+    domain_list = group_urls_by_domain(urls)
 
     # distribute domain groups across spiders
-    domain_list = list(domain_groups.values())
-    if default_group:
-        domain_list.append(default_group)
-
     batches = [[] for _ in range(num_spiders)]
-
     for i, domain_urls in enumerate(domain_list):
         batches[i % num_spiders].extend(domain_urls)
 
