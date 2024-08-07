@@ -98,6 +98,7 @@ def init_sentry(**kwargs):
     # else:
     # logger.info("  Not logging errors to Sentry")
 
+init_sentry()
 
 FEMINICIDE_API_URL = os.environ.get("FEMINICIDE_API_URL", None)
 if FEMINICIDE_API_URL is None:
