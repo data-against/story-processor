@@ -146,7 +146,16 @@ class Classifier:
                 * `model_2_scores`: scores from model 2 (None if only one model)
                 * `model_scores`: list of single, or combined model scores
         """
+        # only execute if there are stories
+        if not stories:
+            return dict(
+                model_1_scores=None,
+                model_2_scores=None,
+                model_scores=[],
+            )
+
         story_texts = [s["story_text"] for s in stories]
+
         # Classifier 1 always exists (but only chained models have classifier_2
         # vectorize first (turn words/sentences into vectors)
         try:
@@ -181,10 +190,12 @@ class Classifier:
                     self.config["vectorizer_type_1"],
                 )
             )
+
         if not self.config["chained_models"]:
             return dict(
                 model_1_scores=None, model_2_scores=None, model_scores=true_probs_1
             )
+
         # Classifier 2 could also exist
         if self.config["vectorizer_type_2"] == VECTORIZER_TF_IDF:
             vectorized_data_2 = self._vectorizer_2.transform(story_texts)
@@ -192,10 +203,11 @@ class Classifier:
             vectorized_data_2 = self._vectorizer_2(story_texts)
         else:
             raise RuntimeError(
-                "Unknonwn vectorizer2 type of {} on project {}".format(
+                "Unknown vectorizer2 type of {} on project {}".format(
                     self.config["vectorizer_type_2"], self.project["id"]
                 )
             )
+
         # now run model against vectors (turn vectors into probabilities)
         try:
             predictions_2 = self._model_2.predict_proba(vectorized_data_2)
@@ -211,6 +223,7 @@ class Classifier:
                     self.config["vectorizer_type_2"],
                 )
             )
+
         # with chained models we just return the multiplied probs (for now)
         combined_probs = true_probs_1 * true_probs_2
         return dict(
