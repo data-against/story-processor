@@ -71,6 +71,9 @@ def add_stories(
         except IntegrityError:
             # duplicate story, so just ignore it
             session.rollback()
+            logger.debug(
+                f"Duplicate story found for project {project['id']}: {s['url']}"
+            )
             del s["db_story"]
             ignored_count += 1
     # only keep ones that inserted correctly
