@@ -71,9 +71,6 @@ def add_stories(
         except IntegrityError:
             # duplicate story, so just ignore it
             session.rollback()
-            logger.debug(
-                f"Duplicate story found for project {project['id']}: {s['url']}"
-            )
             del s["db_story"]
             ignored_count += 1
     # only keep ones that inserted correctly
@@ -261,9 +258,10 @@ def stories_by_published_day(
 
 def _run_query(session: Session, query: str) -> List:
     results = session.execute(text(query))
-    data = []
-    for row in results:
-        data.append(row._mapping)
+    data = results.mappings().all()
+    # data = []
+    # for row in results:
+    # data.append(row._mapping)
     return data
 
 
@@ -295,7 +293,7 @@ def posted_above_story_count(session: Session, project_id: int) -> int:
     :return:
     """
     query = (
-        "select count(1) from stories "
+        "select count(1) as count from stories "
         "where project_id={} and posted_date is not Null and above_threshold is True".format(
             project_id
         )
@@ -309,7 +307,7 @@ def below_story_count(session: Session, project_id: int) -> int:
     :param project_id:
     :return:
     """
-    query = "select count(1) from stories where project_id={} and above_threshold is False".format(
+    query = "select count(1) as count from stories where project_id={} and above_threshold is False".format(
         project_id
     )
     return _run_count_query(session, query)

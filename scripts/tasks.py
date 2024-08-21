@@ -1,5 +1,6 @@
 import logging
 import time
+from datetime import datetime
 from typing import Dict, List
 
 import dateutil.parser
@@ -145,7 +146,11 @@ def queue_stories_for_classification(
                         # important to write this update now, because we have queued up the task to process these
                         # stories the task queue will manage retrying with the stories if it fails with this batch
                         publish_dates = [
-                            dateutil.parser.parse(s["source_publish_date"])
+                            (
+                                s["source_publish_date"]
+                                if isinstance(s["source_publish_date"], datetime)
+                                else dateutil.parser.parse(s["source_publish_date"])
+                            )
                             for s in project_stories
                         ]
                         latest_date = max(
