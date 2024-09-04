@@ -67,4 +67,7 @@ jobs:
           ./scripts/download-models.sh
 
       - name: Test with pytest
-        run: pytest
+        run: pytest --ignore=./scripts/test/
+
+      - name: Run tests in scripts
+        run: pytest ./scripts/test/
