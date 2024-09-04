@@ -145,14 +145,17 @@ def queue_stories_for_classification(
                         )
                         # important to write this update now, because we have queued up the task to process these
                         # stories the task queue will manage retrying with the stories if it fails with this batch
-                        publish_dates = [
-                            (
-                                s["source_publish_date"]
-                                if isinstance(s["source_publish_date"], datetime)
-                                else dateutil.parser.parse(s["source_publish_date"])
-                            )
-                            for s in project_stories
-                        ]
+                        publish_dates = []
+
+                        for s in project_stories:
+                            if isinstance(s["source_publish_date"], datetime):
+                                publish_date = s["source_publish_date"]
+                            else:
+                                publish_date = dateutil.parser.parse(
+                                    s["source_publish_date"]
+                                )
+
+                            publish_dates.append(publish_date)
                         latest_date = max(
                             publish_dates
                         )  # we use latest pub_date to filter in our queries tomorrow

@@ -53,6 +53,7 @@ def add_stories(
     :param source:
     :return: list of ids of objects inserted
     """
+    logger.info(f"  session using {session} ")
     ignored_count = 0
     new_source_story_list = copy.copy(source_story_list)
     now = dt.datetime.now()
@@ -68,7 +69,11 @@ def add_stories(
         try:
             session.add(s["db_story"])
             session.commit()
-        except IntegrityError:
+            if s in session.new:
+                logger.info("Object has been added to the session.")
+                session.commit()
+        except IntegrityError as ie:
+            logger.error(f"Integrity Exception occurred: {str(ie)}")
             # duplicate story, so just ignore it
             session.rollback()
             logger.debug(
@@ -76,6 +81,11 @@ def add_stories(
             )
             del s["db_story"]
             ignored_count += 1
+        except Exception as e:
+            logger.error(f"Exception occurred: {str(e)}")
+            session.rollback()
+
+    session.commit()
     # only keep ones that inserted correctly
     new_source_story_list = [
         s for s in new_source_story_list if ("db_story" in s) and s["db_story"].id
@@ -88,6 +98,8 @@ def add_stories(
         if "db_story" in s:  # a little extra safety
             del s["db_story"]
     logger.info(f"  ignored {ignored_count} stories as duplicates")
+    row_count = session.execute(select(func.count()).select_from(Story)).scalar()
+    logger.info(f" {row_count} stories in db")
     return new_source_story_list
 
 
@@ -270,7 +282,7 @@ def _run_query(session: Session, query: str) -> List:
 
 def _run_count_query(session: Session, query: str) -> int:
     data = _run_query(session, query)
-    return data[0]["count"]
+    return data[0]["total"]
 
 
 def unposted_above_story_count(
@@ -283,7 +295,7 @@ def unposted_above_story_count(
     if limit:
         earliest_date = dt.date.today() - dt.timedelta(days=limit)
         date_clause += " AND (posted_date >= '{}'::DATE)".format(earliest_date)
-    query = "select count(1) from stories where project_id={} and above_threshold is True and {}".format(
+    query = "select count(1) as total from stories where project_id={} and above_threshold is True and {}".format(
         project_id, date_clause
     )
     return _run_count_query(session, query)
@@ -296,7 +308,7 @@ def posted_above_story_count(session: Session, project_id: int) -> int:
     :return:
     """
     query = (
-        "select count(1) as count from stories "
+        "select count(1) as total from stories "
         "where project_id={} and posted_date is not Null and above_threshold is True".format(
             project_id
         )
@@ -310,7 +322,7 @@ def below_story_count(session: Session, project_id: int) -> int:
     :param project_id:
     :return:
     """
-    query = "select count(1) as count from stories where project_id={} and above_threshold is False".format(
+    query = "select count(1) as total from stories where project_id={} and above_threshold is False".format(
         project_id
     )
     return _run_count_query(session, query)

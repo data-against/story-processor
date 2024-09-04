@@ -50,6 +50,85 @@ def load_projects_task() -> List[Dict]:
     return project_list
 
 
+def fetch_stories(
+    mc_client,
+    query,
+    pub_start_date,
+    pub_end_date,
+    project,
+    page_size,
+    platform,
+    max_stories,
+):
+    all_stories = []
+    page_token = None
+    more_stories = True
+    story_count = 0
+    page_count = 0
+
+    while more_stories and (story_count < max_stories):
+        try:
+            page_of_stories, page_token = mc_client.story_list(
+                query,
+                pub_start_date,
+                pub_end_date,
+                collection_ids=project["media_collections"],
+                pagination_token=page_token,
+                page_size=page_size,
+                sort_order="desc",
+                platform=platform,
+                expanded=True,
+            )
+
+            if page_of_stories:
+                all_stories.extend(page_of_stories)
+                story_count += len(page_of_stories)
+                page_count += 1
+                logger.info(
+                    "    {} - page {}: ({}) stories".format(
+                        project["id"], page_count, len(page_of_stories)
+                    )
+                )
+                more_stories = page_token is not None
+            else:
+                more_stories = False
+
+        except Exception as e:
+            logger.error(
+                "  Story list error on project {}. Skipping project for now. {}".format(
+                    project["id"], e
+                )
+            )
+            more_stories = False
+            continue
+
+    return all_stories
+
+
+def get_total_story_count(
+    mc_client, query, pub_start_date, pub_end_date, collection_ids, platform, project
+):
+    try:
+        total_stories = mc_client.story_count(
+            query,
+            pub_start_date,
+            pub_end_date,
+            collection_ids=collection_ids,
+            platform=platform,
+        )["relevant"]
+        logger.info(
+            "  Project {}: {} total stories".format(project["id"], total_stories)
+        )
+        return total_stories, None
+    except Exception as e:
+        logger.error(
+            "  Couldn't count stories in project {}. Skipping project for now. {}".format(
+                project["id"], e
+            )
+        )
+        return e, None
+
+
 def _process_project_task(args: Dict) -> Dict:
     project, page_size, max_stories = args
     Session = database.get_session_maker()
@@ -62,119 +141,90 @@ def _process_project_task(args: Dict) -> Dict:
         processor.SOURCE_MEDIA_CLOUD,
     )
     utc = pytz.UTC
-    # indexed_date filter should be from last search until now
     indexed_start = start_date
     indexed_end = utc.localize(dt.datetime.now())
-    # published_date filter should be the day window for recency (this is stored in MC as date, not datetime)
     pub_start_date = dt.date.today() - dt.timedelta(days=(DAY_OFFSET + DAY_WINDOW))
     pub_end_date = end_date.date()
     project_email_message = ""
     logger.info("Checking project {}/{}".format(project["id"], project["title"]))
     logger.debug("  {} stories/page up to {}".format(page_size, max_stories))
-    project_email_message += "Project {} - {}:\n".format(
-        project["id"], project["title"]
-    )
-    # setup queries to filter by language too, so we only get stories the model can process
     indexed_date_query_clause = f"indexed_date:{INCLUSIVE_RANGE_START}{indexed_start.isoformat()} TO {indexed_end.isoformat()}{EXCLUSIVE_RANGE_END}"
     q = f"({project['search_terms']}) AND language:{project['language']} AND {indexed_date_query_clause}"
-    # see how many stories
     mc = get_mc_client()
-    try:
-        total_stories = mc.story_count(
-            q,
-            pub_start_date,
-            pub_end_date,
-            collection_ids=project["media_collections"],
-            platform=MC_PLATFORM_NAME,
-        )["relevant"]
-    except Exception as e:
-        logger.error(
-            "  Couldn't count stories in project {}. Skipping project for now. {}".format(
-                project["id"], e
-            )
-        )
+    # see how many stories
+    total_stories, e = get_total_story_count(
+        mc,
+        q,
+        pub_start_date,
+        pub_end_date,
+        project["media_collections"],
+        MC_PLATFORM_NAME,
+        project,
+    )
+
+    if total_stories is None:
         project_email_message += "    failed to count with {}\n\n".format(e)
         return dict(
             email_text=project_email_message,
             stories=0,
             pages=0,
         )
-    logger.info("  Project {}: {} total stories".format(project["id"], total_stories))
-    # page through stories with text
-    story_count = 0
-    page_count = 0
-    more_stories = True
-    page_token = None
-    latest_indexed_date = dt.datetime.today() - dt.timedelta(weeks=2)  # a while ago
-    while more_stories and (story_count < max_stories):
-        try:
-            page_of_stories, page_token = mc.story_list(
-                q,
-                pub_start_date,
-                pub_end_date,
-                collection_ids=project["media_collections"],
-                pagination_token=page_token,
-                page_size=STORIES_PER_PAGE,
-                sort_order="desc",
-                platform=MC_PLATFORM_NAME,
-                expanded=True,
-            )
-            logger.info(
-                "    {} - page {}: ({}) stories".format(
-                    project["id"], page_count, len(page_of_stories)
-                )
-            )
-        except Exception as e:
-            logger.error(
-                "  Story list error on project {}. Skipping project for now. {}".format(
-                    project["id"], e
-                )
-            )
-            more_stories = False
-            continue  # fail gracefully by going to the next project; maybe next cron run it'll work?
-        if len(page_of_stories) > 0:
-            page_latest_indexed_date = max([s["indexed_date"] for s in page_of_stories])
-            latest_indexed_date = max(latest_indexed_date, page_latest_indexed_date)
-            for s in page_of_stories:
-                s["source"] = processor.SOURCE_MEDIA_CLOUD
-                s["source_publish_date"] = str(s["publish_date"])
-                s["indexed_date"] = s["indexed_date"]
-                s["project_id"] = project["id"]
-                s["story_text"] = s["text"]
-            page_count += 1
-            # and log that we got and queued them all
-            Session = database.get_session_maker()
-            with Session() as session:
-                stories_to_queue = stories_db.add_stories(
-                    session, page_of_stories, project, processor.SOURCE_MEDIA_CLOUD
-                )
-                story_count += len(stories_to_queue)
-                classification_tasks.classify_and_post_worker.delay(
-                    project, stories_to_queue
-                )
-                # important to write this update now, because we have queued up the task to process these stories
-                # the task queue will manage retrying with the stories if it fails with this batch
-                projects_db.update_history(
-                    session,
-                    project["id"],
-                    latest_indexed_date,  # this will be interpreted next time as GMT, so make sure it is(!)
-                    processor.SOURCE_MEDIA_CLOUD,
-                )
-                more_stories = page_token is not None
-        else:
-            more_stories = False
+
+    # fetch stories
+    stories = fetch_stories(
+        mc,
+        q,
+        max_stories,
+        pub_start_date,
+        pub_end_date,
+        project,
+        page_size,
+        MC_PLATFORM_NAME,
+    )
+    if not stories:
+        return dict(email_text="", stories=0, pages=0)
+    latest_indexed_date = dt.datetime.today() - dt.timedelta(weeks=2)
+    page_latest_indexed_date = max([s["indexed_date"] for s in stories])
+    latest_indexed_date = max(latest_indexed_date, page_latest_indexed_date)
+    for s in stories:
+        s["source"] = processor.SOURCE_MEDIA_CLOUD
+        s["source_publish_date"] = str(s["publish_date"])
+        s["indexed_date"] = s["indexed_date"]
+        s["project_id"] = project["id"]
+        s["story_text"] = s["text"]
+
+    # process stories
+    with Session() as session:
+        stories_to_queue = stories_db.add_stories(
+            session, stories, project, processor.SOURCE_MEDIA_CLOUD
+        )
+        story_count = len(stories_to_queue)
+        classification_tasks.classify_and_post_worker.delay(project, stories_to_queue)
+
+        projects_db.update_history(
+            session,
+            project["id"],
+            latest_indexed_date,
+            processor.SOURCE_MEDIA_CLOUD,
+        )
+        session.commit()
+
+    # return results
+    page_count = len(stories) // STORIES_PER_PAGE
     logger.info(
         "  queued {} stories for project {}/{} (in {} pages)".format(
             story_count, project["id"], project["title"], page_count
         )
     )
-    #  add a summary to the email we are generating
     warnings = ""
-    if story_count > (max_stories * 0.8):  # try to get our attention in the email
+    if story_count > (max_stories * 0.8):
         warnings += "(⚠️️️ query might be too broad)"
-    project_email_message += "    found {} new stories (over {} pages) {}\n\n".format(
-        story_count, page_count, warnings
+
+    project_email_message = f"Project {project['id']} - {project['title']}:\n"
+    project_email_message += (
+        f"    found {story_count} new stories (over {page_count} pages) {warnings}\n\n"
     )
+
     return dict(
         email_text=project_email_message,
         stories=story_count,
@@ -199,7 +249,7 @@ if __name__ == "__main__":
     if not models_downloaded:
         sys.exit(1)
     start_time = time.time()
-    # logger.info("    will request {} stories/page (up to {})".format(stories_per_page, max_stories_per_project))
+    # logger.info("    will request {} stories/page (up to {})".format(STORIES_PER_PAGE, MAX_STORIES_PER_PROJECT))
 
     # 1. list all the project we need to work on
     projects_list = load_projects_task()
