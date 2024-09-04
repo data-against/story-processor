@@ -70,4 +70,4 @@ jobs:
         run: pytest --ignore=./scripts/test/
 
       - name: Run tests in scripts
-        run: pytest ./scripts/test/
+        run: pytest scripts/test/
