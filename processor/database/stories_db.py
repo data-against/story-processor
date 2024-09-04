@@ -53,7 +53,6 @@ def add_stories(
     :param source:
     :return: list of ids of objects inserted
     """
-    logger.info(f"  session using {session} ")
     ignored_count = 0
     new_source_story_list = copy.copy(source_story_list)
     now = dt.datetime.now()
@@ -69,9 +68,6 @@ def add_stories(
         try:
             session.add(s["db_story"])
             session.commit()
-            if s in session.new:
-                logger.info("Object has been added to the session.")
-                session.commit()
         except IntegrityError as ie:
             logger.error(f"Integrity Exception occurred: {str(ie)}")
             # duplicate story, so just ignore it
@@ -81,11 +77,6 @@ def add_stories(
             )
             del s["db_story"]
             ignored_count += 1
-        except Exception as e:
-            logger.error(f"Exception occurred: {str(e)}")
-            session.rollback()
-
-    session.commit()
     # only keep ones that inserted correctly
     new_source_story_list = [
         s for s in new_source_story_list if ("db_story" in s) and s["db_story"].id
@@ -98,8 +89,6 @@ def add_stories(
         if "db_story" in s:  # a little extra safety
             del s["db_story"]
     logger.info(f"  ignored {ignored_count} stories as duplicates")
-    row_count = session.execute(select(func.count()).select_from(Story)).scalar()
-    logger.info(f" {row_count} stories in db")
     return new_source_story_list
 
 
