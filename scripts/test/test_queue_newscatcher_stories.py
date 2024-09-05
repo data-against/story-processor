@@ -2,16 +2,16 @@ import os
 from unittest.mock import patch
 
 import pytest
-from utils import (
-    verify_project_history,
-    verify_stories_table,
-    verify_story_threshold_counts,
-)
 
 import scripts.queue_newscatcher_stories as newscatcher
 import scripts.tasks as tasks
 from processor import SOURCE_NEWSCATCHER, projects
 from processor.tasks.classification import classify_and_post_worker
+from scripts.test.utils import (
+    verify_project_history,
+    verify_stories_table,
+    verify_story_threshold_counts,
+)
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEST_DIR = os.path.join(base_dir, "test", "models")
