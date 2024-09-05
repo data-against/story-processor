@@ -19,7 +19,7 @@ MODEL_DIR = os.path.join(base_dir, "test", "models")
 
 @pytest.fixture
 def sample_stories():
-    from fixtures.sample_wb_text import stories
+    from scripts.test.fixtures.sample_wb_text import stories
 
     return stories
 
