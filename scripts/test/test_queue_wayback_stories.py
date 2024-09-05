@@ -35,7 +35,7 @@ def test_queue_wayback_stories(
     sample_stories,
 ):
     # pickle has trouble without import
-    from models.stubbed_1_model import NoOpLogisticRegression  # noqa: F401
+    from scripts.test.models.stubbed_1_model import NoOpLogisticRegression  # noqa: F401
 
     projects.REALLY_POST = False  # We don't want to post any results to the main server
 

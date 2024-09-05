@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 import pytest
 from celery import Celery
-from fixtures.sample_mc_stories import stories as mc_stories
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -12,6 +11,7 @@ import processor.classifiers as classifiers
 from processor import SOURCE_NEWSCATCHER, SOURCE_WAYBACK_MACHINE
 from processor.database import projects_db
 from processor.database.models import Base, ProjectHistory, Story
+from scripts.test.fixtures.sample_mc_stories import stories as mc_stories
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -109,7 +109,7 @@ def mock_load_projects(db_session_maker):
 
 @pytest.fixture(scope="module")
 def mock_fetch_project_stories(db_session_maker, mock_load_projects):
-    from fixtures.sample_stories import stories
+    from scripts.test.fixtures.sample_stories import stories
 
     with patch(
         "scripts.queue_newscatcher_stories.fetch_project_stories"

@@ -26,7 +26,7 @@ def test_queue_newscatcher_stories(
     db_session_maker,
 ):
     # pickle has trouble without import
-    from models.stubbed_1_model import NoOpLogisticRegression  # noqa: F401
+    from scripts.test.models.stubbed_1_model import NoOpLogisticRegression  # noqa: F401
 
     projects.REALLY_POST = False  # We don't want to post any results to the main server
 
