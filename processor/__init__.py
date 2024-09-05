@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from sentry_sdk import init
 from sentry_sdk.integrations.logging import ignore_logger
 
-VERSION = "4.4.3"
+VERSION = "4.5.0"
 SOURCE_GOOGLE_ALERTS = "google-alerts"
 SOURCE_MEDIA_CLOUD = "media-cloud"
 SOURCE_NEWSCATCHER = "newscatcher"
@@ -97,6 +97,7 @@ def init_sentry(**kwargs):
         logger.info("  SENTRY_DSN: {}".format(SENTRY_DSN))
     # else:
     # logger.info("  Not logging errors to Sentry")
+
 
 init_sentry()
 

@@ -3,6 +3,12 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.5.0
+
+* Parallelize Scrapy-based fetching to speed it up
+* Catch some more empty story edge cases causing errors
+* Tweak some of the Celery cron task schedules
+
 ### v4.4.3
 
 * Update cron schedule to make monitoring easier.
