@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.5.1
+
+* Change Media Cloud parallelization to use a env-var for easier tweaking
+
 ### v4.5.0
 
 * Parallelize Scrapy-based fetching to speed it up
