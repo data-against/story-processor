@@ -3,6 +3,7 @@
 import datetime as dt
 import logging
 import multiprocessing
+import os
 import sys
 import time
 from typing import Dict, List
@@ -25,7 +26,7 @@ import scripts.tasks as tasks
 from processor import get_mc_client
 from processor.classifiers import download_models
 
-POOL_SIZE = 6
+POOL_SIZE = os.environ.get("MC_POOL_SIZE", 3)
 DAY_OFFSET = 1  # stories are ingested within a day of discovery
 DAY_WINDOW = 4  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 STORIES_PER_PAGE = 1000
@@ -205,6 +206,7 @@ if __name__ == "__main__":
     projects_list = load_projects_task()
 
     # 2. process all the projects (in parallel)
+    logger.info(f"Processing project in parallel {POOL_SIZE}")
     project_results = process_projects_in_parallel(projects_list, POOL_SIZE)
 
     # 3. send email/slack_msg with results of operations
