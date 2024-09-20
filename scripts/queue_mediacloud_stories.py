@@ -26,7 +26,7 @@ import scripts.tasks as tasks
 from processor import get_mc_client
 from processor.classifiers import download_models
 
-POOL_SIZE = os.environ.get("MC_POOL_SIZE", 3)
+POOL_SIZE = int(os.environ.get("MC_POOL_SIZE", 3))
 DAY_OFFSET = 1  # stories are ingested within a day of discovery
 DAY_WINDOW = 4  # don't look for stories too old (DEFAULT_DAY_OFFSET + DEFAULT_DAY_WINDOW at most)
 STORIES_PER_PAGE = 1000
