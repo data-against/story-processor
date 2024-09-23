@@ -1,0 +1,12 @@
+[
+    {
+        "id": "1111",
+        "chained_models": false,
+        "name": "Stubbed Language Model",
+        "model_type_1": "lr",
+        "vectorizer_type_1": "tfidf",
+        "model_1_files": ["file:///scripts/test/models/stubbed_1_model.p"],
+        "filename_prefix": "stubbed",
+        "version": "1.0"
+    }
+]

@@ -68,7 +68,8 @@ def add_stories(
         try:
             session.add(s["db_story"])
             session.commit()
-        except IntegrityError:
+        except IntegrityError as ie:
+            logger.error(f"Integrity Exception occurred: {str(ie)}")
             # duplicate story, so just ignore it
             session.rollback()
             logger.debug(
@@ -261,15 +262,16 @@ def stories_by_published_day(
 
 def _run_query(session: Session, query: str) -> List:
     results = session.execute(text(query))
-    data = []
-    for row in results:
-        data.append(row._mapping)
+    data = results.mappings().all()
+    # data = []
+    # for row in results:
+    # data.append(row._mapping)
     return data
 
 
 def _run_count_query(session: Session, query: str) -> int:
     data = _run_query(session, query)
-    return data[0]["count"]
+    return data[0]["total"]
 
 
 def unposted_above_story_count(
@@ -282,7 +284,7 @@ def unposted_above_story_count(
     if limit:
         earliest_date = dt.date.today() - dt.timedelta(days=limit)
         date_clause += " AND (posted_date >= '{}'::DATE)".format(earliest_date)
-    query = "select count(1) from stories where project_id={} and above_threshold is True and {}".format(
+    query = "select count(1) as total from stories where project_id={} and above_threshold is True and {}".format(
         project_id, date_clause
     )
     return _run_count_query(session, query)
@@ -295,7 +297,7 @@ def posted_above_story_count(session: Session, project_id: int) -> int:
     :return:
     """
     query = (
-        "select count(1) from stories "
+        "select count(1) as total from stories "
         "where project_id={} and posted_date is not Null and above_threshold is True".format(
             project_id
         )
@@ -309,7 +311,7 @@ def below_story_count(session: Session, project_id: int) -> int:
     :param project_id:
     :return:
     """
-    query = "select count(1) from stories where project_id={} and above_threshold is False".format(
+    query = "select count(1) as total from stories where project_id={} and above_threshold is False".format(
         project_id
     )
     return _run_count_query(session, query)
