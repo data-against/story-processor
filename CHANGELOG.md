@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.5.3
+
+* HACK: temporarily switch to optimized US State & Local collection for MC queries
+
 ### v4.5.2
 
 * Fix silly error in MC pool size parsing
