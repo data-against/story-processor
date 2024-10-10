@@ -35,16 +35,25 @@ Install for Development
     - Create a folder `docker-conf` (first time only) 
     - To start rabbitmq, postgres: `docker compose up -d` 
 
-## Notes for MacOS on Apple Silicon
+## Instructions for MacOS on Apple Silicon
 
-Installing older versions of tensorflow is tricky. Try `python -m pip install tensorflow-macos`
-(from [Apple's docs](https://developer.apple.com/metal/tensorflow-plugin/)). 
+Verified on M2 and M3:
 
-Note that some of the models use [tensorflow_text](https://pypi.org/project/tensorflow-text/), which is also hard to 
-install on Apple-silicon MacOS machines. For that platform you'll need to download and install the appropriate
-[`tensorflow_text-2.10.0-cp310-cp310-macosx_11_0_arm64.whl`](https://github.com/sun1638650145/Libraries-and-Extensions-for-TensorFlow-for-Apple-Silicon/releases/download/v2.10/tensorflow_text-2.10.0-cp310-cp310-macosx_11_0_arm64.whl)
+1. install brew
+2. install miniforge (with brew)
+3. installed wget (with brew)
+4. Installed tensorflow 2.10.0: `python -m pip install tensorflow-macos==2.10.0` (from [Apple's docs](https://developer.apple.com/metal/tensorflow-plugin/)). 
+5. Download tensorflow-text: [`tensorflow_text-2.10.0-cp310-cp310-macosx_11_0_arm64.whl`](https://github.com/sun1638650145/Libraries-and-Extensions-for-TensorFlow-for-Apple-Silicon/releases/download/v2.10/tensorflow_text-2.10.0-cp310-cp310-macosx_11_0_arm64.whl)
 from the helpful repo of [prebuilt tensorflow wheels for Apple Silicon](https://github.com/sun1638650145/Libraries-and-Extensions-for-TensorFlow-for-Apple-Silicon/releases/). 
-
+6. Install that via `python -m pip install [filename]`
+7. Comment out all the tensorflow packages in requirements.txt
+8. Install the reqs via `python -m pip install -r requirements.txt`
+9. Install the dev reqs via `python -m pip install -r requirements-dev.txt`
+10. Set up your env vars are indicated above
+11. Run scripts/download-models.sh to install the latest models
+12. Run `pytest` to verify everything is working
+ 
+ 
 Running
 -------
 
