@@ -36,10 +36,9 @@ DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
 MAX_STORIES_PER_PROJECT = (
     3000  # can't process all the stories for queries that are too big (keep this low)
 )
-MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
+MAX_CALLS_PER_SEC = 1  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
-# nc_api_client = Newscatcher(api_key=processor.NEWSCATCHER_API_KEY,) - alternative to endpoints
 
 session = requests.Session()
 limiter = LimiterAdapter(per_second=RATE_LIMIT)
@@ -90,7 +89,6 @@ def _fetch_results(
             # to produce stronger results (not validated)
             # sort_by='date',
         }
-        time.sleep(1)  # extra protection
         response = session.get(
             "https://v3-api.newscatcherapi.com/api/search",
             headers={"x-api-token": processor.NEWSCATCHER_API_KEY},
@@ -98,28 +96,17 @@ def _fetch_results(
         )
         # check if the response is successful, if so get the articles
         if response.status_code == 200:
-            results = response.json().get("articles", [])
+            results = response.json()
         else:
             # log the error and return an empty list if fails
             logger.error(
-                f"Failed to fetch stories for project {project['id']}. Status code: {response.status_code} - {response.reason}"
+                f"Failed to fetch stories for project {project['id']}. Status code: {response.status_code} - {response.reason} - {response.text}"
             )
-            print(f"Message: {response.text}")
-            return {}
 
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed: {e}")
-        return {}
-
-    except KeyError as e:
-        # want to catch errors due to missing keys in the project data
-        logger.error(f"KeyError: {e} in project {project['id']}")
-        return {}
-
-    except Exception as e:
-        # if we missed any other exceptions
-        logger.error(f"Unexpected error occurred: {e}")
-        return {}
+    except requests.exceptions.RequestException as re:
+        logger.error(
+            "Fetch-related response on project {} - {}".format(project["id"], re)
+        )
 
     return results
 
@@ -138,13 +125,12 @@ def _project_story_worker(p: Dict, session) -> List[Dict]:
     page_number = 1
     # fetch first page to get total hits, and use results
     current_page = _fetch_results(p, start_date, end_date, page_number)
-    total_hits = len(current_page)
+    total_hits = current_page["total_hits"]
     logger.info(
         "Project {}/{} - {} total stories (since {})".format(
             p["id"], p["title"], total_hits, start_date
         )
     )
-
     project_stories = []
     skipped_dupes = 0  # how many URLs do we filter out because they're already in the DB for this project recently
     if total_hits > 0:
@@ -161,16 +147,16 @@ def _project_story_worker(p: Dict, session) -> List[Dict]:
         while keep_going:
             logger.debug(
                 "  {} - page {}: {} stories".format(
-                    p["id"], page_number, len(current_page)
+                    p["id"], page_number, len(current_page["articles"])
                 )
             )
             # track the latest date so we can use it tomorrow
             page_latest_pub_date = [
-                dateparser.parse(s["published_date"]) for s in current_page
+                dateparser.parse(s["published_date"]) for s in current_page["articles"]
             ]
             latest_pub_date = max(latest_pub_date, max(page_latest_pub_date))
             # prep all the articles
-            for item in current_page:
+            for item in current_page["articles"]:
                 if len(project_stories) > MAX_STORIES_PER_PROJECT:
                     break
                 real_url = item["link"]
