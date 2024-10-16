@@ -84,6 +84,11 @@ def _process_project_task(args: Dict) -> Dict:
         index = project["media_collections"].index(38379429)
         project["media_collections"][index] = 262985212
 
+    # replace the "Massachusetts – state and local" collection value if its one of the project's queries
+    if 38381372 in project["media_collections"]:
+        index = project["media_collections"].index(38381372)
+        project["media_collections"][index] = 262985215
+
     # see how many stories
     mc = get_mc_client()
     try:
