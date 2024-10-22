@@ -6,7 +6,6 @@ import logging
 import math
 import sys
 import time
-from multiprocessing import Pool
 from typing import Dict, List
 
 import dateparser
@@ -18,9 +17,9 @@ processor.disable_package_loggers()
 
 import mcmetadata as metadata
 import mcmetadata.urls as urls
-import newscatcherapi
-import newscatcherapi.newscatcherapi_exception
+import newscatcher_api
 import requests.exceptions
+from requests_ratelimiter import LimiterAdapter
 
 import processor.database as database
 import processor.database.projects_db as projects_db
@@ -32,17 +31,19 @@ from processor.classifiers import download_models
 
 POOL_SIZE = 16  # parallel fetch for story URL lists (by project)
 PAGE_SIZE = 200
+RATE_LIMIT = 1
 DEFAULT_DAY_OFFSET = 0
 DEFAULT_DAY_WINDOW = 4  # don't look for stories that are too old
 MAX_STORIES_PER_PROJECT = (
     3000  # can't process all the stories for queries that are too big (keep this low)
 )
-MAX_CALLS_PER_SEC = 5  # throttle calls to newscatcher to avoid rate limiting
+MAX_CALLS_PER_SEC = 1  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
-nc_api_client = newscatcherapi.NewsCatcherApiClient(
-    x_api_key=processor.NEWSCATCHER_API_KEY
-)
+
+session = requests.Session()
+limiter = LimiterAdapter(per_second=RATE_LIMIT)
+session.mount("https://", limiter)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -75,37 +76,25 @@ def _fetch_results(
     results = dict(
         total_hits=0
     )  # start of with a mockup of no results, so we can handle transient errors bette
-    try:
-        terms_no_curlies = project["search_terms"].replace("“", '"').replace("”", '"')
-        results = nc_api_client.get_search(
-            q=terms_no_curlies,
-            lang=project["language"],
-            countries=[p.strip() for p in project["newscatcher_country"].split(",")],
-            page_size=PAGE_SIZE,
-            from_=start_date.strftime("%Y-%m-%d"),  # UTC
-            to_=end_date.strftime("%Y-%m-%d"),  # UTC
-            page=page,
-            # sort by date only supports date DESC (latest first), so current gues is to do this by relevancy
-            # to produce stronger results (not validated)
-            # sort_by='date',
-        )
-    # try to ignore project-level exceptions so we can keep going and process other projects
-    except newscatcherapi.newscatcherapi_exception.NewsCatcherApiException as ncae:
-        logger.error(
-            "Couldn't get Newscatcher results for project {} - check query ({})".format(
-                project["id"], ncae
-            )
-        )
-        # logger.exception(ncae) #Ignore Sentry Logging
-    except requests.exceptions.RequestException as re:
-        logger.error(
-            "Fetch-related response on project {} - {}".format(project["id"], re)
-        )
-        # logger.exception(re) #Ignore Sentry Logging
+    terms_no_curlies = project["search_terms"].replace("“", '"').replace("”", '"')
+    params = {
+        "q": terms_no_curlies,
+        "lang": project["language"],
+        "countries": [p.strip() for p in project["newscatcher_country"].split(",")],
+        "page_size": PAGE_SIZE,
+        "from_": start_date.strftime("%Y-%m-%d"),
+        "to_": end_date.strftime("%Y-%m-%d"),
+        "page": page,
+        # sort by date only supports date DESC (latest first), so current gues is to do this by relevancy
+        # to produce stronger results (not validated)
+        # sort_by='date',
+    }
+    # fetch stories and return results
+    results = newscatcher_api.search_stories(session, params)
     return results
 
 
-def _project_story_worker(p: Dict) -> List[Dict]:
+def _project_story_worker(p: Dict, session) -> List[Dict]:
     Session = database.get_session_maker()
     # here start_date ignores last query history, since sort is by relevancy; we're relying on robust URL de-duping
     # to make sure we don't double up on stories (and keeping MAX_STORIES_PER_PROJECT low)
@@ -202,15 +191,22 @@ def fetch_project_stories(project_list: List[Dict]) -> List[Dict]:
     :param project_list:
     :return:
     """
-    with Pool(POOL_SIZE) as p:
-        lists_of_stories = p.map(_project_story_worker, project_list)
-    # flatten list of lists of stories into one big list
+    lists_of_stories = []
+
+    for project in project_list:
+        # Call the story worker with the same session to avoid creating new connections
+        stories = _project_story_worker(project, session=session)
+        lists_of_stories.append(stories)
+
+    # Flatten list of lists of stories into one big list
     combined_stories = [s for s in itertools.chain.from_iterable(lists_of_stories)]
+
     logger.info(
         "Fetched {} total URLs from {}".format(
             len(combined_stories), processor.SOURCE_NEWSCATCHER
         )
     )
+
     return combined_stories
 
 
