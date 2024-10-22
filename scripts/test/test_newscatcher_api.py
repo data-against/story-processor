@@ -43,7 +43,7 @@ class TestSearchStories(unittest.TestCase):
         result = search_stories(session, params)
 
         # make sure we get an empty dictionary on failure
-        self.assertEqual(result, {})
+        self.assertEqual(result, dict(total_hits=0))
 
     @patch("requests.Session.get")
     def test_search_stories_exception(self, mock_get):
@@ -55,7 +55,7 @@ class TestSearchStories(unittest.TestCase):
 
         result = search_stories(session, params)
 
-        self.assertEqual(result, {})
+        self.assertEqual(result, dict(total_hits=0))
 
 
 if __name__ == "__main__":

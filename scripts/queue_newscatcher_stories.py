@@ -73,9 +73,6 @@ def load_projects() -> List[Dict]:
 def _fetch_results(
     project: Dict, start_date: dt.datetime, end_date: dt.datetime, page: int = 1
 ) -> Dict:
-    results = dict(
-        total_hits=0
-    )  # start of with a mockup of no results, so we can handle transient errors bette
     terms_no_curlies = project["search_terms"].replace("“", '"').replace("”", '"')
     params = {
         "q": terms_no_curlies,

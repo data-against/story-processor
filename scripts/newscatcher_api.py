@@ -19,7 +19,7 @@ def search_stories(session, params):
         params (dict): The query parameters to send to the API
 
     Returns:
-        dict: The JSON response containing the stories if successful, otherwise an empty dict.
+        dict: The JSON response containing the stories if successful, otherwise a trivial dict.
     """
     try:
         response = session.get(
@@ -36,8 +36,8 @@ def search_stories(session, params):
             logger.error(
                 f"Failed to fetch stories. Status code: {response.status_code} - {response.reason} - {response.text}"
             )
-            return {}
+            return dict(total_hits=0)
 
     except requests.exceptions.RequestException as re:
         logger.error(f"Request exception occurred: {re}")
-        return {}
+        return dict(total_hits=0)
