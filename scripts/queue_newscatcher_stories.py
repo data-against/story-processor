@@ -18,8 +18,6 @@ processor.disable_package_loggers()
 import mcmetadata as metadata
 import mcmetadata.urls as urls
 import newscatcher_api
-import requests.exceptions
-from requests_ratelimiter import LimiterAdapter
 
 import processor.database as database
 import processor.database.projects_db as projects_db
@@ -40,10 +38,8 @@ MAX_STORIES_PER_PROJECT = (
 MAX_CALLS_PER_SEC = 1  # throttle calls to newscatcher to avoid rate limiting
 DELAY_SECS = 1 / MAX_CALLS_PER_SEC
 
-
-session = requests.Session()
-limiter = LimiterAdapter(per_second=RATE_LIMIT)
-session.mount("https://", limiter)
+# create requests session
+requests_session = newscatcher_api.create_session()
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -74,30 +70,33 @@ def _fetch_results(
     project: Dict, start_date: dt.datetime, end_date: dt.datetime, page: int = 1
 ) -> Dict:
     terms_no_curlies = project["search_terms"].replace("“", '"').replace("”", '"')
-    params = {
-        "q": terms_no_curlies,
-        "lang": project["language"],
-        "countries": [p.strip() for p in project["newscatcher_country"].split(",")],
-        "page_size": PAGE_SIZE,
-        "from_": start_date.strftime("%Y-%m-%d"),
-        "to_": end_date.strftime("%Y-%m-%d"),
-        "page": page,
-        # sort by date only supports date DESC (latest first), so current gues is to do this by relevancy
-        # to produce stronger results (not validated)
-        # sort_by='date',
-    }
+
     # fetch stories and return results
-    results = newscatcher_api.search_stories(session, params)
-    return results
+    results = newscatcher_api.search_stories(
+        terms_no_curlies,
+        language=project["language"],
+        countries=project["newscatcher_country"],
+        start_date=start_date,
+        end_date=end_date,
+        page_size=PAGE_SIZE,
+        page=page,
+        session=requests_session,
+    )
+    if results is not None:
+        return results
+    else:
+        return dict(
+            total_hits=0
+        )  # a mockup of no results if fails, so we can handle transient errors better
 
 
-def _project_story_worker(p: Dict, session) -> List[Dict]:
-    Session = database.get_session_maker()
+def _project_story_worker(p: Dict) -> List[Dict]:
+    db_session_maker = database.get_session_maker()
     # here start_date ignores last query history, since sort is by relevancy; we're relying on robust URL de-duping
     # to make sure we don't double up on stories (and keeping MAX_STORIES_PER_PROJECT low)
     start_date, end_date = projects.query_start_end_dates(
         p,
-        Session,
+        db_session_maker,
         DEFAULT_DAY_OFFSET,
         DEFAULT_DAY_WINDOW,
         processor.SOURCE_NEWSCATCHER,
@@ -116,9 +115,9 @@ def _project_story_worker(p: Dict, session) -> List[Dict]:
     if total_hits > 0:
         # list recent urls to filter so we don't fetch text extra if we've recently proceses already
         # (and will be filtered out by add_stories call in later post-text-fetch step)
-        with Session() as session:
+        with db_session_maker() as db_session:
             already_processed_normalized_urls = (
-                stories_db.project_story_normalized_urls(session, p, 14)
+                stories_db.project_story_normalized_urls(db_session, p, 14)
             )
         # query page by page
         latest_pub_date = dt.datetime.now() - dt.timedelta(weeks=50)
@@ -172,11 +171,11 @@ def _project_story_worker(p: Dict, session) -> List[Dict]:
                 p["id"], len(project_stories), skipped_dupes, start_date
             )
         )
-        with Session() as session:
+        with db_session_maker() as db_session:
             # note - right now this latest pub date isn't used, because the sort is by relevancy within the
             # default time window
             projects_db.update_history(
-                session, p["id"], latest_pub_date, processor.SOURCE_NEWSCATCHER
+                db_session, p["id"], latest_pub_date, processor.SOURCE_NEWSCATCHER
             )
     return project_stories[:MAX_STORIES_PER_PROJECT]
 
@@ -192,7 +191,7 @@ def fetch_project_stories(project_list: List[Dict]) -> List[Dict]:
 
     for project in project_list:
         # Call the story worker with the same session to avoid creating new connections
-        stories = _project_story_worker(project, session=session)
+        stories = _project_story_worker(project)
         lists_of_stories.append(stories)
 
     # Flatten list of lists of stories into one big list
