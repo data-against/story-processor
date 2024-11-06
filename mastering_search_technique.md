@@ -1,6 +1,6 @@
 # Query Syntax Guide: Mastering Search Techniques
 
-When conducting advanced searches, the structure of your query can make a significant difference in the relevance and quality of your results. This guide will walk you through the process of building precise queries, followed by examples of common queries and what they are searching for.
+When conducting advanced searches, the structure of your query can make a significant difference in the relevance and quality of your results. This guide will walk you through the process of building precise queries, followed by searching techniques and examples of queries as well as what they are searching for.
 
 ## Step-by-Step Instructions for Assembling a Query
 
@@ -12,6 +12,8 @@ The first step in creating a query is identifying the essential keywords and phr
 You want to find cases involving unsolved murders of Indigenous women using genetic genealogy.
 
 Key terms: `murder`, `woman`, `Indigenous`, `genetic genealogy`
+
+*Note:* Our searches are case insensitive
 
 ### 2. Use Boolean Operators
 
@@ -25,10 +27,24 @@ Boolean operators (AND, OR, NOT) allow you to refine your search by combining or
 You want results that include murder-related terms and genetic genealogy, but also include variations on gender and identity:
 
 ```
-(murder OR homicide OR femicide OR feminicide) AND (woman OR girl OR Indigenous) AND "genetic genealogy"
+(murder OR homicide OR femicide OR feminicide) AND (woman OR girl OR Indigenous) AND genetic genealogy
 ```
 
-### 3. Add Phrase Searches
+You want to match any variety of ways the incident is covered: murder OR homicide OR femicide OR feminicide
+
+And you want to match different ways the victim or survivor is identified: woman OR girl OR Indigenous
+
+### 3. Group Terms with Parentheses
+
+Parentheses help group terms and clarify the order of operations in complex queries.
+
+**Example:**
+You want to search for various violent acts alongside gender identities. Group the terms to maintain clarity:
+
+```
+(murder OR homicide OR femicide) AND (woman OR girl OR Indigenous)
+```
+### 4. Add Phrase Searches
 
 To find exact phrases, use quotation marks around the phrase you're looking for.
 
@@ -39,7 +55,7 @@ You want results with the specific phrase "genetic genealogy":
 "genetic genealogy"
 ```
 
-### 4. Include Wildcards
+### 5. Include Wildcards
 
 Use wildcards (*) to capture variations of a word. The * wildcard represents any number of characters.
 
@@ -48,17 +64,6 @@ Searching for variations of woman and girl, you can use wom*n or girl* to includ
 
 ```
 (woman OR women OR girl*)
-```
-
-### 5. Group Terms with Parentheses
-
-Parentheses help group terms and clarify the order of operations in complex queries.
-
-**Example:**
-You want to search for various violent acts alongside gender identities. Group the terms to maintain clarity:
-
-```
-(murder OR homicide OR femicide) AND (woman OR girl OR Indigenous)
 ```
 
 ### 6. Combine and Refine
@@ -70,39 +75,73 @@ Now, combine all elements to create a more targeted query that captures all rele
 ((murder OR homicide OR femicide OR feminicide) AND (woman OR girl OR Indigenous) AND "genetic genealogy")
 ```
 
-## Most Common Queries
 
-Below are common types of searches that are widely used for various research purposes:
+## Query Syntax Sorted by Prevalence
 
-### Phrase Search
-Use quotes to search for an exact phrase:
-```
-"climate change"
-```
+### 1. **AND/OR Capitalization**
+- Boolean operators like AND and OR must be capitalized. Group ORs and ANDs for clarity.
+- **Example:**
+    - `(church OR faith) AND (lesbian OR gay OR LGBTQ)`
 
-### Exclusion Search
-Use NOT or a minus sign to exclude specific terms:
-```
-Biden NOT Trump
-```
+### 2. **Searching for an Exact Phrase**
+- Searches for an exact match of the phrase.
+- **Example:**
+    - Use double quotes to match an exact phrase like `"unhoused person"`
 
-### Wildcard Search
-Use * to include variations of a term:
-```
-wom*n
-```
+### 3. **Default Search**
+- When no Boolean operator is used, the default assumption is AND.
+- **Example:**
+    - `"monkey banana"` is equivalent to `"monkey AND banana"`
 
-### Boolean Logic
-Combine multiple terms with AND, OR, or NOT for a precise query:
-```
-(LGBTQ OR queer) AND "mental health"
-```
+### 4. **Negation**
+- Use `NOT` or `-` to exclude terms from your search.
+- **Example:**
+    - `"Gaza NOT Hamas"` will return results about Gaza but exclude any result mentioning Hamas.
 
-### Field-Specific Search
-Narrow down results to specific fields (like title or content):
-```
-title: "data science"
-```
+### 5. **Word Stems**
+- Match multiple conjugations or variations of a word by using a wildcard (`*`) after the root word.
+- **Example:**
+    - `"learn*"` will match "learn", "learner", "learning", etc.
+
+### 6. **Multiple Character Wildcard**
+- Matches terms where any number of characters can replace the `*`.
+- **Example:**
+    - `wom*n` or `wom*` works to match things like `women` or `woman`.
+
+### 7. **Single Character Wildcard**
+- Match terms where a single character can vary in a specific position using `?`.
+- **Example:**
+    - `"wom?n"` works to match "woman" or "women".
+
+### 8. **Proximity Search**
+- Use a tilde with a number after it to find words that appear within a certain number of words from each other.
+- **Example:**
+    - `"woman killed"~10` will return results where "woman" and "killed" are within 10 words of each other.
+
+### 9. **Fuzzy Queries**
+- The tilde (`~`) after a word allows for slight misspellings or variations.
+- **Example:**
+    - `"Biden~"` will match any slight misspellings like "Bidan" or "Bidden".
+
+### 10. **Search Titles Only**
+- Specify a field or column to search in, using `"column: search term"`.
+- **Example:**
+    - `article_title: Biden` will search for titles containing "Biden".
+    - In the Wayback Machine, use `title: Biden`.
+
+### 11. **Hyphens**
+- Wrap hyphenated phrases in double quotes to ensure the entire phrase is treated as one unit.
+- **Example:**
+    - `"two-spirit"` needs to be in double quotes.
+
+### 12. **Language Filter**
+- Filter results based on language using `"language:code (ISO 639-1)"`.
+- **Example:**
+    - `"Biden language:en"` returns results in English, while `"Biden language:es"` returns results in Spanish.
+
+### 13. **Regular Expressions**
+- Regular expressions are not supported in most search engines like Media Cloud or Wayback Machine.
+
 
 ## Example Queries and What They Are Searching For
 
@@ -120,17 +159,23 @@ This query looks for articles or reports related to unsolved or cold cases invol
 - Second group identifies potential victims using inclusive terminology
 - Third group narrows results to cold cases or those using genetic genealogy
 
-### 2. Searching for Violent Deaths of Women and Marginalized Groups
+### 2. Searching for Violent Deaths of Black and Indigenous Women and Gender-Diverse People
 
 **Query Objective:**
-This query is designed to find reports involving violent deaths or unnatural deaths of women, transgender people, nonbinary individuals, and Indigenous individuals. The query includes various forms of death (murder, homicide, etc.) and captures marginalized gender identities.
+This query is designed to find reports involving violent deaths or unnatural deaths of women, transgender people, nonbinary individuals, with specific focus on Black and Indigenous victims. The query combines racial and gender identities with various forms of death and violence to capture intersectional experiences.
 
 **Final Query:**
 ```
-((murder* OR homicide* OR femicide* OR feminicide* OR murdered OR dead OR death OR killed OR murdered OR shot OR stabbed OR struck OR strangled OR "life-less" OR hypothermia OR suicide) AND (woman OR women OR girl* OR transgender OR trans OR nonbinary OR non-binary OR Indigenous OR "Native American" OR two-spirit OR "two spirit" OR prostitute OR "sex worker"))
+((murder* OR homicide* OR femicide OR feminicide OR murdered OR dead OR death* OR 
+killed OR murdered OR shot OR stabbed OR struck OR strangled OR "life-less") 
+AND 
+(wom*n OR girl* OR transgender OR trans OR nonbinary OR non-binary OR 
+"African American" OR "African-American" OR "African descent" OR Black OR 
+Indigenous OR "Native American" OR two-spirit OR "two spirit" OR prostitute OR 
+"sex worker"))
 ```
 **Groupings:**
-- First group uses wildcards (murder*) to capture variations like "murdered," "murders," "murderous"
-- Second group includes both singular and plural forms of identities
-- Terms are ordered from most to least common to optimize search performance
-
+- First group uses wildcards on key terms (death*, murder*) to capture variations of violent death descriptions
+- Second group combines gender identity terms with racial identity terms, including multiple formats for Black and Indigenous identities
+- Terms capture both formal (African American) and commonly used (Black) racial identity descriptors
+- Includes specific cultural identity terms like "two-spirit" that intersect with both gender and Indigenous identity
