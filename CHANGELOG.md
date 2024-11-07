@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.6.1
+
+* Use new endpoints for downloading sentence-encoder embedding models
+
 ### v4.6.0
 
 * Integrate changes for working with newscatcher v3 API
