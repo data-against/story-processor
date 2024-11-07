@@ -75,7 +75,7 @@ def _fetch_results(
     results = newscatcher_api.search_stories(
         terms_no_curlies,
         language=project["language"],
-        countries=project["newscatcher_country"],
+        countries=[project["newscatcher_country"]],
         start_date=start_date,
         end_date=end_date,
         page_size=PAGE_SIZE,

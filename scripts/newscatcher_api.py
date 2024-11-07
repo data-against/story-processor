@@ -47,7 +47,7 @@ def search_stories(
         session (requests.Session): A requests session to use for the API call.
         q (str): Search terms for the query.
         language (str): desired language.
-        countries (str): desired countries
+        countries (List[str]): desired countries
         start_date (datetime): the start date for the search.
         end_date (datetime): the end date for the search.
         page (int, optional): The page number to fetch where the default is 1.
@@ -59,7 +59,7 @@ def search_stories(
     params = {
         "q": q,
         "lang": language,
-        "countries": [country.strip() for country in countries.split(",")],
+        "countries": countries,
         "page_size": page_size,
         "from_": start_date.strftime("%Y-%m-%d"),
         "to_": end_date.strftime("%Y-%m-%d"),
