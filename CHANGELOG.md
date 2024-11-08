@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.6.2
+
+* Use our own hosted versions of the embeddings models to ensure availability in the longer term
+
 ### v4.6.1
 
 * Use new endpoints for downloading sentence-encoder embedding models
