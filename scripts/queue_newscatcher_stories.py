@@ -17,13 +17,13 @@ processor.disable_package_loggers()
 
 import mcmetadata as metadata
 import mcmetadata.urls as urls
-import newscatcher_api
 
 import processor.database as database
 import processor.database.projects_db as projects_db
 import processor.database.stories_db as stories_db
 import processor.fetcher as fetcher
 import processor.projects as projects
+import scripts.newscatcher_api as newscatcher_api
 import scripts.tasks as tasks
 from processor.classifiers import download_models
 
