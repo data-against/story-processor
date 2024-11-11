@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.6.4
+
+* Fix silly import bug breaking updated to newscatcher v3 integration
+
 ### v4.6.3
 
 * Fix silly bugs in model downloading for production
