@@ -136,7 +136,7 @@ Now, combine all elements to create a more targeted query that captures all rele
 - Filter results based on language using `"language:code (ISO 639-1)"`.
 - **Example:**
     - `"Biden language:en"` returns results in English, while `"Biden language:es"` returns results in Spanish.
-- Navigate to [this link](https://www.w3schools.com/tags/ref_language_codes.asp) to find a list of language codes.
+- Navigate to [this link](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes) to find a list of language codes.
 
 ### 13. **Regular Expressions**
 - Regular expressions are not supported in most search engines like Media Cloud or Wayback Machine.
