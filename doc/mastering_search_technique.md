@@ -13,7 +13,7 @@ You want to find cases involving unsolved murders of Indigenous women using gene
 
 Key terms: `murder`, `woman`, `Indigenous`, `genetic genealogy`
 
-*Note:* Our searches are case insensitive
+*Note:* Our searches are case-insensitive
 
 ### 2. Use Boolean Operators
 
@@ -60,12 +60,12 @@ You want results with the specific phrase "genetic genealogy":
 Use wildcards (*) to capture variations of a word. The * wildcard represents any number of characters.
 
 **Example:**
-Searching for variations of woman and girl, you can use wom*n or girl* to include results like women or girls:
+Searching for variations of woman and girl, such as plural cases, you can use wom\*n or girl* to include results like women or girls:
 
 ```
-(woman OR women OR girl*)
+(wom*n OR girl*)
 ```
-
+Note: But be careful, because wom\* can also match wombat
 ### 6. Combine and Refine
 
 Now, combine all elements to create a more targeted query that captures all relevant terms and excludes irrelevant information.
@@ -124,10 +124,8 @@ Now, combine all elements to create a more targeted query that captures all rele
     - `"Biden~"` will match any slight misspellings like "Bidan" or "Bidden".
 
 ### 10. **Search Titles Only**
-- Specify a field or column to search in, using `"column: search term"`.
-- **Example:**
-    - `article_title: Biden` will search for titles containing "Biden".
-    - In the Wayback Machine, use `title: Biden`.
+- Our system automatically searches body texts and article titles
+- We do not have the functionality to specify searching titles only
 
 ### 11. **Hyphens**
 - Wrap hyphenated phrases in double quotes to ensure the entire phrase is treated as one unit.
@@ -138,6 +136,7 @@ Now, combine all elements to create a more targeted query that captures all rele
 - Filter results based on language using `"language:code (ISO 639-1)"`.
 - **Example:**
     - `"Biden language:en"` returns results in English, while `"Biden language:es"` returns results in Spanish.
+- Navigate to [this link](https://www.w3schools.com/tags/ref_language_codes.asp) to find a list of language codes.
 
 ### 13. **Regular Expressions**
 - Regular expressions are not supported in most search engines like Media Cloud or Wayback Machine.
@@ -152,7 +151,7 @@ This query looks for articles or reports related to unsolved or cold cases invol
 
 **Final Query:**
 ```
-((murder OR homicide OR femicide OR feminicide OR murdered OR dead OR death OR killed OR shot OR stabbed OR struck OR strangled OR "life-less") AND (woman OR girl OR transgender OR trans OR nonbinary OR non-binary OR Indigenous OR "Native American" OR two-spirit OR "two spirit" OR "a young woman" OR "a teenage girl" OR "a girl" OR "body of a woman" OR prostitute OR "sex worker") AND ("cold case" OR "genetic genealogy"))
+((murder OR homicide OR femicide OR feminicide OR murdered OR dead OR death OR killed OR shot OR stabbed OR struck OR strangled OR "life-less") AND (woman OR girl OR transgender OR trans OR nonbinary OR non-binary OR Indigenous OR "Native American" OR two-spirit OR "two-spirit" OR "a young woman" OR "a teenage girl" OR "a girl" OR "body of a woman" OR prostitute OR "sex worker") AND ("cold case" OR "genetic genealogy"))
 ```
 **Groupings:**
 - First group captures various ways of describing death or violent acts
@@ -162,7 +161,7 @@ This query looks for articles or reports related to unsolved or cold cases invol
 ### 2. Searching for Violent Deaths of Black and Indigenous Women and Gender-Diverse People
 
 **Query Objective:**
-This query is designed to find reports involving violent deaths or unnatural deaths of women, transgender people, nonbinary individuals, with specific focus on Black and Indigenous victims. The query combines racial and gender identities with various forms of death and violence to capture intersectional experiences.
+This query is designed to find reports involving violent deaths or unnatural deaths of women, transgender people, nonbinary individuals, with a specific focus on Black and Indigenous victims. The query combines racial and gender identities with various forms of death and violence to capture intersectional experiences.
 
 **Final Query:**
 ```
@@ -171,11 +170,10 @@ killed OR murdered OR shot OR stabbed OR struck OR strangled OR "life-less")
 AND 
 (wom*n OR girl* OR transgender OR trans OR nonbinary OR non-binary OR 
 "African American" OR "African-American" OR "African descent" OR Black OR 
-Indigenous OR "Native American" OR two-spirit OR "two spirit" OR prostitute OR 
+Indigenous OR "Native American" OR two-spirit OR "two-spirit" OR prostitute OR 
 "sex worker"))
 ```
 **Groupings:**
-- First group uses wildcards on key terms (death*, murder*) to capture variations of violent death descriptions
-- Second group combines gender identity terms with racial identity terms, including multiple formats for Black and Indigenous identities
+- First group uses wildcards on key terms (death*, murder*) to capture variations of violent death descriptions such as death/deaths and murder/murders- Second group combines gender identity terms with racial identity terms, including multiple formats for Black and Indigenous identities
 - Terms capture both formal (African American) and commonly used (Black) racial identity descriptors
 - Includes specific cultural identity terms like "two-spirit" that intersect with both gender and Indigenous identity
