@@ -18,6 +18,6 @@ slack_sdk==3.31.*
 slack-bolt==1.19.*
 scrapy==2.11.*
 mc-providers==2.0.*
-numpy==1.23.* # freeze this here for tensorflow compatibility
+numpy==1.26.* # freeze this here for tensorflow compatibility
 requests
 requests_ratelimiter==0.7.*
