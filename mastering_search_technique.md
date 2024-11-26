@@ -60,12 +60,12 @@ You want results with the specific phrase "genetic genealogy":
 Use wildcards (*) to capture variations of a word. The * wildcard represents any number of characters.
 
 **Example:**
-Searching for variations of woman and girl, you can use wom*n or girl* to include results like women or girls:
+Searching for variations of woman and girl, such as plural cases, you can use wom\*n or girl* to include results like women or girls:
 
 ```
-(woman OR women OR girl*)
+(wom*n OR girl*)
 ```
-
+Note: But be careful, because wom\* can also match wombat"
 ### 6. Combine and Refine
 
 Now, combine all elements to create a more targeted query that captures all relevant terms and excludes irrelevant information.
@@ -94,13 +94,7 @@ Now, combine all elements to create a more targeted query that captures all rele
     - `"monkey banana"` is equivalent to `"monkey AND banana"`
 
 ### 4. **Negation**
-- Use `NOT` or `-` to exclude terms from your search.
-- **Example:**
-    - `"Gaza NOT Hamas"` will return results about Gaza but exclude any result mentioning Hamas.
-
-### 5. **Word Stems**
-- Match multiple conjugations or variations of a word by using a wildcard (`*`) after the root word.
-- **Example:**
+- Use `NOT` or `-` to exclude terms from your search
     - `"learn*"` will match "learn", "learner", "learning", etc.
 
 ### 6. **Multiple Character Wildcard**
@@ -124,10 +118,8 @@ Now, combine all elements to create a more targeted query that captures all rele
     - `"Biden~"` will match any slight misspellings like "Bidan" or "Bidden".
 
 ### 10. **Search Titles Only**
-- Specify a field or column to search in, using `"column: search term"`.
-- **Example:**
-    - `article_title: Biden` will search for titles containing "Biden".
-    - In the Wayback Machine, use `title: Biden`.
+- Our system automatically searches body texts and article titles
+- We do not have functionality to specify  searchinh title only
 
 ### 11. **Hyphens**
 - Wrap hyphenated phrases in double quotes to ensure the entire phrase is treated as one unit.
@@ -138,6 +130,7 @@ Now, combine all elements to create a more targeted query that captures all rele
 - Filter results based on language using `"language:code (ISO 639-1)"`.
 - **Example:**
     - `"Biden language:en"` returns results in English, while `"Biden language:es"` returns results in Spanish.
+Navigate to [this link](https://www.w3schools.com/tags/ref_language_codes.asp) to find a list of language codes.
 
 ### 13. **Regular Expressions**
 - Regular expressions are not supported in most search engines like Media Cloud or Wayback Machine.
@@ -175,7 +168,7 @@ Indigenous OR "Native American" OR two-spirit OR "two spirit" OR prostitute OR
 "sex worker"))
 ```
 **Groupings:**
-- First group uses wildcards on key terms (death*, murder*) to capture variations of violent death descriptions
+- First group uses wildcards on key terms (death*, murder*) to capture variations of violent death descriptions such as death/deaths and murder/murders
 - Second group combines gender identity terms with racial identity terms, including multiple formats for Black and Indigenous identities
 - Terms capture both formal (African American) and commonly used (Black) racial identity descriptors
 - Includes specific cultural identity terms like "two-spirit" that intersect with both gender and Indigenous identity
