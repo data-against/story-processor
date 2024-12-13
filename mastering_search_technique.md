@@ -27,22 +27,22 @@ Boolean operators (AND, OR, NOT) allow you to refine your search by combining or
 You want results that include murder-related terms and genetic genealogy, but also include variations on gender and identity:
 
 ```
-(murder OR homicide OR femicide OR feminicide) AND (woman OR girl OR Indigenous) AND genetic genealogy
+(murder OR homicide OR femicide OR feminicide) AND (woman OR girl) AND Indigenous AND genetic genealogy
 ```
 
 You want to match any variety of ways the incident is covered: murder OR homicide OR femicide OR feminicide
 
-And you want to match different ways the victim or survivor is identified: woman OR girl OR Indigenous
+And you want to match different ways the victim or survivor is identified: woman OR girl AND Indigenous
 
 ### 3. Group Terms with Parentheses
 
-Parentheses help group terms and clarify the order of operations in complex queries.
+Parentheses help group terms and clarify the order of operations in complex queries. In queries, parentheses override the default order of operations, meaning that any expression within parentheses will be evaluated first, before any other operations outside of the parentheses are performed.
 
 **Example:**
 You want to search for various violent acts alongside gender identities. Group the terms to maintain clarity:
 
 ```
-(murder OR homicide OR femicide) AND (woman OR girl OR Indigenous)
+(murder OR homicide OR femicide) AND (woman OR girl) AND Indigenous
 ```
 ### 4. Add Phrase Searches
 
@@ -54,6 +54,7 @@ You want results with the specific phrase "genetic genealogy":
 ```
 "genetic genealogy"
 ```
+If the quotations were not present, the system would interpet it as genetic AND geneaology.
 
 ### 5. Include Wildcards
 
@@ -91,45 +92,46 @@ Now, combine all elements to create a more targeted query that captures all rele
 ### 3. **Default Search**
 - When no Boolean operator is used, the default assumption is AND.
 - **Example:**
-    - `"monkey banana"` is equivalent to `"monkey AND banana"`
+    - `monkey banana` is equivalent to `monkey AND banana`
 
 ### 4. **Negation**
 - Use `NOT` or `-` to exclude terms from your search
     - `"learn*"` will match "learn", "learner", "learning", etc.
 
-### 6. **Multiple Character Wildcard**
-- Matches terms where any number of characters can replace the `*`.
-- **Example:**
+### 5. **Word Stems** / **Multiple Character Wildcard**
+- Match multiple conjugations or variations of a word by using a wildcard (`*`) after the root word.
+- **Examples:**
+    - `"learn*"` will match "learn", "learner", "learning", etc.
     - `wom*n` or `wom*` works to match things like `women` or `woman`.
 
-### 7. **Single Character Wildcard**
+### 6. **Single Character Wildcard**
 - Match terms where a single character can vary in a specific position using `?`.
 - **Example:**
     - `"wom?n"` works to match "woman" or "women".
 
-### 8. **Proximity Search**
+### 7. **Proximity Search**
 - Use a tilde with a number after it to find words that appear within a certain number of words from each other.
 - **Example:**
     - `"woman killed"~10` will return results where "woman" and "killed" are within 10 words of each other.
 
-### 9. **Fuzzy Queries**
+### 8. **Fuzzy Queries**
 - The tilde (`~`) after a word allows for slight misspellings or variations.
 - **Example:**
     - `"Biden~"` will match any slight misspellings like "Bidan" or "Bidden".
 
-### 10. **Search Titles Only**
+### 9. **Search Titles Only**
 - Our system automatically searches body texts and article titles
-- We do not have functionality to specify  searchinh title only
+- We do not have functionality to specify  searching title only
 
-### 11. **Hyphens**
+### 10. **Hyphens**
 - Wrap hyphenated phrases in double quotes to ensure the entire phrase is treated as one unit.
 - **Example:**
     - `"two-spirit"` needs to be in double quotes.
 
-### 12. **Language Filter**
+### 11. **Language Filter**
 - Filter results based on language using `"language:code (ISO 639-1)"`.
 - **Example:**
-    - `"Biden language:en"` returns results in English, while `"Biden language:es"` returns results in Spanish.
+    - `Biden AND language:en` returns results in English, while `Biden AND language:es` returns results in Spanish.
 Navigate to [this link](https://www.w3schools.com/tags/ref_language_codes.asp) to find a list of language codes.
 
 ### 13. **Regular Expressions**
@@ -162,9 +164,9 @@ This query is designed to find reports involving violent deaths or unnatural dea
 ((murder* OR homicide* OR femicide OR feminicide OR murdered OR dead OR death* OR 
 killed OR murdered OR shot OR stabbed OR struck OR strangled OR "life-less") 
 AND 
-(wom*n OR girl* OR transgender OR trans OR nonbinary OR non-binary OR 
+(wom*n OR girl* OR transgender OR trans OR nonbinary OR "non-binary" OR 
 "African American" OR "African-American" OR "African descent" OR Black OR 
-Indigenous OR "Native American" OR two-spirit OR "two spirit" OR prostitute OR 
+Indigenous OR "Native American" OR "two-spirit" OR "two spirit" OR prostitute OR 
 "sex worker"))
 ```
 **Groupings:**
