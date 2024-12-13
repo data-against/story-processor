@@ -96,8 +96,9 @@ Now, combine all elements to create a more targeted query that captures all rele
 
 ### 4. **Negation**
 - Use `NOT` or `-` to exclude terms from your search
-    - `"learn*"` will match "learn", "learner", "learning", etc.
-
+- **Example:**
+    - `"Gaza NOT Hamas"` will return results about Gaza but exclude any result mentioning Hamas.
+      
 ### 5. **Word Stems** / **Multiple Character Wildcard**
 - Match multiple conjugations or variations of a word by using a wildcard (`*`) after the root word.
 - **Examples:**
