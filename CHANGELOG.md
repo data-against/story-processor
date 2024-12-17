@@ -3,6 +3,31 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.6.5
+
+* Bump requirements to run new models
+* Add query guide documentation (internal)
+
+### v4.6.4
+
+* Fix silly import bug breaking updated to newscatcher v3 integration
+
+### v4.6.3
+
+* Fix silly bugs in model downloading for production
+
+### v4.6.2
+
+* Use our own hosted versions of the embeddings models to ensure availability in the longer term
+
+### v4.6.1
+
+* Use new endpoints for downloading sentence-encoder embedding models
+
+### v4.6.0
+
+* Integrate changes for working with newscatcher v3 API
+
 ### v4.5.3
 
 * HACK: temporarily switch to optimized US State & Local collection for MC queries

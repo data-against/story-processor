@@ -198,5 +198,5 @@ def classify_and_post_worker(self, project: Dict, stories: List[Dict]):
         logger.warning(
             "{}: Failed to label {} stories".format(project["id"], len(stories))
         )
-        # logger.exception(exc) #Sentry logging ignored
+        logger.exception(exc)
         raise self.retry(exc=exc)

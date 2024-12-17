@@ -13,7 +13,7 @@ You want to find cases involving unsolved murders of Indigenous women using gene
 
 Key terms: `murder`, `woman`, `Indigenous`, `genetic genealogy`
 
-*Note:* Our searches are case insensitive
+*Note:* Our searches are case-insensitive
 
 ### 2. Use Boolean Operators
 
@@ -58,15 +58,16 @@ If the quotations were not present, the system would interpet it as genetic AND 
 
 ### 5. Include Wildcards
 
-Use wildcards (*) to capture variations of a word. The * wildcard represents any number of characters.
+Use wildcards (`*`) to capture variations of a word. The `*` wildcard represents any number of characters.
 
 **Example:**
-Searching for variations of woman and girl, such as plural cases, you can use wom\*n or girl* to include results like women or girls:
+Searching for variations of woman and girl, such as plural cases, you can use `wom\*n` or `girl*` to include results like women or girls:
 
 ```
 (wom*n OR girl*)
 ```
-Note: But be careful, because wom\* can also match wombat"
+Note: But be careful, because `wom\*` can also match `wombat`
+
 ### 6. Combine and Refine
 
 Now, combine all elements to create a more targeted query that captures all relevant terms and excludes irrelevant information.
@@ -97,7 +98,7 @@ Now, combine all elements to create a more targeted query that captures all rele
 ### 4. **Negation**
 - Use `NOT` or `-` to exclude terms from your search
 - **Example:**
-    - `"Gaza NOT Hamas"` will return results about Gaza but exclude any result mentioning Hamas.
+    - `Gaza NOT Hamas` will return results about Gaza but exclude any result mentioning Hamas.
       
 ### 5. **Word Stems** / **Multiple Character Wildcard**
 - Match multiple conjugations or variations of a word by using a wildcard (`*`) after the root word.
@@ -120,9 +121,9 @@ Now, combine all elements to create a more targeted query that captures all rele
 - **Example:**
     - `"Biden~"` will match any slight misspellings like "Bidan" or "Bidden".
 
-### 9. **Search Titles Only**
+### 10. **Search Titles Only**
 - Our system automatically searches body texts and article titles
-- We do not have functionality to specify  searching title only
+- We do not have the functionality to specify searching titles only
 
 ### 10. **Hyphens**
 - Wrap hyphenated phrases in double quotes to ensure the entire phrase is treated as one unit.
@@ -133,7 +134,7 @@ Now, combine all elements to create a more targeted query that captures all rele
 - Filter results based on language using `"language:code (ISO 639-1)"`.
 - **Example:**
     - `Biden AND language:en` returns results in English, while `Biden AND language:es` returns results in Spanish.
-Navigate to [this link](https://www.w3schools.com/tags/ref_language_codes.asp) to find a list of language codes.
+Wikipedia has a [reference list of language codes](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes).
 
 ### 13. **Regular Expressions**
 - Regular expressions are not supported in most search engines like Media Cloud or Wayback Machine.
@@ -148,7 +149,7 @@ This query looks for articles or reports related to unsolved or cold cases invol
 
 **Final Query:**
 ```
-((murder OR homicide OR femicide OR feminicide OR murdered OR dead OR death OR killed OR shot OR stabbed OR struck OR strangled OR "life-less") AND (woman OR girl OR transgender OR trans OR nonbinary OR non-binary OR Indigenous OR "Native American" OR two-spirit OR "two spirit" OR "a young woman" OR "a teenage girl" OR "a girl" OR "body of a woman" OR prostitute OR "sex worker") AND ("cold case" OR "genetic genealogy"))
+((murder OR homicide OR femicide OR feminicide OR murdered OR dead OR death OR killed OR shot OR stabbed OR struck OR strangled OR "life-less") AND (woman OR girl OR transgender OR trans OR nonbinary OR non-binary OR Indigenous OR "Native American" OR two-spirit OR "two-spirit" OR "a young woman" OR "a teenage girl" OR "a girl" OR "body of a woman" OR prostitute OR "sex worker") AND ("cold case" OR "genetic genealogy"))
 ```
 **Groupings:**
 - First group captures various ways of describing death or violent acts
@@ -158,7 +159,7 @@ This query looks for articles or reports related to unsolved or cold cases invol
 ### 2. Searching for Violent Deaths of Black and Indigenous Women and Gender-Diverse People
 
 **Query Objective:**
-This query is designed to find reports involving violent deaths or unnatural deaths of women, transgender people, nonbinary individuals, with specific focus on Black and Indigenous victims. The query combines racial and gender identities with various forms of death and violence to capture intersectional experiences.
+This query is designed to find reports involving violent deaths or unnatural deaths of women, transgender people, nonbinary individuals, with a specific focus on Black and Indigenous victims. The query combines racial and gender identities with various forms of death and violence to capture intersectional experiences.
 
 **Final Query:**
 ```
@@ -171,7 +172,7 @@ Indigenous OR "Native American" OR "two-spirit" OR "two spirit" OR prostitute OR
 "sex worker"))
 ```
 **Groupings:**
-- First group uses wildcards on key terms (death*, murder*) to capture variations of violent death descriptions such as death/deaths and murder/murders
+- First group uses wildcards on key terms (`death*`, `murder*`) to capture variations of violent death descriptions such as death/deaths and murder/murders
 - Second group combines gender identity terms with racial identity terms, including multiple formats for Black and Indigenous identities
 - Terms capture both formal (African American) and commonly used (Black) racial identity descriptors
-- Includes specific cultural identity terms like "two-spirit" that intersect with both gender and Indigenous identity
+- Includes specific cultural identity terms like `two-spirit` that intersect with both gender and Indigenous identity
