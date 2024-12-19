@@ -3,6 +3,10 @@ Change Log
 
 Here is a history of what was changed in each version. 
 
+### v4.6.6
+* remove trailing slash from URLs to help with deduplication
+* bump python runtime version
+
 ### v4.6.5
 
 * Bump requirements to run new models
